@@ -3,7 +3,10 @@ from typing import List
 
 
 def calc_frequency(frequency_changes: List[str]) -> int:
-    return 0
+    frequency = 0
+    for change in frequency_changes:
+        frequency += int(change)
+    return frequency
 
 
 def main():
