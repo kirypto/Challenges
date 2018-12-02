@@ -1,4 +1,9 @@
 import sys
+from typing import List
+
+
+def calc_frequency(frequency_changes: List[str]) -> int:
+    return 0
 
 
 def main():
@@ -7,7 +12,17 @@ def main():
 
 
 def tests():
-    print("Test")
+    test_cases = [
+        (3,  ["+1", "+1", "+1"]),
+        (0,  ["+1", "+1", "-2"]),
+        (-6, ["-1", "-2", "-3"])
+    ]
+    for expected_output, test_input in test_cases:
+        output = calc_frequency(test_input)
+        if expected_output != output:
+            print(ValueError(f"Expected {expected_output}, got {output}. Input was {test_input}"))
+        else:
+            print("Test passed!")
     pass
 
 
