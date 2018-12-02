@@ -1,7 +1,8 @@
 import sys
+from typing import List
 
 
-def METHOD_NAME():
+def calc_repeated_frequency(data: List[str]) -> int:
     pass
 
 
@@ -9,14 +10,19 @@ def main():
     with open("input.txt", "r") as file:
         input_list = [line.strip() for line in file.readlines()]
 
-    result_frequency = METHOD_NAME(input_list)
+    result_frequency = calc_repeated_frequency(input_list)
     print(f"Result: {result_frequency}")
 
 
 def tests():
-    test_cases = []
+    test_cases = [
+        (0,  ["+1", "-1"]),
+        (10, ["+3", "+3", "+4", "-2", "-4"]),
+        (5,  ["-6", "+3", "+8", "+5", "-6"]),
+        (14, ["+7", "+7", "-2", "-7", "-4"])
+    ]
     for expected_output, test_input in test_cases:
-        output = METHOD_NAME(test_input)
+        output = calc_repeated_frequency(test_input)
         if expected_output != output:
             print(ValueError(f"Expected {expected_output}, got {output}. Input was {test_input}"))
         else:
