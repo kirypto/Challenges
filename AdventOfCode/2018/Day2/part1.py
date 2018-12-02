@@ -1,9 +1,18 @@
 import sys
-from typing import List
+from itertools import groupby
+from typing import List, Tuple
 
 
-def calc_checksum(box_ids: List[str]) -> int:
-    pass
+def calc_checksum(box_ids: List[str]) -> Tuple[int, int, int]:
+    double_count = 0
+    triple_count = 0
+    for box_id in box_ids:
+        occurrence_counts = dict((char, len(list(group))) for char, group in groupby(sorted(box_id)))
+        if 2 in occurrence_counts.values():
+            double_count += 1
+        if 3 in occurrence_counts.values():
+            triple_count += 1
+    return double_count * triple_count, double_count, triple_count
 
 
 def main():
