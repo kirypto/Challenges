@@ -1,9 +1,16 @@
 import sys
+from itertools import cycle
 from typing import List
 
 
 def calc_repeated_frequency(data: List[str]) -> int:
-    pass
+    data = cycle([int(x) for x in data])
+    observed_frequencies = set()
+    frequency = 0
+    while frequency not in observed_frequencies:
+        observed_frequencies.add(frequency)
+        frequency += next(data)
+    return frequency
 
 
 def main():
