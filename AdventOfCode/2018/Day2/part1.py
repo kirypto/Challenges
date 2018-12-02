@@ -1,7 +1,8 @@
 import sys
+from typing import List
 
 
-def METHOD_NAME():
+def calc_checksum(box_ids: List[str]) -> int:
     pass
 
 
@@ -9,14 +10,16 @@ def main():
     with open("input.txt", "r") as file:
         input_list = [line.strip() for line in file.readlines()]
 
-    result_frequency = METHOD_NAME(input_list)
+    result_frequency = calc_checksum(input_list)
     print(f"Result: {result_frequency}")
 
 
 def tests():
-    test_cases = []
+    test_cases = [
+        ((12, 4, 3), ["abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab"])
+    ]
     for expected_output, test_input in test_cases:
-        output = METHOD_NAME(test_input)
+        output = calc_checksum(test_input)
         if expected_output != output:
             print(ValueError(f"Expected {expected_output}, got {output}. Input was {test_input}"))
         else:
