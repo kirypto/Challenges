@@ -15,7 +15,6 @@ def main():
 
     result_frequency = calc_frequency(input_list)
     print(f"Resulting Frequency: {result_frequency}")
-    pass
 
 
 def tests():
@@ -30,7 +29,6 @@ def tests():
             print(ValueError(f"Expected {expected_output}, got {output}. Input was {test_input}"))
         else:
             print("Test passed!")
-    pass
 
 
 if __name__ == '__main__':
