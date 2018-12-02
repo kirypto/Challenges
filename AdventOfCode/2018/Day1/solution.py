@@ -10,7 +10,11 @@ def calc_frequency(frequency_changes: List[str]) -> int:
 
 
 def main():
-    print("Main")
+    with open("input.txt", "r") as file:
+        input_list = [line.strip() for line in file.readlines()]
+
+    result_frequency = calc_frequency(input_list)
+    print(f"Resulting Frequency: {result_frequency}")
     pass
 
 
