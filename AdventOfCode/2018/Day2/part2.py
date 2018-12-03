@@ -1,7 +1,8 @@
 import sys
+from typing import List
 
 
-def METHOD_NAME():
+def find_similar_ids(ids: List[str]) -> str:
     pass
 
 
@@ -9,14 +10,14 @@ def main():
     with open("input.txt", "r") as file:
         input_list = [line.strip() for line in file.readlines()]
 
-    result = METHOD_NAME(input_list)
+    result = find_similar_ids(input_list)
     print(f"Result: {result}")
 
 
 def tests():
     test_cases = []
     for expected_output, test_input in test_cases:
-        output = METHOD_NAME(test_input)
+        output = find_similar_ids(test_input)
         if expected_output != output:
             print(ValueError(f"Expected {expected_output}, got {output}. Input was {test_input}"))
         else:
