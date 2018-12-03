@@ -1,9 +1,32 @@
 import sys
-from typing import List
+from typing import List, Tuple
 
 
-def find_similar_ids(ids: List[str]) -> str:
-    pass
+def find_similar_ids(ids: List[str]) -> Tuple[str, str, str]:
+    pairs = []
+    for index_a in range(len(ids)):
+        for index_b in range(index_a + 1, len(ids)):
+            pairs.append((ids[index_a], ids[index_b]))
+
+    possibilities = []
+    for id_a, id_b in pairs:
+        similarity_count = 0
+        for char_a, char_b in zip(id_a, id_b):
+            if char_a == char_b:
+                similarity_count += 1
+        if similarity_count == len(id_a) - 1:
+            possibilities.append((id_a, id_b))
+
+    if 1 != len(possibilities):
+        raise RuntimeError("More than one match found")
+
+    id_a, id_b = possibilities[0]
+    similarities = ""
+    for char_a, char_b in zip(id_a, id_b):
+        if char_a == char_b:
+            similarities += char_a
+
+    return similarities, id_a, id_b
 
 
 def main():
