@@ -15,7 +15,9 @@ def main():
 
 
 def tests():
-    test_cases = []
+    test_cases = [
+        (("fgij", "fghij", "fguij"), ["abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz"])
+    ]
     for expected_output, test_input in test_cases:
         output = find_similar_ids(test_input)
         if expected_output != output:
