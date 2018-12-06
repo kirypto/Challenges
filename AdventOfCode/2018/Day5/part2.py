@@ -28,16 +28,16 @@ def main():
     if len(input_list) != 1:
         raise RuntimeError(f"Unhandled input, had multiple lines: {len(input_list)}")
 
-    result = reduce_polymer(input_list[0])
+    result = find_best_removal(input_list[0])
     print(f"Result: {result}")
 
 
 def tests():
     test_cases = [
-        ((4, "c", "dabCBAcaDA"), "dabAcCaCBAcCcaDA")
+        ((4, "c", "daDA"), "dabAcCaCBAcCcaDA")
     ]
     for expected_output, test_input in test_cases:
-        output = reduce_polymer(test_input)
+        output = find_best_removal(test_input)
         if expected_output != output:
             print(ValueError(f"Expected {expected_output}, got {output}. Input was {test_input}"))
         else:
