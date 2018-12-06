@@ -1,23 +1,27 @@
 import sys
-from typing import List
+from typing import Tuple
 
 
-def METHOD_NAME(INPUT: List[str]) -> None:
+def reduce_polymer(polymer_string: str) -> Tuple[int, str]:
     pass
 
 
 def main():
     with open("input.txt", "r") as file:
         input_list = [line.strip() for line in file.readlines()]
+    if len(input_list) > 0:
+        raise RuntimeError("Unhandled input, had multiple lines")
 
-    result = METHOD_NAME(input_list)
+    result = reduce_polymer(input_list[0])
     print(f"Result: {result}")
 
 
 def tests():
-    test_cases = []
+    test_cases = [
+        ((10, "dabCBAcaDA"), "dabAcCaCBAcCcaDA")
+    ]
     for expected_output, test_input in test_cases:
-        output = METHOD_NAME(test_input)
+        output = reduce_polymer(test_input)
         if expected_output != output:
             print(ValueError(f"Expected {expected_output}, got {output}. Input was {test_input}"))
         else:
