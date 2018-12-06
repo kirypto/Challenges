@@ -5,7 +5,7 @@ from typing import List, Tuple
 import numpy as np
 
 
-def find_overlap(cuts: List[str]) -> int:
+def find__non_overlapping_cut(cuts: List[str]) -> int:
 
     pattern = re.compile("#(\d+) @ (\d+),(\d+): (\d+)x(\d+)")
 
@@ -15,28 +15,31 @@ def find_overlap(cuts: List[str]) -> int:
 
     fabric = np.zeros((1000, 1000))
 
+    non_overlapping_cut = None
+
     for cut in cuts:
         cut_id, x, y, w, h = parse_cut(cut)
+        if 0 == np.sum(fabric[y:y+h, x:x+w]):
+            non_overlapping_cut = cut_id
         fabric[y:y+h, x:x+w] += 1
 
-    num_of_overlaps: int = np.sum(fabric > 1)
-    return num_of_overlaps
+    return non_overlapping_cut
 
 
 def main():
     with open("input.txt", "r") as file:
         input_list = [line.strip() for line in file.readlines()]
 
-    result = find_overlap(input_list)
+    result = find__non_overlapping_cut(input_list)
     print(f"Result: {result}")
 
 
 def tests():
     test_cases = [
-        (4, ["#1 @ 1,3: 4x4", "#2 @ 3,1: 4x4", "#3 @ 5,5: 2x2"])
+        (3, ["#1 @ 1,3: 4x4", "#2 @ 3,1: 4x4", "#3 @ 5,5: 2x2"])
     ]
     for expected_output, test_input in test_cases:
-        output = find_overlap(test_input)
+        output = find__non_overlapping_cut(test_input)
         if expected_output != output:
             print(ValueError(f"Expected {expected_output}, got {output}. Input was {test_input}"))
         else:
