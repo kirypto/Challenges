@@ -16,9 +16,7 @@ def main():
 
 def tests():
     test_cases = [
-        "#1 @ 1,3: 4x4"
-        "#2 @ 3,1: 4x4"
-        "#3 @ 5,5: 2x2"
+        (4, ["#1 @ 1,3: 4x4", "#2 @ 3,1: 4x4", "#3 @ 5,5: 2x2"])
     ]
     for expected_output, test_input in test_cases:
         output = find_overlap(test_input)
