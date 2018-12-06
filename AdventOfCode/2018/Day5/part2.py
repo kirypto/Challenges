@@ -4,12 +4,8 @@ from string import ascii_lowercase
 from typing import Tuple, Dict
 
 
-def reduce_polymer(polymer_string: str) -> Tuple[int, str]:
-    # noinspection PyUnresolvedReferences
-    regs: Dict[str, re.Pattern] = {}
-    for char in ascii_lowercase:
-        regs[char] = re.compile(f"({char}{char.upper()}|{char.upper()}{char})")
-
+# noinspection PyUnresolvedReferences
+def reduce_polymer(polymer_string: str, regs: Dict[str, re.Pattern]) -> Tuple[int, str]:
     prev_polymer_length = -1
     while prev_polymer_length != len(polymer_string):
         prev_polymer_length = len(polymer_string)
@@ -20,6 +16,23 @@ def reduce_polymer(polymer_string: str) -> Tuple[int, str]:
             # if remove_count > 0:
             #     print(f"Replaced { remove_count } characters!")
     return len(polymer_string), polymer_string
+
+
+# noinspection PyUnresolvedReferences
+def find_best_removal(polymer_string: str) -> Tuple[int, str, str]:
+    polymer_regs: Dict[str, re.Pattern] = {}
+    removal_regs: Dict[str, re.Pattern] = {}
+    for char in ascii_lowercase:
+        polymer_regs[char] = re.compile(f"({char}{char.upper()}|{char.upper()}{char})")
+        removal_regs[char] = re.compile(char, re.IGNORECASE)
+
+    results = []
+    for char, regex in removal_regs.items():
+        modified_polymer = regex.sub("", polymer_string)
+        length, reduced = reduce_polymer(modified_polymer, polymer_regs)
+        results.append((length, char, reduced))
+
+    return min(results, key=lambda x: x[0])
 
 
 def main():
