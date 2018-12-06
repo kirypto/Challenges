@@ -15,13 +15,16 @@ def find__non_overlapping_cut(cuts: List[str]) -> int:
 
     fabric = np.zeros((1000, 1000))
 
+    for cut in cuts:
+        cut_id, x, y, w, h = parse_cut(cut)
+        fabric[y:y+h, x:x+w] += 1
+
     non_overlapping_cut = None
 
     for cut in cuts:
         cut_id, x, y, w, h = parse_cut(cut)
-        if 0 == np.sum(fabric[y:y+h, x:x+w]):
+        if np.sum(fabric[y:y+h, x:x+w]) == (w * h):
             non_overlapping_cut = cut_id
-        fabric[y:y+h, x:x+w] += 1
 
     return non_overlapping_cut
 
