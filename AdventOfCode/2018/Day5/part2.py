@@ -28,6 +28,7 @@ def find_best_removal(polymer_string: str) -> Tuple[int, str, str]:
 
     results = []
     for char, regex in removal_regs.items():
+        print(f"Calculating: {char}")
         modified_polymer = regex.sub("", polymer_string)
         length, reduced = reduce_polymer(modified_polymer, polymer_regs)
         results.append((length, char, reduced))
