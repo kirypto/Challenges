@@ -71,21 +71,23 @@ class GuardSchedule:
             else:
                 raise RuntimeError("Unhandled Case!")
 
-    def get_longest_sleeper(self) -> Tuple[int, int]:
-        # print(self._sleep_sched)
+    def get_most_predictable_sleeper(self) -> Tuple[int, int]:
         best_guard_id = None
         best_sleep_time = -1
-        for guard_id, sleep_time in [(key, np.sum(val)) for key, val in self._sleep_sched.items()]:
+        best_sleep_minute = -1
+        for guard_id, sleep_times, sleep_minute in [(key, val, int(np.argmax(val)))
+                                                    for key, val in self._sleep_sched.items()]:
+            sleep_time = sleep_times[sleep_minute]
             if sleep_time > best_sleep_time:
                 best_guard_id = guard_id
                 best_sleep_time = sleep_time
-        best_minute = np.argmax(self._sleep_sched[best_guard_id])
-        return int(best_guard_id), int(best_minute)
+                best_sleep_minute = sleep_minute
+        return int(best_guard_id), int(best_sleep_minute)
 
 
 def find_sneak_time(guard_log: List[str]) -> Tuple[int, int, int]:
     guard_schedule = GuardSchedule(guard_log)
-    guard_id, sleep_time = guard_schedule.get_longest_sleeper()
+    guard_id, sleep_time = guard_schedule.get_most_predictable_sleeper()
     print(f"Found guard #{guard_id}, Slept most at min {sleep_time}")
     return guard_id * sleep_time, guard_id, sleep_time
 
