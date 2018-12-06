@@ -1,9 +1,26 @@
+import re
 import sys
-from typing import List
+from typing import List, Tuple
+
+import numpy as np
 
 
 def find_overlap(cuts: List[str]) -> int:
-    pass
+
+    pattern = re.compile("#(\d+) @ (\d+),(\d+): (\d+)x(\d+)")
+
+    def parse_cut(cut_str: str) -> Tuple[int, int, int, int, int]:
+        match = pattern.match(cut_str)
+        return int(match.group(1)), int(match.group(2)), int(match.group(3)), int(match.group(4)), int(match.group(5))
+
+    fabric = np.zeros((1000, 1000))
+
+    for cut in cuts:
+        cut_id, x, y, w, h = parse_cut(cut)
+        fabric[y:y+h, x:x+w] += 1
+
+    num_of_overlaps: int = np.sum(fabric > 1)
+    return num_of_overlaps
 
 
 def main():
