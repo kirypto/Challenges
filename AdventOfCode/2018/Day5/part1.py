@@ -14,11 +14,11 @@ def reduce_polymer(polymer_string: str) -> Tuple[int, str]:
     while prev_polymer_length != len(polymer_string):
         prev_polymer_length = len(polymer_string)
         for char, regex in regs.items():
-            tmp_length = len(polymer_string)
+            # tmp_length = len(polymer_string)
             polymer_string = regex.sub("", polymer_string)
-            remove_count = tmp_length - len(polymer_string)
-            if remove_count > 0:
-                print(f"Replaced { remove_count } characters!")
+            # remove_count = tmp_length - len(polymer_string)
+            # if remove_count > 0:
+            #     print(f"Replaced { remove_count } characters!")
     return len(polymer_string), polymer_string
 
 
