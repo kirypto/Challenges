@@ -95,7 +95,7 @@ class DAG:
                 found_path = path
                 break
             elif nodei in seen:
-                raise ValueError("Graph is cyclical")
+                continue
             seen.add(nodei)
             for nexti in self._edges[nodei]:
                 next_path = list(path)
@@ -164,6 +164,27 @@ class DAGTests(TestCase):
         self.assertEqual(2, len(dag))
         self.assertEqual(0, len(dag.get_edges("B")))
         self.assertEqual(0, len(dag.get_edges("C")))
+        dag.add_node("A")
+        dag.add_node("D")
+        dag.add_node("E")
+        self.assertEqual(5, len(dag))
+        dag.add_edge("C", "E")
+        dag.add_edge("B", "C")
+        dag.add_edge("B", "D")
+        dag.add_edge("D", "E")
+        self.assertEqual(5, len(dag))
+        self.assertEqual(0, len(dag.get_edges("A")))
+        self.assertEqual(2, len(dag.get_edges("B")))
+        self.assertEqual(1, len(dag.get_edges("C")))
+        self.assertEqual(1, len(dag.get_edges("D")))
+        self.assertEqual(0, len(dag.get_edges("E")))
+        dag.add_edge("A", "B")
+        self.assertEqual(5, len(dag))
+        self.assertEqual(1, len(dag.get_edges("A")))
+        self.assertEqual(2, len(dag.get_edges("B")))
+        self.assertEqual(1, len(dag.get_edges("C")))
+        self.assertEqual(1, len(dag.get_edges("D")))
+        self.assertEqual(0, len(dag.get_edges("E")))
 
 
 if __name__ == '__main__':
