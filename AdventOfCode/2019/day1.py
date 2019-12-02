@@ -2,7 +2,7 @@ from typing import Callable, Any, List, Tuple
 
 
 def calc_fuel(mass: int) -> int:
-    return -1
+    return mass // 3 - 2
 
 
 def do_tests(method_under_test: Callable[[Any], Any], test_cases: List[Tuple[Any, Any]]):
