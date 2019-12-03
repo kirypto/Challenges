@@ -1,8 +1,16 @@
+import sys
 from typing import Callable, Any, List, Tuple
 
 
 def calc_fuel(mass: int) -> int:
     return mass // 3 - 2
+
+
+def calc_fuel_recursive(mass: int) -> int:
+    fuel_cost = calc_fuel(mass)
+    if fuel_cost < 0:
+        return 0
+    return fuel_cost + calc_fuel_recursive(fuel_cost)
 
 
 def read_puzzle_input():
@@ -21,7 +29,7 @@ def do_tests(method_under_test: Callable[[Any], Any], test_cases: List[Tuple[Any
             print("Test passed!")
 
 
-def tests():
+def tests_part1():
     test_cases = [
         (2, 12),
         (2, 14),
@@ -33,10 +41,31 @@ def tests():
     print("", flush=True)
 
 
+def tests_part2():
+    test_cases = [
+        (2, 14),
+        (654 + 216 + 70 + 21 + 5, 1969),
+        (33583 + 11192 + 3728 + 1240 + 411 + 135 + 43 + 12 + 2, 100756),
+    ]
+    method_under_test = calc_fuel_recursive
+    do_tests(method_under_test, test_cases)
+    print("", flush=True)
+
+
 def _main():
     puzzle_input = read_puzzle_input()
-    print(sum([calc_fuel(int(x)) for x in puzzle_input]))
+    print(sum([calc_fuel_recursive(int(x)) for x in puzzle_input]))
 
 
 if __name__ == '__main__':
-    _main()
+    run_mode = "main" if len(sys.argv) < 2 else str(sys.argv[1]).lower()
+    if run_mode == "main":
+        _main()
+    elif run_mode == "tests":
+        print("--- Part 1 Tests:")
+        tests_part1()
+        print("--- Part 2 Tests:")
+        tests_part2()
+        print("--- End of Tests")
+    else:
+        raise ValueError(f"Run mode '{run_mode}' is not supported")
