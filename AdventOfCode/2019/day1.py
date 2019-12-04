@@ -1,5 +1,35 @@
 import sys
+from abc import ABC, abstractmethod
 from typing import Callable, Any, List, Tuple
+
+
+class TestCase:
+    _expected: Any
+    _puzzle_input: Any
+
+    @property
+    def expected(self) -> Any:
+        return self._expected
+
+    @property
+    def puzzle_input(self) -> Any:
+        return self._puzzle_input
+
+    def __init__(self, expected: Any, puzzle_input: Any):
+        self._expected = expected
+        self._puzzle_input = puzzle_input
+
+
+class AdventOfCodeProblem(ABC):
+    @property
+    @abstractmethod
+    def part_1_test_cases(self) -> List[TestCase]:
+        ...
+
+    def part_2_test_cases(self) -> List[TestCase]:
+        pass
+
+    # def part_1_solution(self, ):
 
 
 def calc_fuel(mass: int) -> int:
