@@ -40,5 +40,5 @@ problem = AdventOfCodeProblem(
     calculate_required_fuel,
     part_2_test_cases,
     calculate_required_fuel_including_fuel,
-    lambda raw_input: [int(x) for x in raw_input]
+    lambda raw_input: [int(x) for x in raw_input.splitlines()]
 )

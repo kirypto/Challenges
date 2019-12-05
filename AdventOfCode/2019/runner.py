@@ -1,15 +1,14 @@
 import pathlib
 import sys
 from importlib import import_module
-from typing import List
 
 from python_tools.advent_of_code_lib import AdventOfCodeProblem
 
 
-def read_puzzle_input(day_name: str) -> List[str]:
+def read_puzzle_input(day_name: str) -> str:
     input_file_path = pathlib.Path(f"{day_name}_input.txt").absolute()
     with open(input_file_path, mode="r") as input_file:
-        puzzle_input = input_file.readlines()
+        puzzle_input = input_file.read()
     return puzzle_input
 
 
