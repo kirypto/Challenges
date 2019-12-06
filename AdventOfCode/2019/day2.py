@@ -16,9 +16,11 @@ def run_program(input_program: List[int]) -> List[int]:
         input_b = program[input_b_position]
         output_position = program[program_position + 3]
         if op_code == 1:
-            def operator(a, b): return a + b
+            def operator(a, b):
+                return a + b
         elif op_code == 2:
-            def operator(a, b): return a * b
+            def operator(a, b):
+                return a * b
         else:
             raise ValueError(f"OpCode {op_code} not supported")
         program[output_position] = operator(input_a, input_b)
