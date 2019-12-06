@@ -1,4 +1,11 @@
+from typing import List, Tuple
+
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
+
+
+def translate_input(puzzle_input_raw: str) -> Tuple[List[str], List[str]]:
+    line1, line2 = puzzle_input_raw.split()
+    return line1.split(","), line2.split(",")
 
 
 part_1_test_cases = [
@@ -21,5 +28,5 @@ problem = AdventOfCodeProblem(
     lambda x: x,
     part_2_test_cases,
     lambda x: x,
-    lambda x: x
+    translate_input
 )
