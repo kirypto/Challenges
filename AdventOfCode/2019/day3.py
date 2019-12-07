@@ -1,11 +1,12 @@
 from typing import List, Tuple
 
 from numpy import ndarray, ogrid, tile, logical_and, ones, logical_or, argwhere
+from tqdm import tqdm
 
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
 
 
-_SIZE = 1000
+_SIZE = 100
 
 
 def follow_instruction(x: int, y: int, move_instruction: str) -> Tuple[int, int, ndarray]:
@@ -45,7 +46,7 @@ def part_1_solver(wires: Tuple[List[str], List[str]]) -> int:
     temp = ones((_SIZE, _SIZE)) != 1
     temp[init_x, init_y] = True
     wire_1 = wire_2 = temp
-    for move_instruction in wire_1_instructions:
+    for move_instruction in tqdm(wire_1_instructions, desc="Finding Wire 1 ..."):
         curr_x, curr_y, visited = follow_instruction(curr_x, curr_y, move_instruction)
         if 0 > curr_x or curr_x >= _SIZE or 0 > curr_y or curr_y >= _SIZE:
             raise OverflowError(f"x={curr_x}, y={curr_y}")
@@ -53,7 +54,7 @@ def part_1_solver(wires: Tuple[List[str], List[str]]) -> int:
 
     curr_x = init_x
     curr_y = init_y
-    for move_instruction in wire_2_instructions:
+    for move_instruction in tqdm(wire_2_instructions, desc="Finding Wire 2 ..."):
         curr_x, curr_y, visited = follow_instruction(curr_x, curr_y, move_instruction)
         if 0 > curr_x or curr_x >= _SIZE or 0 > curr_y or curr_y >= _SIZE:
             raise OverflowError(f"x={curr_x}, y={curr_y}")
@@ -63,7 +64,7 @@ def part_1_solver(wires: Tuple[List[str], List[str]]) -> int:
 
     min_dist = _SIZE * _SIZE
 
-    for x, y in argwhere(intersections):
+    for x, y in tqdm(argwhere(intersections), desc="Finding closest intersection..."):
         if x == init_x and y == init_y:
             continue
         curr_dist_x = abs(init_x - x)
