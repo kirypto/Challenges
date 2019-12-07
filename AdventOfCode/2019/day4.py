@@ -73,8 +73,33 @@ def part_1_validity_check(possible_solution: int, maximum: int) -> bool:
     for i in range(1, 6):
         if digits[i] < greater_or_eq_than:
             return False
+        greater_or_eq_than = digits[i]
         has_pair = has_pair or digits[i - 1] == digits[i]
     return has_pair
+
+
+def part_2_validity_check(possible_solution: int, maximum: int) -> bool:
+    if possible_solution > maximum:
+        return False
+    digits = convert_number_to_digits(possible_solution)
+
+    for i in range(1, 6):
+        if digits[i - 1] > digits[i]:
+            return False
+
+    if digits[0] == digits[1] and digits[1] != digits[2]:
+        return True
+    if digits[4] == digits[5] and digits[3] != digits[4]:
+        return True
+
+    for i in range(3):
+        before_pair, pair_part_1, pair_part_2, after_pair = digits[i:i+4]
+        if before_pair == pair_part_1:
+            continue
+        if after_pair == pair_part_2:
+            continue
+        if pair_part_1 == pair_part_2:
+            return True
 
 
 def part_1_solver(puzzle_input: Tuple[int, int]) -> int:
@@ -84,7 +109,10 @@ def part_1_solver(puzzle_input: Tuple[int, int]) -> int:
 
 
 def part_2_solver(puzzle_input: Tuple[int, int]) -> int:
-    return -1
+    validity_check = part_2_validity_check
+    start, maximum = puzzle_input
+    possibilities = find_all_possibilities(maximum, start, validity_check)
+    return len(possibilities)
 
 
 def translate_input(puzzle_input_raw: str) -> Tuple[int, int]:
@@ -101,7 +129,7 @@ part_1_test_cases = [
 part_2_test_cases = [
     TestCase(0, (111100, 111115)),  # None of 111111, 111112, 111114 and 111115 should match, as the group of ONLY 2, as all have 5 1s
     TestCase(10, (111100, 111224)),  # Should be 111122, 111133, 111144, 111155, 111166, 111177, 111188, 111199, 111223, 111224
-    TestCase(0, (333550, 333560)),  # Should be nothing, as 333555 has no group of only 2
+    TestCase(4, (333550, 333565)),  # Should be 333556, 333557, 333558, 333559
 ]
 
 problem = AdventOfCodeProblem(
