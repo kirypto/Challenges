@@ -62,23 +62,25 @@ def part_1_solver(puzzle_input: Tuple[int, int]) -> int:
     for i in range(1, 6):
         start_digits[i] = max(start_digits[i - 1], start_digits[i])
     start = convert_digits_to_number(start_digits)
+    found = set()
     visited = set()
     todo = {start}
     while len(todo) > 0:
-        possible_solution = todo.pop()
-        print(f"Trying {possible_solution}")
-        if possible_solution in visited:
+        current = todo.pop()
+        print(f"Trying {current}")
+        if current in visited:
             print(f" ~~> Visited")
             continue
-        visited.add(possible_solution)
-        if check(possible_solution, maximum):
+        visited.add(current)
+        if check(current, maximum):
             print(f" ~~> Yup!")
-            return possible_solution
-        successors = get_successors(start, maximum)
+            found.add(current)
+        successors = get_successors(current, maximum)
         print(f" ~~> Getting successors: {successors}")
         for successor in successors:
             todo.add(successor)
-    return None
+    print(found)
+    return len(found)
 
 
 def part_2_solver(puzzle_input: Any) -> Any:
@@ -91,9 +93,9 @@ def translate_input(puzzle_input_raw: str) -> Tuple[int, int]:
 
 
 part_1_test_cases = [
-    TestCase(111111, (111100, 1111200)),
-    TestCase(None, (223450, 223454)),  # Example was 223450 should not be returned
-    TestCase(None, (123789, 123798)),  # Example was 123789 should not be returned
+    TestCase(5, (111100, 111115)),  # Should be 111111, 111112, 111114 and 111115
+    TestCase(0, (223450, 223454)),  # Should be nothing
+    TestCase(1, (123789, 123800)),  # Should be 123799
 ]
 
 part_2_test_cases = [
@@ -105,5 +107,6 @@ problem = AdventOfCodeProblem(
     part_1_solver,
     part_2_test_cases,
     part_2_solver,
-    translate_input
+    translate_input,
+    run_tests_only=True
 )
