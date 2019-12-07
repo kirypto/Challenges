@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
 
@@ -78,8 +78,8 @@ def part_1_solver(puzzle_input: Tuple[int, int]) -> int:
     return len(found)
 
 
-def part_2_solver(puzzle_input: Any) -> Any:
-    return puzzle_input
+def part_2_solver(puzzle_input: Tuple[int, int]) -> int:
+    return -1
 
 
 def translate_input(puzzle_input_raw: str) -> Tuple[int, int]:
@@ -94,7 +94,9 @@ part_1_test_cases = [
 ]
 
 part_2_test_cases = [
-    TestCase(None, None)
+    TestCase(0, (111100, 111115)),  # None of 111111, 111112, 111114 and 111115 should match, as the group of ONLY 2, as all have 5 1s
+    TestCase(10, (111100, 111224)),  # Should be 111122, 111133, 111144, 111155, 111166, 111177, 111188, 111199, 111223, 111224
+    TestCase(0, (333550, 333560)),  # Should be nothing, as 333555 has no group of only 2
 ]
 
 problem = AdventOfCodeProblem(
