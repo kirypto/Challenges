@@ -6,7 +6,7 @@ from tqdm import tqdm
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
 
 
-_SIZE = 10000
+_SIZE = 25000
 _CENTER = _SIZE // 2
 
 
@@ -91,6 +91,5 @@ problem = AdventOfCodeProblem(
     part_1_solver,
     part_2_test_cases,
     lambda x: x,
-    translate_input,
-    run_tests_only=True
+    translate_input
 )
