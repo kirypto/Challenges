@@ -1,19 +1,16 @@
 from typing import List, Tuple
 
-from numpy import ndarray, ogrid, tile, logical_and, ones, logical_or, argwhere
+from numpy import logical_and, ones, argwhere
 from tqdm import tqdm
 
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
 
 
-_SIZE = 100
+_SIZE = 10000
+_CENTER = _SIZE // 2
 
 
-def follow_instruction(x: int, y: int, move_instruction: str) -> Tuple[int, int, ndarray]:
-    a, b = ogrid[:_SIZE, :_SIZE]
-    y_layer = tile(a, _SIZE)
-    x_layer = tile(b, (_SIZE, 1))
-
+def follow_instruction(x: int, y: int, move_instruction: str) -> Tuple[int, int, int, int, int, int]:
     direction = move_instruction[:1]
     offset = int(move_instruction[1:])
     x_min = x_max = x_out = x
@@ -28,10 +25,7 @@ def follow_instruction(x: int, y: int, move_instruction: str) -> Tuple[int, int,
         y_out = y_min = y_min - offset
     else:
         raise ValueError(f"Unknown direction '{direction}'")
-
-    visited = logical_and(logical_and(x_layer >= x_min, x_layer <= x_max), logical_and(y_layer >= y_min, y_layer <= y_max))
-
-    return x_out, y_out, visited
+    return x_out, y_out, x_min, x_max, y_min, y_max
 
 
 def translate_input(puzzle_input_raw: str) -> Tuple[List[str], List[str]]:
@@ -42,37 +36,35 @@ def translate_input(puzzle_input_raw: str) -> Tuple[List[str], List[str]]:
 def part_1_solver(wires: Tuple[List[str], List[str]]) -> int:
     wire_1_instructions, wire_2_instructions = wires
 
-    curr_x = curr_y = init_x = init_y = _SIZE // 2
-    temp = ones((_SIZE, _SIZE)) != 1
-    temp[init_x, init_y] = True
-    wire_1 = wire_2 = temp
-    for move_instruction in tqdm(wire_1_instructions, desc="Finding Wire 1 ..."):
-        curr_x, curr_y, visited = follow_instruction(curr_x, curr_y, move_instruction)
-        if 0 > curr_x or curr_x >= _SIZE or 0 > curr_y or curr_y >= _SIZE:
-            raise OverflowError(f"x={curr_x}, y={curr_y}")
-        wire_1 = logical_or(wire_1, visited)
+    wire_1 = traverse_wire_path(wire_1_instructions, "Finding Wire 1 ...")
 
-    curr_x = init_x
-    curr_y = init_y
-    for move_instruction in tqdm(wire_2_instructions, desc="Finding Wire 2 ..."):
-        curr_x, curr_y, visited = follow_instruction(curr_x, curr_y, move_instruction)
-        if 0 > curr_x or curr_x >= _SIZE or 0 > curr_y or curr_y >= _SIZE:
-            raise OverflowError(f"x={curr_x}, y={curr_y}")
-        wire_2 = logical_or(wire_2, visited)
+    wire_2 = traverse_wire_path(wire_2_instructions, "Finding Wire 2 ...")
 
     intersections = logical_and(wire_1, wire_2)
 
     min_dist = _SIZE * _SIZE
 
     for x, y in tqdm(argwhere(intersections), desc="Finding closest intersection..."):
-        if x == init_x and y == init_y:
+        if x == _CENTER and y == _CENTER:
             continue
-        curr_dist_x = abs(init_x - x)
-        curr_dist_y = abs(init_y - y)
+        curr_dist_x = abs(_CENTER - x)
+        curr_dist_y = abs(_CENTER - y)
         curr_dist = curr_dist_x + curr_dist_y
         if curr_dist < min_dist:
             min_dist = curr_dist
     return min_dist
+
+
+def traverse_wire_path(wire_instructions: List[str], desc: str):
+    curr_x = curr_y = _CENTER
+    wire = ones((_SIZE, _SIZE)) != 1
+    wire[_CENTER, _CENTER] = True
+    for move_instruction in tqdm(wire_instructions, desc=desc):
+        curr_x, curr_y, visited_x_min, visited_x_max, visited_y_min, visited_y_max = follow_instruction(curr_x, curr_y, move_instruction)
+        if 0 > curr_x or curr_x >= _SIZE or 0 > curr_y or curr_y >= _SIZE:
+            raise OverflowError(f"x={curr_x}, y={curr_y}")
+        wire[visited_x_min:visited_x_max + 1, visited_y_min:visited_y_max + 1] = True
+    return wire
 
 
 part_1_test_cases = [
