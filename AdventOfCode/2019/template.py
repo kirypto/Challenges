@@ -1,4 +1,18 @@
+from typing import Any
+
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
+
+
+def part_1_solver(puzzle_input: Any) -> Any:
+    return puzzle_input
+
+
+def part_2_solver(puzzle_input: Any) -> Any:
+    return puzzle_input
+
+
+def translate_input(puzzle_input_raw: Any) -> Any:
+    return puzzle_input_raw
 
 
 part_1_test_cases = [
@@ -11,8 +25,8 @@ part_2_test_cases = [
 
 problem = AdventOfCodeProblem(
     part_1_test_cases,
-    lambda x: x,
+    part_1_solver,
     part_2_test_cases,
-    lambda x: x,
-    lambda x: x
+    part_2_solver,
+    translate_input
 )
