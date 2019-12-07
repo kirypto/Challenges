@@ -11,7 +11,7 @@ def part_2_solver(puzzle_input: Any) -> Any:
     return puzzle_input
 
 
-def translate_input(puzzle_input_raw: Any) -> Any:
+def translate_input(puzzle_input_raw: str, part_num: int) -> Any:
     return puzzle_input_raw
 
 

@@ -28,7 +28,7 @@ def follow_instruction(x: int, y: int, move_instruction: str) -> Tuple[int, int,
     return x_out, y_out, x_min, x_max, y_min, y_max
 
 
-def translate_input(puzzle_input_raw: str) -> Tuple[List[str], List[str]]:
+def translate_input(puzzle_input_raw: str, _: int) -> Tuple[List[str], List[str]]:
     line1, line2 = puzzle_input_raw.split()
     return line1.split(","), line2.split(",")
 

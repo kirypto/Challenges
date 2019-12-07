@@ -22,7 +22,8 @@ else:
 
 problem: AdventOfCodeProblem = import_module(puzzle_day).problem
 
-translated_puzzle_input = problem.translate_input(read_puzzle_input(puzzle_day))
+translated_puzzle_input_for_part_1 = problem.translate_input(read_puzzle_input(puzzle_day), 1)
+translated_puzzle_input_for_part_2 = problem.translate_input(read_puzzle_input(puzzle_day), 2)
 
 print(f"  Part 1 Tests |\n"
       f"---------------+")
@@ -33,7 +34,7 @@ for test in problem.part_1_test_cases:
     else:
         print(f" - Test FAILED: Expected={test.expected}, Actual={actual}, Input={test.puzzle_input}")
 if not problem.run_tests_only:
-    print(f"  Part 1 Result: {problem.part_1_solver(translated_puzzle_input)}")
+    print(f"  Part 1 Result: {problem.part_1_solver(translated_puzzle_input_for_part_1)}")
 print()
 
 print(f"  Part 2 Tests |\n"
@@ -45,4 +46,4 @@ for test in problem.part_2_test_cases:
     else:
         print(f" - Test FAILED: Expected={test.expected}, Actual={actual}, Input={test.puzzle_input}")
 if not problem.run_tests_only:
-    print(f"  Part 2 Result: {problem.part_2_solver(translated_puzzle_input)}")
+    print(f"  Part 2 Result: {problem.part_2_solver(translated_puzzle_input_for_part_2)}")

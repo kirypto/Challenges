@@ -115,7 +115,7 @@ def part_2_solver(puzzle_input: Tuple[int, int]) -> int:
     return len(possibilities)
 
 
-def translate_input(puzzle_input_raw: str) -> Tuple[int, int]:
+def translate_input(puzzle_input_raw: str, _: int) -> Tuple[int, int]:
     a, b = puzzle_input_raw.split("-")
     return int(a), int(b)
 

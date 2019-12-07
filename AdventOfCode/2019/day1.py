@@ -35,10 +35,15 @@ part_2_test_cases = [
     TestCase(33583 + 11192 + 3728 + 1240 + 411 + 135 + 43 + 12 + 2, [100756])
 ]
 
+
+def blah(raw_input: str, _: int) -> List[int]:
+    return [int(x) for x in raw_input.splitlines()]
+
+
 problem = AdventOfCodeProblem(
     part_1_test_cases,
     calculate_required_fuel,
     part_2_test_cases,
     calculate_required_fuel_including_fuel,
-    lambda raw_input: [int(x) for x in raw_input.splitlines()]
+    blah
 )

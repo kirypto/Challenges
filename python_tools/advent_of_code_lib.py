@@ -23,7 +23,7 @@ class AdventOfCodeProblem:
     _part_2_test_cases: List[TestCase]
     _part_1_solve_method: Callable[[Any], Any]
     _part_2_solve_method: Callable[[Any], Any]
-    _input_translate_method: Callable[[str], Any]
+    _input_translate_method: Callable[[str, int], Any]
     _run_tests_only: bool
 
     @property
@@ -44,13 +44,13 @@ class AdventOfCodeProblem:
     def part_2_solver(self, puzzle_input: Any) -> Any:
         return self._part_2_solve_method(puzzle_input)
 
-    def translate_input(self, raw_puzzle_input: str) -> List[Any]:
-        return self._input_translate_method(raw_puzzle_input)
+    def translate_input(self, raw_puzzle_input: str, puzzle_part_num: int) -> Any:
+        return self._input_translate_method(raw_puzzle_input, puzzle_part_num)
 
     def __init__(self,
                  part_1_test_cases: List[TestCase], part_1_solve_method: Callable[[Any], Any],
                  part_2_test_cases: List[TestCase], part_2_solve_method: Callable[[Any], Any],
-                 translate_method: Callable[[str], Any],
+                 translate_method: Callable[[str, int], Any],
                  run_tests_only: bool = False):
         self._part_1_test_cases = part_1_test_cases
         self._part_2_test_cases = part_2_test_cases
