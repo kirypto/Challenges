@@ -67,19 +67,14 @@ def part_1_solver(puzzle_input: Tuple[int, int]) -> int:
     todo = {start}
     while len(todo) > 0:
         current = todo.pop()
-        print(f"Trying {current}")
         if current in visited:
-            print(f" ~~> Visited")
             continue
         visited.add(current)
         if check(current, maximum):
-            print(f" ~~> Yup!")
             found.add(current)
         successors = get_successors(current, maximum)
-        print(f" ~~> Getting successors: {successors}")
         for successor in successors:
             todo.add(successor)
-    print(found)
     return len(found)
 
 
@@ -107,6 +102,5 @@ problem = AdventOfCodeProblem(
     part_1_solver,
     part_2_test_cases,
     part_2_solver,
-    translate_input,
-    run_tests_only=True
+    translate_input
 )
