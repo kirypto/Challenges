@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Callable, Set
 
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
 
@@ -43,7 +43,28 @@ def get_successors(number: int, maximum: int) -> List[int]:
     return successors
 
 
-def check(possible_solution: int, maximum: int) -> bool:
+def find_all_possibilities(maximum: int, start: int, validity_check: Callable[[int, int], bool]) -> Set[int]:
+    start_digits = convert_number_to_digits(start)
+    for i in range(1, 6):
+        start_digits[i] = max(start_digits[i - 1], start_digits[i])
+    start = convert_digits_to_number(start_digits)
+    found = set()
+    visited = set()
+    todo = {start}
+    while len(todo) > 0:
+        current = todo.pop()
+        if current in visited:
+            continue
+        visited.add(current)
+        if validity_check(current, maximum):
+            found.add(current)
+        successors = get_successors(current, maximum)
+        for successor in successors:
+            todo.add(successor)
+    return found
+
+
+def part_1_validity_check(possible_solution: int, maximum: int) -> bool:
     if possible_solution > maximum:
         return False
     digits = convert_number_to_digits(possible_solution)
@@ -57,25 +78,9 @@ def check(possible_solution: int, maximum: int) -> bool:
 
 
 def part_1_solver(puzzle_input: Tuple[int, int]) -> int:
+    validity_check = part_1_validity_check
     start, maximum = puzzle_input
-    start_digits = convert_number_to_digits(start)
-    for i in range(1, 6):
-        start_digits[i] = max(start_digits[i - 1], start_digits[i])
-    start = convert_digits_to_number(start_digits)
-    found = set()
-    visited = set()
-    todo = {start}
-    while len(todo) > 0:
-        current = todo.pop()
-        if current in visited:
-            continue
-        visited.add(current)
-        if check(current, maximum):
-            found.add(current)
-        successors = get_successors(current, maximum)
-        for successor in successors:
-            todo.add(successor)
-    return len(found)
+    return len(find_all_possibilities(maximum, start, validity_check))
 
 
 def part_2_solver(puzzle_input: Tuple[int, int]) -> int:
