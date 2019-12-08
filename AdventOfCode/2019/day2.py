@@ -11,18 +11,6 @@ class OpCode(Enum):
     MULTIPLY = 2
     HALT = 99
 
-    def get_operator(self) -> Callable[[List[int]], int]:
-        return {
-            OpCode.ADD: sum,
-            OpCode.MULTIPLY: multiply,
-        }[self]
-
-    def get_instruction_pointer_offset(self) -> int:
-        return {
-            OpCode.ADD: 4,
-            OpCode.MULTIPLY: 4
-        }[self]
-
 
 class ParameterMode(Enum):
     POSITION = 0
@@ -34,16 +22,46 @@ class IntCodeInstruction:
     def op_code(self) -> OpCode:
         return self._op_code
 
+    @property
+    def operator(self) -> Callable[[List[int]], int]:
+        return {
+            OpCode.ADD: sum,
+            OpCode.MULTIPLY: multiply,
+        }[self.op_code]
+
+    @property
+    def inputs(self) -> List[Tuple[ParameterMode, int]]:
+        num_inputs = {
+            OpCode.ADD: 2,
+            OpCode.MULTIPLY: 2,
+        }[self.op_code]
+        return [(self._param_modes[i], i + 1) for i in range(num_inputs)]
+
+    @property
+    def output(self) -> int:
+        return {
+            OpCode.ADD: 3,
+            OpCode.MULTIPLY: 3,
+        }[self.op_code]
+
+    @property
+    def pointer_offset(self) -> int:
+        return {
+            OpCode.ADD: 4,
+            OpCode.MULTIPLY: 4
+        }[self.op_code]
+
     def __init__(self, instruction: int) -> None:
-        instruction_str = str(instruction).ljust(5, "0")
-        self._op_code = OpCode(int(instruction_str[:-2]))
-        p1_mode = ParameterMode(int(instruction_str[2]))
-        p2_mode = ParameterMode(int(instruction_str[1]))
-        p3_mode = ParameterMode(int(instruction_str[0]))
+        instruction_str = str(instruction).rjust(5, "0")
+        self._op_code = OpCode(int(instruction_str[-2:]))
+        self._param_modes = [
+            ParameterMode(int(instruction_str[2])),
+            ParameterMode(int(instruction_str[1])),
+            ParameterMode(int(instruction_str[0]))
+        ]
 
 
-# noinspection SpellCheckingInspection
-def run_intcode_program(input_program: List[int], noun: int = None, verb: int = None) -> List[int]:
+def run_int_code_program(input_program: List[int], noun: int = None, verb: int = None) -> List[int]:
     program_memory = list(input_program)
     if noun is not None:
         program_memory[1] = noun
@@ -54,27 +72,25 @@ def run_intcode_program(input_program: List[int], noun: int = None, verb: int = 
         instruction = IntCodeInstruction(program_memory[instruction_pointer])
         if instruction.op_code == OpCode.HALT:
             break
-        input_a_position = program_memory[instruction_pointer + 1]
-        input_b_position = program_memory[instruction_pointer + 2]
-        input_a = program_memory[input_a_position]
-        input_b = program_memory[input_b_position]
-        output_position = program_memory[instruction_pointer + 3]
-        if op_code == OpCode.ADD:
-            def operator(a, b):
-                return a + b
-        elif op_code == OpCode.MULTIPLY:
-            def operator(a, b):
-                return a * b
-        else:
-            raise ValueError(f"OpCode {op_code} not supported")
-        program_memory[output_position] = operator(input_a, input_b)
-        instruction_pointer += 4
+
+        inputs = []
+        for param_mode, input_offset in instruction.inputs:
+            if param_mode == ParameterMode.IMMEDIATE:
+                inputs.append(program_memory[instruction_pointer + input_offset])
+            elif param_mode == ParameterMode.POSITION:
+                inputs.append(program_memory[program_memory[instruction_pointer + input_offset]])
+
+        result = instruction.operator(inputs)
+
+        output_position = program_memory[instruction_pointer + instruction.output]
+        program_memory[output_position] = result
+        instruction_pointer += instruction.pointer_offset
     return program_memory
 
 
 def part_1_solver(part_1_input: List[int]) -> List[int]:
     input_program, noun, verb = part_1_input
-    return run_intcode_program(input_program, noun=noun, verb=verb)
+    return run_int_code_program(input_program, noun=noun, verb=verb)
 
 
 def part_2_solver(part_2_input: Tuple[List[int], int]) -> Tuple[int, int]:
@@ -82,7 +98,7 @@ def part_2_solver(part_2_input: Tuple[List[int], int]) -> Tuple[int, int]:
     possible_verbs = possible_nouns = list(range(min(100, len(input_program))))
     all_possible_noun_verb_combinations = product(possible_nouns, possible_verbs)
     for noun, verb in all_possible_noun_verb_combinations:
-        result = run_intcode_program(input_program, noun=noun, verb=verb)
+        result = run_int_code_program(input_program, noun=noun, verb=verb)
         if result[0] == desired_output:
             return noun, verb
     return -1, -1
