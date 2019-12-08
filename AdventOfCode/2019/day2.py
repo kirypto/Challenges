@@ -1,6 +1,6 @@
 from enum import Enum
 from itertools import product
-from typing import List, Tuple, Union, Callable
+from typing import List, Tuple, Union, Callable, Dict
 
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
 from python_tools.maths import multiply
@@ -18,38 +18,31 @@ class ParameterMode(Enum):
 
 
 class IntCodeInstruction:
+    _instruction_info: Dict[OpCode, Tuple[int, Callable[[List[int]], int]]] = {
+        OpCode.ADD: (2, sum),
+        OpCode.MULTIPLY: (2, multiply),
+    }
+
     @property
     def op_code(self) -> OpCode:
         return self._op_code
 
     @property
     def operator(self) -> Callable[[List[int]], int]:
-        return {
-            OpCode.ADD: sum,
-            OpCode.MULTIPLY: multiply,
-        }[self.op_code]
+        return self._instruction_info[self.op_code][1]
 
     @property
     def inputs(self) -> List[Tuple[ParameterMode, int]]:
-        num_inputs = {
-            OpCode.ADD: 2,
-            OpCode.MULTIPLY: 2,
-        }[self.op_code]
+        num_inputs = self._instruction_info[self.op_code][0]
         return [(self._param_modes[i], i + 1) for i in range(num_inputs)]
 
     @property
     def output(self) -> int:
-        return {
-            OpCode.ADD: 3,
-            OpCode.MULTIPLY: 3,
-        }[self.op_code]
+        return self._instruction_info[self.op_code][0] + 1
 
     @property
     def pointer_offset(self) -> int:
-        return {
-            OpCode.ADD: 4,
-            OpCode.MULTIPLY: 4
-        }[self.op_code]
+        return self._instruction_info[self.op_code][0] + 2
 
     def __init__(self, instruction: int) -> None:
         instruction_str = str(instruction).rjust(5, "0")
