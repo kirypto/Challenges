@@ -4,6 +4,16 @@ from typing import Dict, Tuple, Callable, List, Optional
 from python_tools.maths import multiply
 
 
+def input_int(_: List[int]) -> int:
+    return int(input("[INT CODE COMPUTER] [input] "))
+
+
+def output_int(output: List[int]) -> None:
+    if len(output) != 1:
+        raise ValueError("Output should only have one int!")
+    print(f"[INT CODE COMPUTER] [output] {output[0]}")
+
+
 class OpCode(Enum):
     ADD = 1
     MULTIPLY = 2
@@ -21,8 +31,8 @@ class IntCodeInstruction:
     _instruction_info: Dict[OpCode, Tuple[int, int, Callable[[List[int]], int]]] = {
         OpCode.ADD: (2, True, sum),
         OpCode.MULTIPLY: (2, True, multiply),
-        OpCode.INPUT: (0, True, input),
-        OpCode.OUTPUT: (1, False, print)
+        OpCode.INPUT: (0, True, input_int),
+        OpCode.OUTPUT: (1, False, output_int)
     }
 
     @property
