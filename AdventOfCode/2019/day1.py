@@ -1,6 +1,6 @@
 from typing import List
 
-from python_tools.advent_of_code_lib import TestCase, AdventOfCodeProblem
+from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem, TestCase
 
 
 def calc_fuel(mass: int) -> int:

@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple, Callable, Set
 
-from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
+from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem, TestCase
 
 
 def convert_number_to_digits(number: int) -> List[int]:

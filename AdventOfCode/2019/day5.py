@@ -1,6 +1,6 @@
 from typing import Any
 
-from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
+from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem, TestCase
 
 
 def part_1_solver(puzzle_input: Any) -> Any:
@@ -28,5 +28,6 @@ problem = AdventOfCodeProblem(
     part_1_solver,
     part_2_test_cases,
     part_2_solver,
-    translate_input
+    translate_input,
+    run_tests_only=True
 )

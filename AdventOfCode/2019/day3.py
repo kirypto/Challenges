@@ -3,7 +3,7 @@ from typing import List, Tuple
 from numpy import logical_and, ones, argwhere
 from tqdm import tqdm
 
-from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
+from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem, TestCase
 
 
 _SIZE = 25000

@@ -2,7 +2,7 @@ import pathlib
 import sys
 from importlib import import_module
 
-from python_tools.advent_of_code_lib import AdventOfCodeProblem
+from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem
 
 
 def read_puzzle_input(day_name: str) -> str:
