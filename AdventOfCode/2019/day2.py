@@ -1,14 +1,45 @@
 from enum import Enum
 from itertools import product
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Callable
 
 from python_tools.advent_of_code_lib import AdventOfCodeProblem, TestCase
+from python_tools.maths import multiply
 
 
 class OpCode(Enum):
     ADD = 1
     MULTIPLY = 2
     HALT = 99
+
+    def get_operator(self) -> Callable[[List[int]], int]:
+        return {
+            OpCode.ADD: sum,
+            OpCode.MULTIPLY: multiply,
+        }[self]
+
+    def get_instruction_pointer_offset(self) -> int:
+        return {
+            OpCode.ADD: 4,
+            OpCode.MULTIPLY: 4
+        }[self]
+
+
+class ParameterMode(Enum):
+    POSITION = 0
+    IMMEDIATE = 1
+
+
+class IntCodeInstruction:
+    @property
+    def op_code(self) -> OpCode:
+        return self._op_code
+
+    def __init__(self, instruction: int) -> None:
+        instruction_str = str(instruction).ljust(5, "0")
+        self._op_code = OpCode(int(instruction_str[:-2]))
+        p1_mode = ParameterMode(int(instruction_str[2]))
+        p2_mode = ParameterMode(int(instruction_str[1]))
+        p3_mode = ParameterMode(int(instruction_str[0]))
 
 
 # noinspection SpellCheckingInspection
@@ -20,8 +51,8 @@ def run_intcode_program(input_program: List[int], noun: int = None, verb: int = 
         program_memory[2] = verb
     instruction_pointer = 0
     while True:
-        op_code = OpCode(program_memory[instruction_pointer])
-        if op_code == OpCode.HALT:
+        instruction = IntCodeInstruction(program_memory[instruction_pointer])
+        if instruction.op_code == OpCode.HALT:
             break
         input_a_position = program_memory[instruction_pointer + 1]
         input_b_position = program_memory[instruction_pointer + 2]
