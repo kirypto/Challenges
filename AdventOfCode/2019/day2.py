@@ -1,6 +1,6 @@
 from enum import Enum
 from itertools import product
-from typing import List, Tuple, Union, Callable, Dict
+from typing import List, Tuple, Union, Callable, Dict, Optional
 
 from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem, TestCase
 from python_tools.maths import multiply
@@ -9,6 +9,8 @@ from python_tools.maths import multiply
 class OpCode(Enum):
     ADD = 1
     MULTIPLY = 2
+    INPUT = 3
+    OUTPUT = 4
     HALT = 99
 
 
@@ -18,9 +20,11 @@ class ParameterMode(Enum):
 
 
 class IntCodeInstruction:
-    _instruction_info: Dict[OpCode, Tuple[int, Callable[[List[int]], int]]] = {
-        OpCode.ADD: (2, sum),
-        OpCode.MULTIPLY: (2, multiply),
+    _instruction_info: Dict[OpCode, Tuple[int, int, Callable[[List[int]], int]]] = {
+        OpCode.ADD: (2, True, sum),
+        OpCode.MULTIPLY: (2, True, multiply),
+        OpCode.INPUT: (0, True, input),
+        OpCode.OUTPUT: (1, False, print)
     }
 
     @property
@@ -29,7 +33,7 @@ class IntCodeInstruction:
 
     @property
     def operator(self) -> Callable[[List[int]], int]:
-        return self._instruction_info[self.op_code][1]
+        return self._instruction_info[self.op_code][2]
 
     @property
     def inputs(self) -> List[Tuple[ParameterMode, int]]:
@@ -37,12 +41,15 @@ class IntCodeInstruction:
         return [(self._param_modes[i], i + 1) for i in range(num_inputs)]
 
     @property
-    def output(self) -> int:
+    def output(self) -> Optional[int]:
+        if not self._instruction_info[self.op_code][1]:
+            return None
         return self._instruction_info[self.op_code][0] + 1
 
     @property
     def pointer_offset(self) -> int:
-        return self._instruction_info[self.op_code][0] + 2
+        additional_offset = 2 if self._instruction_info[self.op_code][1] else 1
+        return self._instruction_info[self.op_code][0] + additional_offset
 
     def __init__(self, instruction: int) -> None:
         instruction_str = str(instruction).rjust(5, "0")
@@ -75,8 +82,9 @@ def run_int_code_program(input_program: List[int], noun: int = None, verb: int =
 
         result = instruction.operator(inputs)
 
-        output_position = program_memory[instruction_pointer + instruction.output]
-        program_memory[output_position] = result
+        if instruction.output is not None:
+            output_position = program_memory[instruction_pointer + instruction.output]
+            program_memory[output_position] = result
         instruction_pointer += instruction.pointer_offset
     return program_memory
 
