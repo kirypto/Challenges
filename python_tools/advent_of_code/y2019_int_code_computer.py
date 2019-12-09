@@ -14,11 +14,23 @@ def output_int(output: List[int]) -> None:
     print(f"[INT CODE COMPUTER] [output] {output[0]}")
 
 
+def less_than(to_compare: List[int]) -> int:
+    a, b = to_compare
+    return 1 if a < b else 0
+
+
+def equals(to_compare: List[int]) -> int:
+    a, b = to_compare
+    return 1 if a == b else 0
+
+
 class OpCode(Enum):
     ADD = 1
     MULTIPLY = 2
     INPUT = 3
     OUTPUT = 4
+    LESS_THAN = 7
+    EQUALS = 8
     HALT = 99
 
 
@@ -29,11 +41,17 @@ class ParameterMode(Enum):
 
 class IntCodeInstruction:
     _instruction_info: Dict[OpCode, Tuple[int, int, Callable[[List[int]], int]]] = {
+        # <OpCode>: (<num_inputs>, <has_output>, operator>)
         OpCode.ADD: (2, True, sum),
         OpCode.MULTIPLY: (2, True, multiply),
         OpCode.INPUT: (0, True, input_int),
-        OpCode.OUTPUT: (1, False, output_int)
+        OpCode.OUTPUT: (1, False, output_int),
+        OpCode.LESS_THAN: (2, True, less_than),
+        OpCode.EQUALS: (2, True, equals),
     }
+    _INFO_INDEX_NUM_INPUTS = 0
+    _INFO_INDEX_HAS_OUTPUT = 1
+    _INFO_INDEX_OPERATOR = 2
 
     @property
     def op_code(self) -> OpCode:
@@ -41,18 +59,18 @@ class IntCodeInstruction:
 
     @property
     def operator(self) -> Callable[[List[int]], int]:
-        return self._instruction_info[self.op_code][2]
+        return self._instruction_info[self.op_code][self._INFO_INDEX_OPERATOR]
 
     @property
     def inputs(self) -> List[Tuple[ParameterMode, int]]:
-        num_inputs = self._instruction_info[self.op_code][0]
+        num_inputs = self._instruction_info[self.op_code][self._INFO_INDEX_NUM_INPUTS]
         return [(self._param_modes[i], i + 1) for i in range(num_inputs)]
 
     @property
     def output(self) -> Optional[int]:
-        if not self._instruction_info[self.op_code][1]:
+        if not self._instruction_info[self.op_code][self._INFO_INDEX_HAS_OUTPUT]:
             return None
-        return self._instruction_info[self.op_code][0] + 1
+        return self._instruction_info[self.op_code][self._INFO_INDEX_NUM_INPUTS] + 1
 
     @property
     def pointer_offset(self) -> int:
