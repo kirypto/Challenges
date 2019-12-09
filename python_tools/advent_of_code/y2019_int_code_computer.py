@@ -4,27 +4,27 @@ from typing import Dict, Tuple, Callable, List, Optional
 from python_tools.maths import multiply
 
 
-def input_int(_: List[int]) -> int:
+def _input_int(_: List[int]) -> int:
     return int(input("[INT CODE COMPUTER] [input] "))
 
 
-def output_int(output: List[int]) -> None:
+def _output_int(output: List[int]) -> None:
     if len(output) != 1:
         raise ValueError("Output should only have one int!")
     print(f"[INT CODE COMPUTER] [output] {output[0]}")
 
 
-def less_than(to_compare: List[int]) -> int:
+def _less_than(to_compare: List[int]) -> int:
     a, b = to_compare
     return 1 if a < b else 0
 
 
-def equals(to_compare: List[int]) -> int:
+def _equals(to_compare: List[int]) -> int:
     a, b = to_compare
     return 1 if a == b else 0
 
 
-class OpCode(Enum):
+class _OpCode(Enum):
     ADD = 1
     MULTIPLY = 2
     INPUT = 3
@@ -34,27 +34,27 @@ class OpCode(Enum):
     HALT = 99
 
 
-class ParameterMode(Enum):
+class _ParameterMode(Enum):
     POSITION = 0
     IMMEDIATE = 1
 
 
-class IntCodeInstruction:
-    _instruction_info: Dict[OpCode, Tuple[int, int, Callable[[List[int]], int]]] = {
+class _IntCodeInstruction:
+    _instruction_info: Dict[_OpCode, Tuple[int, int, Callable[[List[int]], int]]] = {
         # <OpCode>: (<num_inputs>, <has_output>, operator>)
-        OpCode.ADD: (2, True, sum),
-        OpCode.MULTIPLY: (2, True, multiply),
-        OpCode.INPUT: (0, True, input_int),
-        OpCode.OUTPUT: (1, False, output_int),
-        OpCode.LESS_THAN: (2, True, less_than),
-        OpCode.EQUALS: (2, True, equals),
+        _OpCode.ADD: (2, True, sum),
+        _OpCode.MULTIPLY: (2, True, multiply),
+        _OpCode.INPUT: (0, True, _input_int),
+        _OpCode.OUTPUT: (1, False, _output_int),
+        _OpCode.LESS_THAN: (2, True, _less_than),
+        _OpCode.EQUALS: (2, True, _equals),
     }
     _INFO_INDEX_NUM_INPUTS = 0
     _INFO_INDEX_HAS_OUTPUT = 1
     _INFO_INDEX_OPERATOR = 2
 
     @property
-    def op_code(self) -> OpCode:
+    def op_code(self) -> _OpCode:
         return self._op_code
 
     @property
@@ -62,7 +62,7 @@ class IntCodeInstruction:
         return self._instruction_info[self.op_code][self._INFO_INDEX_OPERATOR]
 
     @property
-    def inputs(self) -> List[Tuple[ParameterMode, int]]:
+    def inputs(self) -> List[Tuple[_ParameterMode, int]]:
         num_inputs = self._instruction_info[self.op_code][self._INFO_INDEX_NUM_INPUTS]
         return [(self._param_modes[i], i + 1) for i in range(num_inputs)]
 
@@ -79,11 +79,11 @@ class IntCodeInstruction:
 
     def __init__(self, instruction: int) -> None:
         instruction_str = str(instruction).rjust(5, "0")
-        self._op_code = OpCode(int(instruction_str[-2:]))
+        self._op_code = _OpCode(int(instruction_str[-2:]))
         self._param_modes = [
-            ParameterMode(int(instruction_str[2])),
-            ParameterMode(int(instruction_str[1])),
-            ParameterMode(int(instruction_str[0]))
+            _ParameterMode(int(instruction_str[2])),
+            _ParameterMode(int(instruction_str[1])),
+            _ParameterMode(int(instruction_str[0]))
         ]
 
 
@@ -95,15 +95,15 @@ def run_int_code_program(input_program: List[int], noun: int = None, verb: int =
         program_memory[2] = verb
     instruction_pointer = 0
     while True:
-        instruction = IntCodeInstruction(program_memory[instruction_pointer])
-        if instruction.op_code == OpCode.HALT:
+        instruction = _IntCodeInstruction(program_memory[instruction_pointer])
+        if instruction.op_code == _OpCode.HALT:
             break
 
         inputs = []
         for param_mode, input_offset in instruction.inputs:
-            if param_mode == ParameterMode.IMMEDIATE:
+            if param_mode == _ParameterMode.IMMEDIATE:
                 inputs.append(program_memory[instruction_pointer + input_offset])
-            elif param_mode == ParameterMode.POSITION:
+            elif param_mode == _ParameterMode.POSITION:
                 inputs.append(program_memory[program_memory[instruction_pointer + input_offset]])
 
         result = instruction.operator(inputs)
