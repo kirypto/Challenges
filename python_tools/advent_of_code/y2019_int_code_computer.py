@@ -4,7 +4,18 @@ from typing import Dict, Tuple, Callable, List, Optional
 from python_tools.maths import multiply
 
 
+_input_buffer = []
+
+
+def buffer_input(input_int: int) -> None:
+    _input_buffer.append(input_int)
+
+
 def _input_int(_: List[int]) -> int:
+    if _input_buffer:
+        buffered_input = _input_buffer.pop()
+        print(f"[INT CODE COMPUTER] [buffered input] {buffered_input}")
+        return buffered_input
     return int(input("[INT CODE COMPUTER] [input] "))
 
 
