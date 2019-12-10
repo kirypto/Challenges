@@ -5,9 +5,10 @@ from python_tools.maths import multiply
 
 
 _input_buffer = []
+_output_buffer = []
 
 
-def buffer_input(input_int: int) -> None:
+def add_buffered_input(input_int: int) -> None:
     _input_buffer.append(input_int)
 
 
@@ -19,9 +20,16 @@ def _input_int(_: List[int]) -> int:
     return int(input("[INT CODE COMPUTER] [input] "))
 
 
+def get_buffered_output() -> List[int]:
+    output = list(_output_buffer)
+    _output_buffer.clear()
+    return output
+
+
 def _output_int(output: List[int]) -> None:
     if len(output) != 1:
         raise ValueError("Output should only have one int!")
+    _output_buffer.extend(output)
     print(f"[INT CODE COMPUTER] [output] {output[0]}")
 
 
