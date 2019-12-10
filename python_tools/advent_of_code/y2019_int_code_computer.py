@@ -43,11 +43,19 @@ def _equals(to_compare: List[int]) -> int:
     return 1 if a == b else 0
 
 
+def _jump_if_false(bool_and_position: List[int]) -> Optional[int]:
+    should_jump, instr_ptr_pos = bool_and_position
+    if should_jump == 0:
+        return instr_ptr_pos
+    return None
+
+
 class _OpCode(Enum):
     ADD = 1
     MULTIPLY = 2
     INPUT = 3
     OUTPUT = 4
+    JUMP_IF_FALSE = 6
     LESS_THAN = 7
     EQUALS = 8
     HALT = 99
@@ -60,17 +68,19 @@ class _ParameterMode(Enum):
 
 class _IntCodeInstruction:
     _instruction_info: Dict[_OpCode, Tuple[int, int, Callable[[List[int]], int]]] = {
-        # <OpCode>: (<num_inputs>, <has_output>, operator>)
-        _OpCode.ADD: (2, True, sum),
-        _OpCode.MULTIPLY: (2, True, multiply),
-        _OpCode.INPUT: (0, True, _input_int),
-        _OpCode.OUTPUT: (1, False, _output_int),
-        _OpCode.LESS_THAN: (2, True, _less_than),
-        _OpCode.EQUALS: (2, True, _equals),
+        # <OpCode>: (<num_inputs>, <has_output>, operator>, <moves_instr_pointer>)
+        _OpCode.ADD: (2, True, sum, False),
+        _OpCode.MULTIPLY: (2, True, multiply, False),
+        _OpCode.INPUT: (0, True, _input_int, False),
+        _OpCode.OUTPUT: (1, False, _output_int, False),
+        _OpCode.JUMP_IF_FALSE: (2, False, _jump_if_false, True),
+        _OpCode.LESS_THAN: (2, True, _less_than, False),
+        _OpCode.EQUALS: (2, True, _equals, False),
     }
     _INFO_INDEX_NUM_INPUTS = 0
     _INFO_INDEX_HAS_OUTPUT = 1
     _INFO_INDEX_OPERATOR = 2
+    _INFO_INDEX_MOVES_INSTR_PTR = 3
 
     @property
     def op_code(self) -> _OpCode:
@@ -93,8 +103,13 @@ class _IntCodeInstruction:
 
     @property
     def pointer_offset(self) -> int:
-        additional_offset = 2 if self._instruction_info[self.op_code][1] else 1
-        return self._instruction_info[self.op_code][0] + additional_offset
+        has_output = self._instruction_info[self.op_code][self._INFO_INDEX_HAS_OUTPUT]
+        additional_offset = 2 if has_output else 1
+        return self._instruction_info[self.op_code][self._INFO_INDEX_NUM_INPUTS] + additional_offset
+    
+    @property
+    def moves_instr_ptr(self) -> bool:
+        return self._instruction_info[self.op_code][self._INFO_INDEX_MOVES_INSTR_PTR]
 
     def __init__(self, instruction: int) -> None:
         instruction_str = str(instruction).rjust(5, "0")
@@ -130,5 +145,8 @@ def run_int_code_program(input_program: List[int], noun: int = None, verb: int =
         if instruction.output is not None:
             output_position = program_memory[instruction_pointer + instruction.output]
             program_memory[output_position] = result
-        instruction_pointer += instruction.pointer_offset
+        if instruction.moves_instr_ptr and result is not None:
+            instruction_pointer = result
+        else:
+            instruction_pointer += instruction.pointer_offset
     return program_memory
