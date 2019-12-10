@@ -50,11 +50,19 @@ def _jump_if_false(bool_and_position: List[int]) -> Optional[int]:
     return None
 
 
+def _jump_if_true(bool_and_position: List[int]) -> Optional[int]:
+    should_jump, instr_ptr_pos = bool_and_position
+    if should_jump != 0:
+        return instr_ptr_pos
+    return None
+
+
 class _OpCode(Enum):
     ADD = 1
     MULTIPLY = 2
     INPUT = 3
     OUTPUT = 4
+    JUMP_IF_TRUE = 5
     JUMP_IF_FALSE = 6
     LESS_THAN = 7
     EQUALS = 8
@@ -73,6 +81,7 @@ class _IntCodeInstruction:
         _OpCode.MULTIPLY: (2, True, multiply, False),
         _OpCode.INPUT: (0, True, _input_int, False),
         _OpCode.OUTPUT: (1, False, _output_int, False),
+        _OpCode.JUMP_IF_TRUE: (2, False, _jump_if_true, True),
         _OpCode.JUMP_IF_FALSE: (2, False, _jump_if_false, True),
         _OpCode.LESS_THAN: (2, True, _less_than, False),
         _OpCode.EQUALS: (2, True, _equals, False),
