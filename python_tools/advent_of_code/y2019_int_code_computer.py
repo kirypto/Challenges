@@ -6,6 +6,12 @@ from python_tools.maths import multiply
 
 _input_buffer = []
 _output_buffer = []
+_verbose = True
+
+
+def set_verbose(verbose: bool) -> None:
+    global _verbose
+    _verbose = verbose
 
 
 def add_buffered_input(input_int: int) -> None:
@@ -15,7 +21,8 @@ def add_buffered_input(input_int: int) -> None:
 def _input_int(_: List[int]) -> int:
     if _input_buffer:
         buffered_input = _input_buffer.pop()
-        print(f"[INT CODE COMPUTER] [buffered input] {buffered_input}")
+        if _verbose:
+            print(f"[INT CODE COMPUTER] [buffered input] {buffered_input}")
         return buffered_input
     return int(input("[INT CODE COMPUTER] [input] "))
 
@@ -30,7 +37,8 @@ def _output_int(output: List[int]) -> None:
     if len(output) != 1:
         raise ValueError("Output should only have one int!")
     _output_buffer.extend(output)
-    print(f"[INT CODE COMPUTER] [output] {output[0]}")
+    if _verbose:
+        print(f"[INT CODE COMPUTER] [output] {output[0]}")
 
 
 def _less_than(to_compare: List[int]) -> int:
