@@ -61,5 +61,4 @@ problem = AdventOfCodeProblem(
     part_2_test_cases,
     part_2_solver,
     translate_input,
-    run_tests_only=True
 )
