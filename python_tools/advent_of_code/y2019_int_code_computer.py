@@ -63,50 +63,45 @@ class _ParameterMode(Enum):
 
 
 class _IntCodeInstruction:
-    _instruction_info: Dict[_OpCode, Tuple[int, int, Callable[[List[int]], int]]] = {
-        # <OpCode>: (<num_inputs>, <has_output>, operator>, <moves_instr_pointer>)
-        _OpCode.ADD: (2, True, sum, False),
-        _OpCode.MULTIPLY: (2, True, multiply, False),
-        _OpCode.INPUT: (0, True, _input_int, False),
-        _OpCode.OUTPUT: (1, False, _output_int, False),
-        _OpCode.JUMP_IF_TRUE: (2, False, _jump_if_true, True),
-        _OpCode.JUMP_IF_FALSE: (2, False, _jump_if_false, True),
-        _OpCode.LESS_THAN: (2, True, _less_than, False),
-        _OpCode.EQUALS: (2, True, _equals, False),
+    _instruction_info: Dict[_OpCode, Tuple[int, int, bool]] = {
+        # <OpCode>: (<num_inputs>, <has_output>, <moves_instr_pointer>)
+        _OpCode.ADD: (2, True, False),
+        _OpCode.MULTIPLY: (2, True, False),
+        _OpCode.INPUT: (0, True, False),
+        _OpCode.OUTPUT: (1, False, False),
+        _OpCode.JUMP_IF_TRUE: (2, False, True),
+        _OpCode.JUMP_IF_FALSE: (2, False, True),
+        _OpCode.LESS_THAN: (2, True, False),
+        _OpCode.EQUALS: (2, True, False),
     }
     _INFO_INDEX_NUM_INPUTS = 0
     _INFO_INDEX_HAS_OUTPUT = 1
-    _INFO_INDEX_OPERATOR = 2
-    _INFO_INDEX_MOVES_INSTR_PTR = 3
+    _INFO_INDEX_MOVES_INSTR_PTR = 2
 
     @property
     def op_code(self) -> _OpCode:
         return self._op_code
 
     @property
-    def operator(self) -> Callable[[List[int]], int]:
-        return self._instruction_info[self.op_code][self._INFO_INDEX_OPERATOR]
-
-    @property
     def inputs(self) -> List[Tuple[_ParameterMode, int]]:
-        num_inputs = self._instruction_info[self.op_code][self._INFO_INDEX_NUM_INPUTS]
+        num_inputs = self._instruction_info[self._op_code][self._INFO_INDEX_NUM_INPUTS]
         return [(self._param_modes[i], i + 1) for i in range(num_inputs)]
 
     @property
     def output(self) -> Optional[int]:
-        if not self._instruction_info[self.op_code][self._INFO_INDEX_HAS_OUTPUT]:
+        if not self._instruction_info[self._op_code][self._INFO_INDEX_HAS_OUTPUT]:
             return None
-        return self._instruction_info[self.op_code][self._INFO_INDEX_NUM_INPUTS] + 1
+        return self._instruction_info[self._op_code][self._INFO_INDEX_NUM_INPUTS] + 1
 
     @property
     def pointer_offset(self) -> int:
-        has_output = self._instruction_info[self.op_code][self._INFO_INDEX_HAS_OUTPUT]
+        has_output = self._instruction_info[self._op_code][self._INFO_INDEX_HAS_OUTPUT]
         additional_offset = 2 if has_output else 1
-        return self._instruction_info[self.op_code][self._INFO_INDEX_NUM_INPUTS] + additional_offset
+        return self._instruction_info[self._op_code][self._INFO_INDEX_NUM_INPUTS] + additional_offset
 
     @property
     def moves_instr_ptr(self) -> bool:
-        return self._instruction_info[self.op_code][self._INFO_INDEX_MOVES_INSTR_PTR]
+        return self._instruction_info[self._op_code][self._INFO_INDEX_MOVES_INSTR_PTR]
 
     def __init__(self, instruction: int) -> None:
         instruction_str = str(instruction).rjust(5, "0")
@@ -148,6 +143,17 @@ class IntCodeComputer:
     _output_buffer: List[int]
     _instruction_pointer: int
 
+    _operators: Dict[_OpCode, Callable[[List[int]], int]] = {
+        _OpCode.ADD: sum,
+        _OpCode.MULTIPLY: multiply,
+        _OpCode.INPUT: _input_int,
+        _OpCode.OUTPUT: _output_int,
+        _OpCode.JUMP_IF_TRUE: _jump_if_true,
+        _OpCode.JUMP_IF_FALSE: _jump_if_false,
+        _OpCode.LESS_THAN: _less_than,
+        _OpCode.EQUALS: _equals,
+    }
+
     def set_int_code_program(self, input_program: List[int], noun: int = None, verb: int = None):
         self._program_memory = list(input_program)
         if noun is not None:
@@ -169,7 +175,8 @@ class IntCodeComputer:
                 elif param_mode == _ParameterMode.POSITION:
                     inputs.append(self._program_memory[self._program_memory[self._instruction_pointer + input_offset]])
 
-            result = instruction.operator(inputs)
+            operator = self._operators[instruction.op_code]
+            result = operator(inputs)
 
             if instruction.output is not None:
                 output_position = self._program_memory[self._instruction_pointer + instruction.output]
