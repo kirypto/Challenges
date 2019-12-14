@@ -2,7 +2,7 @@ from itertools import product
 from typing import List, Tuple, Union
 
 from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem, TestCase
-from python_tools.advent_of_code.y2019_int_code_computer import run_int_code_program
+from python_tools.advent_of_code.y2019_int_code_computer import IntCodeComputer
 
 
 def part_1_solver(part_1_input: List[int]) -> List[int]:
@@ -12,7 +12,7 @@ def part_1_solver(part_1_input: List[int]) -> List[int]:
         modified_program[1] = noun
     if verb is not None:
         modified_program[2] = verb
-    return run_int_code_program(modified_program)
+    return IntCodeComputer(modified_program).run()
 
 
 def part_2_solver(part_2_input: Tuple[List[int], int]) -> Tuple[int, int]:
@@ -25,7 +25,7 @@ def part_2_solver(part_2_input: Tuple[List[int], int]) -> Tuple[int, int]:
             modified_program[1] = noun
         if verb is not None:
             modified_program[2] = verb
-        result = run_int_code_program(input_program)
+        result = IntCodeComputer(input_program).run()
         if result[0] == desired_output:
             return noun, verb
     return -1, -1

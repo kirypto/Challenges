@@ -115,10 +115,12 @@ class IntCodeComputer:
 
     _operators: Dict[_OpCode, Callable[[List[int]], int]]
 
-    def __init__(self) -> None:
+    def __init__(self, input_program: List[int] = None) -> None:
         self._verbose = True
         self._input_buffer = []
         self._output_buffer = []
+        if input_program is not None:
+            self.set_int_code_program(input_program)
         self._operators = {
             _OpCode.ADD: sum,
             _OpCode.MULTIPLY: multiply,
