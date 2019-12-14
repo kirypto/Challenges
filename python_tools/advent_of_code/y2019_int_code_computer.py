@@ -73,8 +73,8 @@ class _IntCodeInstruction:
 
 
 def set_verbose(verbose: bool) -> None:
-    global _verbose
-    _verbose = verbose
+    global __default_computer_verbose
+    __default_computer_verbose = verbose
 
 
 def add_buffered_input(input_int: int) -> None:
@@ -92,6 +92,9 @@ def get_buffered_output() -> List[int]:
 def run_int_code_program(input_program: List[int], noun: int = None, verb: int = None) -> List[int]:
     # __default_global_int_computer: IntCodeComputer
     global __default_global_int_computer
+    global __default_computer_verbose
+    __default_global_int_computer = IntCodeComputer()
+    __default_global_int_computer.set_verbose(__default_computer_verbose)
     __default_global_int_computer.set_int_code_program(input_program, noun=noun, verb=verb)
     return __default_global_int_computer.run()
 
@@ -101,10 +104,12 @@ class IntCodeComputer:
     _input_buffer: List[int]
     _output_buffer: List[int]
     _instruction_pointer: int
+    __default_computer_verbose: bool
 
     _operators: Dict[_OpCode, Callable[[List[int]], int]]
 
     def __init__(self) -> None:
+        self._verbose = True
         self._operators = {
             _OpCode.ADD: sum,
             _OpCode.MULTIPLY: multiply,
@@ -115,6 +120,9 @@ class IntCodeComputer:
             _OpCode.LESS_THAN: self._less_than,
             _OpCode.EQUALS: self._equals,
         }
+
+    def set_verbose(self, verbose: bool) -> None:
+        self._verbose = verbose
 
     def set_int_code_program(self, input_program: List[int], noun: int = None, verb: int = None):
         self._program_memory = list(input_program)
@@ -149,21 +157,19 @@ class IntCodeComputer:
                 self._instruction_pointer += instruction.pointer_offset
         return self._program_memory
 
-    @staticmethod
-    def _input_int(_: List[int]) -> int:
+    def _input_int(self, _: List[int]) -> int:
         if _input_buffer:
             buffered_input = _input_buffer.pop()
-            if _verbose:
+            if self._verbose:
                 print(f"[INT CODE COMPUTER] [buffered input] {buffered_input}")
             return buffered_input
         return int(input("[INT CODE COMPUTER] [input] "))
 
-    @staticmethod
-    def _output_int(output: List[int]) -> None:
+    def _output_int(self, output: List[int]) -> None:
         if len(output) != 1:
             raise ValueError("Output should only have one int!")
         _output_buffer.extend(output)
-        if _verbose:
+        if self._verbose:
             print(f"[INT CODE COMPUTER] [output] {output[0]}")
 
     @staticmethod
@@ -195,6 +201,5 @@ _input_buffer = []
 _output_buffer = []
 
 
-_verbose = True
-__default_global_int_computer = IntCodeComputer()
-
+__default_computer_verbose = True
+__default_global_int_computer = None
