@@ -92,14 +92,14 @@ def get_buffered_output() -> List[int]:
     return output
 
 
-def run_int_code_program(input_program: List[int], noun: int = None, verb: int = None) -> List[int]:
+def run_int_code_program(input_program: List[int]) -> List[int]:
     global __default_global_int_computer
     global __default_computer_verbose
     __default_global_int_computer = IntCodeComputer()
     while len(_global_input_buffer) > 0:
         __default_global_int_computer.add_buffered_input(_global_input_buffer.pop(0))
     __default_global_int_computer.set_verbose(__default_computer_verbose)
-    __default_global_int_computer.set_int_code_program(input_program, noun=noun, verb=verb)
+    __default_global_int_computer.set_int_code_program(input_program)
     result = __default_global_int_computer.run()
     _global_output_buffer.extend(__default_global_int_computer.get_buffered_output())
     __default_global_int_computer = None
@@ -141,12 +141,8 @@ class IntCodeComputer:
     def set_verbose(self, verbose: bool) -> None:
         self._verbose = verbose
 
-    def set_int_code_program(self, input_program: List[int], noun: int = None, verb: int = None):
+    def set_int_code_program(self, input_program: List[int]):
         self._program_memory = list(input_program)
-        if noun is not None:
-            self._program_memory[1] = noun
-        if verb is not None:
-            self._program_memory[2] = verb
         self._instruction_pointer = 0
 
     def run(self):
