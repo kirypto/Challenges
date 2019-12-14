@@ -2,25 +2,25 @@ from itertools import permutations
 from typing import List, Optional, Tuple
 
 from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem, TestCase
-from python_tools.advent_of_code.y2019_int_code_computer import add_buffered_input, run_int_code_program, get_buffered_output, set_verbose
+from python_tools.advent_of_code.y2019_int_code_computer import IntCodeComputer
 
 
 def part_1_solver(puzzle_input: List[int]) -> Tuple[int, List[int]]:
-    set_verbose(False)
     all_possible_phase_settings = list(permutations(range(5)))
     max_phase_setting: List[int] = []
     max_thruster_signal: Optional[int] = None
 
     for phase_setting in all_possible_phase_settings:
         phase_setting = list(phase_setting)
+        last_output = [0]
         for amplifier_index, phase_signal in enumerate(phase_setting):
-            if amplifier_index == 0:
-                add_buffered_input(0)
-            else:
-                add_buffered_input(get_buffered_output()[0])
-            add_buffered_input(phase_signal)
-            run_int_code_program(list(puzzle_input))
-        output = get_buffered_output()[0]
+            computer = IntCodeComputer(list(puzzle_input))
+            computer.set_verbose(False)
+            computer.add_buffered_input(phase_signal)
+            computer.add_buffered_input(last_output[0])
+            computer.run()
+            last_output = computer.get_buffered_output()
+        output = last_output[0]
 
         if max_thruster_signal is None or output > max_thruster_signal:
             max_phase_setting = phase_setting
