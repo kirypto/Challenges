@@ -4,47 +4,6 @@ from typing import Dict, Tuple, Callable, List, Optional
 from python_tools.maths import multiply
 
 
-def _input_int(_: List[int]) -> int:
-    if _input_buffer:
-        buffered_input = _input_buffer.pop()
-        if _verbose:
-            print(f"[INT CODE COMPUTER] [buffered input] {buffered_input}")
-        return buffered_input
-    return int(input("[INT CODE COMPUTER] [input] "))
-
-
-def _output_int(output: List[int]) -> None:
-    if len(output) != 1:
-        raise ValueError("Output should only have one int!")
-    _output_buffer.extend(output)
-    if _verbose:
-        print(f"[INT CODE COMPUTER] [output] {output[0]}")
-
-
-def _less_than(to_compare: List[int]) -> int:
-    a, b = to_compare
-    return 1 if a < b else 0
-
-
-def _equals(to_compare: List[int]) -> int:
-    a, b = to_compare
-    return 1 if a == b else 0
-
-
-def _jump_if_false(bool_and_position: List[int]) -> Optional[int]:
-    should_jump, instr_ptr_pos = bool_and_position
-    if should_jump == 0:
-        return instr_ptr_pos
-    return None
-
-
-def _jump_if_true(bool_and_position: List[int]) -> Optional[int]:
-    should_jump, instr_ptr_pos = bool_and_position
-    if should_jump != 0:
-        return instr_ptr_pos
-    return None
-
-
 class _OpCode(Enum):
     ADD = 1
     MULTIPLY = 2
@@ -143,16 +102,19 @@ class IntCodeComputer:
     _output_buffer: List[int]
     _instruction_pointer: int
 
-    _operators: Dict[_OpCode, Callable[[List[int]], int]] = {
-        _OpCode.ADD: sum,
-        _OpCode.MULTIPLY: multiply,
-        _OpCode.INPUT: _input_int,
-        _OpCode.OUTPUT: _output_int,
-        _OpCode.JUMP_IF_TRUE: _jump_if_true,
-        _OpCode.JUMP_IF_FALSE: _jump_if_false,
-        _OpCode.LESS_THAN: _less_than,
-        _OpCode.EQUALS: _equals,
-    }
+    _operators: Dict[_OpCode, Callable[[List[int]], int]]
+
+    def __init__(self) -> None:
+        self._operators = {
+            _OpCode.ADD: sum,
+            _OpCode.MULTIPLY: multiply,
+            _OpCode.INPUT: self._input_int,
+            _OpCode.OUTPUT: self._output_int,
+            _OpCode.JUMP_IF_TRUE: self._jump_if_true,
+            _OpCode.JUMP_IF_FALSE: self._jump_if_false,
+            _OpCode.LESS_THAN: self._less_than,
+            _OpCode.EQUALS: self._equals,
+        }
 
     def set_int_code_program(self, input_program: List[int], noun: int = None, verb: int = None):
         self._program_memory = list(input_program)
@@ -186,6 +148,47 @@ class IntCodeComputer:
             else:
                 self._instruction_pointer += instruction.pointer_offset
         return self._program_memory
+
+    @staticmethod
+    def _input_int(_: List[int]) -> int:
+        if _input_buffer:
+            buffered_input = _input_buffer.pop()
+            if _verbose:
+                print(f"[INT CODE COMPUTER] [buffered input] {buffered_input}")
+            return buffered_input
+        return int(input("[INT CODE COMPUTER] [input] "))
+
+    @staticmethod
+    def _output_int(output: List[int]) -> None:
+        if len(output) != 1:
+            raise ValueError("Output should only have one int!")
+        _output_buffer.extend(output)
+        if _verbose:
+            print(f"[INT CODE COMPUTER] [output] {output[0]}")
+
+    @staticmethod
+    def _less_than(to_compare: List[int]) -> int:
+        a, b = to_compare
+        return 1 if a < b else 0
+
+    @staticmethod
+    def _equals(to_compare: List[int]) -> int:
+        a, b = to_compare
+        return 1 if a == b else 0
+
+    @staticmethod
+    def _jump_if_false(bool_and_position: List[int]) -> Optional[int]:
+        should_jump, instr_ptr_pos = bool_and_position
+        if should_jump == 0:
+            return instr_ptr_pos
+        return None
+
+    @staticmethod
+    def _jump_if_true(bool_and_position: List[int]) -> Optional[int]:
+        should_jump, instr_ptr_pos = bool_and_position
+        if should_jump != 0:
+            return instr_ptr_pos
+        return None
 
 
 _input_buffer = []
