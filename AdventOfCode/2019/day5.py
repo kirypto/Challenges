@@ -1,24 +1,26 @@
 from typing import List, Tuple
 
 from python_tools.advent_of_code.puzzle_runner_helpers import AdventOfCodeProblem, TestCase
-from python_tools.advent_of_code.y2019_int_code_computer import run_int_code_program, add_buffered_input, get_buffered_output
+from python_tools.advent_of_code.y2019_int_code_computer import IntCodeComputer
 
 
 def part_1_solver(puzzle_input: Tuple[List[int], List[int]]) -> List[int]:
     program, to_be_buffered = puzzle_input
+    computer = IntCodeComputer(program)
     for val in to_be_buffered:
-        add_buffered_input(val)
-    run_int_code_program(program)
-    program_output = get_buffered_output()
+        computer.add_buffered_input(val)
+    computer.run()
+    program_output = computer.get_buffered_output()
     return program_output
 
 
 def part_2_solver(puzzle_input: Tuple[List[int], List[int]]) -> List[int]:
     program, to_be_buffered = puzzle_input
+    computer = IntCodeComputer(program)
     for val in to_be_buffered:
-        add_buffered_input(val)
-    run_int_code_program(program)
-    program_output = get_buffered_output()
+        computer.add_buffered_input(val)
+    computer.run()
+    program_output = computer.get_buffered_output()
     return program_output
 
 
