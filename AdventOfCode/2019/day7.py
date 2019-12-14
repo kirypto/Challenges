@@ -14,8 +14,7 @@ def part_1_solver(puzzle_input: List[int]) -> Tuple[int, List[int]]:
         phase_setting = list(phase_setting)
         last_output = [0]
         for amplifier_index, phase_signal in enumerate(phase_setting):
-            computer = IntCodeComputer(list(puzzle_input))
-            computer.set_verbose(False)
+            computer = IntCodeComputer(list(puzzle_input), verbose=False)
             computer.add_buffered_input(phase_signal)
             computer.add_buffered_input(last_output[0])
             computer.run()

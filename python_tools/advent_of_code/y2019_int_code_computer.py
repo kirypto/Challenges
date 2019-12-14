@@ -72,55 +72,21 @@ class _IntCodeInstruction:
         ]
 
 
-def set_verbose(verbose: bool) -> None:
-    global __default_computer_verbose
-    __default_computer_verbose = verbose
-
-
-def add_buffered_input(input_int: int) -> None:
-    global __default_global_int_computer
-    global _global_input_buffer
-    if __default_global_int_computer is not None:
-        __default_global_int_computer.add_buffered_input(input_int)
-        return
-    _global_input_buffer.insert(0, input_int)
-
-
-def get_buffered_output() -> List[int]:
-    output = list(_global_output_buffer)
-    _global_output_buffer.clear()
-    return output
-
-
-def run_int_code_program(input_program: List[int]) -> List[int]:
-    global __default_global_int_computer
-    global __default_computer_verbose
-    __default_global_int_computer = IntCodeComputer()
-    while len(_global_input_buffer) > 0:
-        __default_global_int_computer.add_buffered_input(_global_input_buffer.pop(0))
-    __default_global_int_computer.set_verbose(__default_computer_verbose)
-    __default_global_int_computer.set_int_code_program(input_program)
-    result = __default_global_int_computer.run()
-    _global_output_buffer.extend(__default_global_int_computer.get_buffered_output())
-    __default_global_int_computer = None
-    return result
-
-
 class IntCodeComputer:
     _program_memory: List[int]
     _input_buffer: List[int]
     _output_buffer: List[int]
     _instruction_pointer: int
-    __default_computer_verbose: bool
+    _verbose: bool
 
     _operators: Dict[_OpCode, Callable[[List[int]], int]]
 
-    def __init__(self, input_program: List[int] = None) -> None:
-        self._verbose = True
+    def __init__(self, input_program: List[int], verbose: bool = None) -> None:
+        self._verbose = verbose if verbose is not None else True
         self._input_buffer = []
         self._output_buffer = []
-        if input_program is not None:
-            self.set_int_code_program(input_program)
+        self._program_memory = list(input_program)
+        self._instruction_pointer = 0
         self._operators = {
             _OpCode.ADD: sum,
             _OpCode.MULTIPLY: multiply,
@@ -139,13 +105,6 @@ class IntCodeComputer:
         output = list(self._output_buffer)
         self._output_buffer.clear()
         return output
-
-    def set_verbose(self, verbose: bool) -> None:
-        self._verbose = verbose
-
-    def set_int_code_program(self, input_program: List[int]):
-        self._program_memory = list(input_program)
-        self._instruction_pointer = 0
 
     def run(self):
         while True:
@@ -173,7 +132,6 @@ class IntCodeComputer:
         return self._program_memory
 
     def _input_int(self, _: List[int]) -> int:
-        global _global_input_buffer
         if len(self._input_buffer) > 0:
             buffered_input = self._input_buffer.pop(0)
             if self._verbose:
@@ -213,9 +171,4 @@ class IntCodeComputer:
         return None
 
 
-_global_input_buffer = []
-_global_output_buffer = []
-
-
-__default_computer_verbose = True
 __default_global_int_computer = None
