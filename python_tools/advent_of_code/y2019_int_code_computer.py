@@ -4,20 +4,6 @@ from typing import Dict, Tuple, Callable, List, Optional
 from python_tools.maths import multiply
 
 
-_input_buffer = []
-_output_buffer = []
-_verbose = True
-
-
-def set_verbose(verbose: bool) -> None:
-    global _verbose
-    _verbose = verbose
-
-
-def add_buffered_input(input_int: int) -> None:
-    _input_buffer.append(input_int)
-
-
 def _input_int(_: List[int]) -> int:
     if _input_buffer:
         buffered_input = _input_buffer.pop()
@@ -25,12 +11,6 @@ def _input_int(_: List[int]) -> int:
             print(f"[INT CODE COMPUTER] [buffered input] {buffered_input}")
         return buffered_input
     return int(input("[INT CODE COMPUTER] [input] "))
-
-
-def get_buffered_output() -> List[int]:
-    output = list(_output_buffer)
-    _output_buffer.clear()
-    return output
 
 
 def _output_int(output: List[int]) -> None:
@@ -123,7 +103,7 @@ class _IntCodeInstruction:
         has_output = self._instruction_info[self.op_code][self._INFO_INDEX_HAS_OUTPUT]
         additional_offset = 2 if has_output else 1
         return self._instruction_info[self.op_code][self._INFO_INDEX_NUM_INPUTS] + additional_offset
-    
+
     @property
     def moves_instr_ptr(self) -> bool:
         return self._instruction_info[self.op_code][self._INFO_INDEX_MOVES_INSTR_PTR]
@@ -138,32 +118,73 @@ class _IntCodeInstruction:
         ]
 
 
+def set_verbose(verbose: bool) -> None:
+    global _verbose
+    _verbose = verbose
+
+
+def add_buffered_input(input_int: int) -> None:
+    # global __default_global_int_computer
+    # __default_global_int_computer: IntCodeComputer
+    _input_buffer.append(input_int)
+
+
+def get_buffered_output() -> List[int]:
+    output = list(_output_buffer)
+    _output_buffer.clear()
+    return output
+
+
 def run_int_code_program(input_program: List[int], noun: int = None, verb: int = None) -> List[int]:
-    program_memory = list(input_program)
-    if noun is not None:
-        program_memory[1] = noun
-    if verb is not None:
-        program_memory[2] = verb
-    instruction_pointer = 0
-    while True:
-        instruction = _IntCodeInstruction(program_memory[instruction_pointer])
-        if instruction.op_code == _OpCode.HALT:
-            break
+    # __default_global_int_computer: IntCodeComputer
+    global __default_global_int_computer
+    __default_global_int_computer.set_int_code_program(input_program, noun=noun, verb=verb)
+    return __default_global_int_computer.run()
 
-        inputs = []
-        for param_mode, input_offset in instruction.inputs:
-            if param_mode == _ParameterMode.IMMEDIATE:
-                inputs.append(program_memory[instruction_pointer + input_offset])
-            elif param_mode == _ParameterMode.POSITION:
-                inputs.append(program_memory[program_memory[instruction_pointer + input_offset]])
 
-        result = instruction.operator(inputs)
+class IntCodeComputer:
+    _program_memory: List[int]
+    _input_buffer: List[int]
+    _output_buffer: List[int]
+    _instruction_pointer: int
 
-        if instruction.output is not None:
-            output_position = program_memory[instruction_pointer + instruction.output]
-            program_memory[output_position] = result
-        if instruction.moves_instr_ptr and result is not None:
-            instruction_pointer = result
-        else:
-            instruction_pointer += instruction.pointer_offset
-    return program_memory
+    def set_int_code_program(self, input_program: List[int], noun: int = None, verb: int = None):
+        self._program_memory = list(input_program)
+        if noun is not None:
+            self._program_memory[1] = noun
+        if verb is not None:
+            self._program_memory[2] = verb
+        self._instruction_pointer = 0
+
+    def run(self):
+        while True:
+            instruction = _IntCodeInstruction(self._program_memory[self._instruction_pointer])
+            if instruction.op_code == _OpCode.HALT:
+                break
+
+            inputs = []
+            for param_mode, input_offset in instruction.inputs:
+                if param_mode == _ParameterMode.IMMEDIATE:
+                    inputs.append(self._program_memory[self._instruction_pointer + input_offset])
+                elif param_mode == _ParameterMode.POSITION:
+                    inputs.append(self._program_memory[self._program_memory[self._instruction_pointer + input_offset]])
+
+            result = instruction.operator(inputs)
+
+            if instruction.output is not None:
+                output_position = self._program_memory[self._instruction_pointer + instruction.output]
+                self._program_memory[output_position] = result
+            if instruction.moves_instr_ptr and result is not None:
+                self._instruction_pointer = result
+            else:
+                self._instruction_pointer += instruction.pointer_offset
+        return self._program_memory
+
+
+_input_buffer = []
+_output_buffer = []
+
+
+_verbose = True
+__default_global_int_computer = IntCodeComputer()
+
