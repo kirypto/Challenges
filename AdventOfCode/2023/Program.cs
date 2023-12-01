@@ -12,7 +12,14 @@ IInputRepository inputRepository = new FileInputRepository();
 int ExtractCalibrationValue(string raw) {
     Match match = Regex.Match(raw, @"^[^\d]*(\d).*?(\d)?[^\d]*$");
     string secondDigit = match.Groups[2].Length > 0 ? match.Groups[2].Value : match.Groups[1].Value;
-    return int.Parse($"{match.Groups[1]}{secondDigit}");
+    try {
+        return int.Parse($"{match.Groups[1]}{secondDigit}");
+    }
+    catch (Exception e) {
+        Console.WriteLine($"Failed on value '{raw}'");
+        Console.WriteLine(e);
+        throw;
+    }
 }
 
 
