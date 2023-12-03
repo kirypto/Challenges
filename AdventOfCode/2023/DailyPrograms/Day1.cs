@@ -1,9 +1,19 @@
 ﻿using kirypto.AdventOfCode._2023.Extensions;
+using kirypto.AdventOfCode._2023.Repos;
 
-namespace kirypto.AdventOfCode._2023;
+namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
-public static class Utils {
-    public static int ExtractCalibrationValue(string raw) {
+internal readonly record struct CalibrationDigit(string Raw, string Normalized);
+
+public class Day1 : IDailyProgram {
+    public void Run(IInputRepository inputRepository, string inputRef) {
+        int calibrationSum = inputRepository.FetchLines(inputRef)
+                .Select(ExtractCalibrationValue)
+                .Sum();
+        Console.WriteLine($"Calibration sum: {calibrationSum}");
+    }
+
+    private static int ExtractCalibrationValue(string raw) {
         var replacements = new List<CalibrationDigit> {
                 new("0", "0"),
                 new("1", "1"),
