@@ -3,7 +3,7 @@
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
 public class Day2 : IDailyProgram {
-    public void Run(IInputRepository inputRepository, string inputRef) {
+    public void Run(IInputRepository inputRepository, string inputRef, int part) {
         IList<string> lines = inputRepository.FetchLines(inputRef);
         var sum = 0;
         foreach (string line in lines) {

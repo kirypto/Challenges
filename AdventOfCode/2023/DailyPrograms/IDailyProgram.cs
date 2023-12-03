@@ -3,5 +3,5 @@
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
 public interface IDailyProgram {
-    public void Run(IInputRepository inputRepository, string inputRef);
+    public void Run(IInputRepository inputRepository, string inputRef, int part);
 }

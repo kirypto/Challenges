@@ -18,22 +18,10 @@ if (!int.TryParse(Console.ReadLine(), out int day)) {
     day = (DateTime.Now + TimeSpan.FromHours(1)).Day;
     Console.WriteLine($"  -> Defaulting to {day}");
 }
-string dayPortion = $"day{day}-";
-List<string> inputRefs;
 Console.Write("Part: ");
-string input = Console.ReadLine() ?? "";
-if (input.Length > 0) {
-    inputRefs = new List<string> { dayPortion + "part" + input };
-} else {
-    inputRefs = new List<string> { dayPortion + "part1", dayPortion + "part2", dayPortion + "real" };
-}
+int part = int.Parse(Console.ReadLine() ?? "");
 
-
-foreach (string inputRef in inputRefs) {
-    try {
-        dayFunctions[day].Run(inputRepository, inputRef);
-    }
-    catch (Exception e) {
-        Console.WriteLine($"FAILURE on '{inputRef}': {e.Message}");
-    }
-}
+Console.WriteLine("\n+==============\n| Sample\n+==============");
+dayFunctions[day].Run(inputRepository, $"day{day}-part{part}", part);
+Console.WriteLine("\n+==============\n| Real\n+==============");
+dayFunctions[day].Run(inputRepository, $"day{day}-real", part);

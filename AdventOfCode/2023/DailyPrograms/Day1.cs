@@ -6,7 +6,7 @@ namespace kirypto.AdventOfCode._2023.DailyPrograms;
 internal readonly record struct CalibrationDigit(string Raw, string Normalized);
 
 public class Day1 : IDailyProgram {
-    public void Run(IInputRepository inputRepository, string inputRef) {
+    public void Run(IInputRepository inputRepository, string inputRef, int part) {
         int calibrationSum = inputRepository.FetchLines(inputRef)
                 .Select(ExtractCalibrationValue)
                 .Sum();
