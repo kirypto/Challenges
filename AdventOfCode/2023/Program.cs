@@ -11,6 +11,7 @@ IInputRepository inputRepository = new FileInputRepository();
 IDictionary<int, IDailyProgram> dayFunctions = new Dictionary<int, IDailyProgram> {
         { 1, new Day1() },
         { 2, new Day2() },
+        { 3, new Day3() },
 };
 
 Console.Write("Day: ");
