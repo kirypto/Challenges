@@ -24,18 +24,31 @@ public class Day3 : IDailyProgram {
                     .Sum();
             Console.WriteLine($"Sum of valid part numbers: {sumOfPartNumbers}");
         } else {
-            throw new NotImplementedException("Part 2 not implemented");
+            int gearRatioSum = schematic.Gears
+                    .Select(gear => gear.GearRatio)
+                    .Sum();
+            Console.WriteLine($"Sum of gear ratios: {gearRatioSum}");
         }
     }
 }
 
-public readonly record struct PartNumber(int Number, int Row, int Col, int Length);
+public readonly record struct Position(int Row, int Col);
+
+public readonly record struct PartNumber(int Number, Position Position) {
+    public int Length => Number.ToString().Length;
+};
+
+public readonly record struct Gear(PartNumber part1, PartNumber part2) {
+    public int GearRatio => part1.Number * part2.Number;
+}
 
 public record struct Schematic(char[,] Data) {
     private IList<PartNumber>? _partNumbers = null;
-    public IList<PartNumber> PartNumbers => _partNumbers ??= DerivePartNumbers(Data);
+    private IList<Gear>? _gears = null;
+    public IList<PartNumber> PartNumbers => _partNumbers ??= DerivePartNumbers();
+    public IList<Gear> Gears => _gears ??= DeriveGears();
 
-    private static IList<PartNumber> DerivePartNumbers(char[,] Data) {
+    private IList<PartNumber> DerivePartNumbers() {
         bool[,] validPartNumberPositions = Data
                 .ApplyMask(IsSymbol)
                 .ApplyMask(IsAdjacentToTrue);
@@ -52,8 +65,39 @@ public record struct Schematic(char[,] Data) {
                         obj.Match.Length,
                 })
                 .Where(obj => IsPartNumber(validPartNumberPositions, obj.Row, obj.Col, obj.Length))
-                .Select(obj => new PartNumber(obj.Value, obj.Row, obj.Col, obj.Length))
+                .Select(obj => new PartNumber(obj.Value, new Position(obj.Row, obj.Col)))
                 .ToList();
+    }
+
+    private IList<Gear> DeriveGears() {
+        int rowCount = Data.GetLength(0);
+        int colCount = Data.GetLength(1);
+        var surroundingPartNumberCounts = new int[rowCount, colCount];
+        var surroundingPartNumbers = new Dictionary<Position, IList<PartNumber>>();
+
+
+        foreach (PartNumber partNumber in PartNumbers) {
+            foreach (Position position in GetSurroundingPositions(partNumber, rowCount, colCount)) {
+                surroundingPartNumberCounts[position.Row, position.Col]++;
+                if (!surroundingPartNumbers.ContainsKey(position)) {
+                    surroundingPartNumbers[position] = new List<PartNumber>();
+                }
+                surroundingPartNumbers[position].Add(partNumber);
+            }
+        }
+
+        var gears = new List<Gear>();
+        for (var row = 0; row < rowCount; row++) {
+            for (var col = 0; col < colCount; col++) {
+                if (surroundingPartNumberCounts[row, col] == 2 && Data[row, col] == '*') {
+                    var position = new Position(row, col);
+                    IList<PartNumber> adjacentPartNumbers = surroundingPartNumbers[position];
+                    gears.Add(new Gear(adjacentPartNumbers[0], adjacentPartNumbers[1]));
+                }
+            }
+        }
+
+        return gears;
     }
 
     private static bool IsPartNumber(bool[,] validPartNumberPositions, int row, int col, int length) {
@@ -74,5 +118,27 @@ public record struct Schematic(char[,] Data) {
             }
         }
         return false;
+    }
+
+    private static IEnumerable<Position> GetSurroundingPositions(PartNumber partNumber, int rowCount, int colCount) {
+        (int row, int col) = partNumber.Position;
+        var positions = new List<Position>();
+        if (row - 1 >= 0) {
+            Enumerable.Range(col - 1, partNumber.Length + 2)
+                    .Where(c => 0 <= c && c < colCount)
+                    .ForEach(c => positions.Add(new Position(row - 1, c)));
+        }
+        if (col > 0) {
+            positions.Add(new Position(row, col - 1));
+        }
+        if (col < colCount - partNumber.Length - 1) {
+            positions.Add(new Position(row, col + partNumber.Length));
+        }
+        if (row + 1 < rowCount) {
+            Enumerable.Range(col - 1, partNumber.Length + 2)
+                    .Where(c => 0 <= c && c < colCount)
+                    .ForEach(c => positions.Add(new Position(row + 1, c)));
+        }
+        return positions;
     }
 }
