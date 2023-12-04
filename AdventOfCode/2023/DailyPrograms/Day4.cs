@@ -29,6 +29,15 @@ public class Day4 : IDailyProgram {
                     .Select(card => card.Value)
                     .Sum();
             Console.WriteLine($"Total winning points: {sum}");
+        } else {
+            var resultCardCounts = new Dictionary<int, int>();
+            for (int cardId = scratchCards.Count; cardId > 0; cardId--) {
+                ScratchCard card = scratchCards[cardId];
+                resultCardCounts[cardId] = 1 + Enumerable.Range(cardId + 1, card.WinningCount)
+                        .Select(copyCardId => resultCardCounts[copyCardId])
+                        .Sum();
+            }
+            Console.WriteLine($"Total resulting card count: {resultCardCounts.Values.Sum()}");
         }
     }
 }
