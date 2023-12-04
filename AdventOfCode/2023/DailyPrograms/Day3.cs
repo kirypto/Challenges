@@ -17,14 +17,19 @@ public class Day3 : IDailyProgram {
         }
 
         var schematic = new Schematic(schematicData);
-        int sumOfPartNumbers = schematic.PartNumbers
-                .Select(partNumber => partNumber.Number)
-                .Sum();
-        Console.WriteLine($"Sum of valid part numbers: {sumOfPartNumbers}");
+
+        if (part == 1) {
+            int sumOfPartNumbers = schematic.PartNumbers
+                    .Select(partNumber => partNumber.Number)
+                    .Sum();
+            Console.WriteLine($"Sum of valid part numbers: {sumOfPartNumbers}");
+        } else {
+            throw new NotImplementedException("Part 2 not implemented");
+        }
     }
 }
 
-public readonly record struct PartNumber(int Number);
+public readonly record struct PartNumber(int Number, int Row, int Col, int Length);
 
 public readonly record struct Schematic(char[,] Data, IList<PartNumber> PartNumbers) {
     public Schematic(char[,] Data) : this(Data, DerivePartNumbers(Data)) { }
@@ -46,7 +51,7 @@ public readonly record struct Schematic(char[,] Data, IList<PartNumber> PartNumb
                         obj.Match.Length,
                 })
                 .Where(obj => IsPartNumber(validPartNumberPositions, obj.Row, obj.Col, obj.Length))
-                .Select(obj => new PartNumber(obj.Value))
+                .Select(obj => new PartNumber(obj.Value, obj.Row, obj.Col, obj.Length))
                 .ToList();
     }
 
