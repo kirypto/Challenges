@@ -21,4 +21,10 @@ public static class Array2dExtensions {
             Console.WriteLine();
         }
     }
+
+    public static T[] GetRow<T>(this T[,] array, int row) {
+        return Enumerable.Range(0, array.GetLength(1))
+                .Select(col => array[row, col])
+                .ToArray();
+    }
 }

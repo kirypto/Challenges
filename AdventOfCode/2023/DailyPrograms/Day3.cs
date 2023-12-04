@@ -9,18 +9,34 @@ public class Day3 : IDailyProgram {
         IList<string> inputLines = inputRepository.FetchLines(inputRef);
         int rowCount = inputLines.Count;
         int colCount = inputLines[0].Length;
-        var schematic = new char[rowCount, colCount];
+        var schematicData = new char[rowCount, colCount];
         for (var row = 0; row < rowCount; row++) {
             for (var col = 0; col < colCount; col++) {
-                schematic[row, col] = inputLines[row][col];
+                schematicData[row, col] = inputLines[row][col];
             }
         }
-        bool[,] validPartNumberPositions = schematic
+
+        var schematic = new Schematic(schematicData);
+        int sumOfPartNumbers = schematic.PartNumbers
+                .Select(partNumber => partNumber.Number)
+                .Sum();
+        Console.WriteLine($"Sum of valid part numbers: {sumOfPartNumbers}");
+    }
+}
+
+public readonly record struct PartNumber(int Number);
+
+public readonly record struct Schematic(char[,] Data, IList<PartNumber> PartNumbers) {
+    public Schematic(char[,] Data) : this(Data, DerivePartNumbers(Data)) { }
+
+    private static IList<PartNumber> DerivePartNumbers(char[,] Data) {
+        bool[,] validPartNumberPositions = Data
                 .ApplyMask(IsSymbol)
                 .ApplyMask(IsAdjacentToTrue);
 
-
-        int sumOfValidPartNumbers = inputLines
+        return Enumerable.Range(0, Data.GetLength(0))
+                .Select(Data.GetRow)
+                .Select(dataRow => string.Join("", dataRow))
                 .SelectMany((line, row) => Regex.Matches(line, @"(\d+)")
                         .Select(match => new { Row = row, Match = match }))
                 .Select(obj => new {
@@ -30,9 +46,8 @@ public class Day3 : IDailyProgram {
                         obj.Match.Length,
                 })
                 .Where(obj => IsPartNumber(validPartNumberPositions, obj.Row, obj.Col, obj.Length))
-                .Select(obj => obj.Value)
-                .Sum();
-        Console.WriteLine($"Sum of valid part numbers: {sumOfValidPartNumbers}");
+                .Select(obj => new PartNumber(obj.Value))
+                .ToList();
     }
 
     private static bool IsPartNumber(bool[,] validPartNumberPositions, int row, int col, int length) {
