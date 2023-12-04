@@ -31,8 +31,9 @@ public class Day3 : IDailyProgram {
 
 public readonly record struct PartNumber(int Number, int Row, int Col, int Length);
 
-public readonly record struct Schematic(char[,] Data, IList<PartNumber> PartNumbers) {
-    public Schematic(char[,] Data) : this(Data, DerivePartNumbers(Data)) { }
+public record struct Schematic(char[,] Data) {
+    private IList<PartNumber>? _partNumbers = null;
+    public IList<PartNumber> PartNumbers => _partNumbers ??= DerivePartNumbers(Data);
 
     private static IList<PartNumber> DerivePartNumbers(char[,] Data) {
         bool[,] validPartNumberPositions = Data
