@@ -29,34 +29,33 @@ public class Day5 : IDailyProgram {
 
 
         Console.WriteLine(seeds.Count);
-        IDictionary<string, IList<AlmanacMapper>> mappers = new Dictionary<string, IList<AlmanacMapper>>();
-        var currentMapper = "";
         var currentEntryList = new List<AlmanacMapEntry>();
+        IList<AlmanacMap> almanacMaps = new List<AlmanacMap>();
         foreach (string line in inputLines.Skip(1)) {
-            var mapNameMatch = Regex.Match(line, @"^([\w-]+)(?=( map:$))");
             MatchCollection matches = Regex.Matches(line, @"(\d+)");
-            if (mapNameMatch.Success) {
-                currentMapper = mapNameMatch.Value;
-                mappers[currentMapper] = new List<AlmanacMapper>();
-                if (currentEntryList.Any()) {
-                    new AlmanacMap(currentEntryList);
-                }
-                currentEntryList = new List<AlmanacMapEntry>();
-            } else {
-                mappers[currentMapper].Add(AlmanacMapperFrom(
-                        matches.Select(match => long.Parse(match.Value)).ToList()
-                ));
+            if (matches.Any()) {
                 currentEntryList.Add(new AlmanacMapEntry(
                         long.Parse(matches[0].Value),
                         long.Parse(matches[1].Value),
                         long.Parse(matches[2].Value)
-                        ));
+                ));
+            } else {
+                if (currentEntryList.Any()) {
+                    almanacMaps.Add(new AlmanacMap(currentEntryList));
+                }
+                currentEntryList = new List<AlmanacMapEntry>();
             }
         }
-        var almanac = new Almamac(mappers);
-        long minLocation = seeds.Select(seed => almanac.MapSeedToLocation(seed))
+        long min = seeds.Select(seed => {
+                    long curr = seed;
+                    foreach (AlmanacMap almanacMap in almanacMaps) {
+                        curr = almanacMap.Map(curr);
+                    }
+                    return curr;
+                })
                 .Min();
-        Console.WriteLine($"Min location: {minLocation}");
+        Console.WriteLine($"Min location is {min}");
+        // throw new NotImplementedException();
     }
 
     private static IEnumerable<long> LongRange(long start, long count)
