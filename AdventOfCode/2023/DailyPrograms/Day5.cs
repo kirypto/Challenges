@@ -31,16 +31,26 @@ public class Day5 : IDailyProgram {
         Console.WriteLine(seeds.Count);
         IDictionary<string, IList<AlmanacMapper>> mappers = new Dictionary<string, IList<AlmanacMapper>>();
         var currentMapper = "";
+        var currentEntryList = new List<AlmanacMapEntry>();
         foreach (string line in inputLines.Skip(1)) {
             var mapNameMatch = Regex.Match(line, @"^([\w-]+)(?=( map:$))");
             MatchCollection matches = Regex.Matches(line, @"(\d+)");
             if (mapNameMatch.Success) {
                 currentMapper = mapNameMatch.Value;
                 mappers[currentMapper] = new List<AlmanacMapper>();
+                if (currentEntryList.Any()) {
+                    new AlmanacMap(currentEntryList);
+                }
+                currentEntryList = new List<AlmanacMapEntry>();
             } else {
                 mappers[currentMapper].Add(AlmanacMapperFrom(
                         matches.Select(match => long.Parse(match.Value)).ToList()
                 ));
+                currentEntryList.Add(new AlmanacMapEntry(
+                        long.Parse(matches[0].Value),
+                        long.Parse(matches[1].Value),
+                        long.Parse(matches[2].Value)
+                        ));
             }
         }
         var almanac = new Almamac(mappers);
