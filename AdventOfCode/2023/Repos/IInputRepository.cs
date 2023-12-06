@@ -1,4 +1,7 @@
-﻿namespace kirypto.AdventOfCode._2023.Repos;
+﻿using System;
+using System.Collections.Generic;
+
+namespace kirypto.AdventOfCode._2023.Repos;
 
 public interface IInputRepository {
     public string Fetch(string inputRef);

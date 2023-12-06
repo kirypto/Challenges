@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using kirypto.AdventOfCode._2023.Repos;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;

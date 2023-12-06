@@ -1,4 +1,7 @@
-﻿namespace kirypto.AdventOfCode._2023.Extensions;
+﻿using System;
+using System.Linq;
+
+namespace kirypto.AdventOfCode._2023.Extensions;
 
 public static class Array2dExtensions {
     public delegate R Mask<in T, out R>(T[,] t, int row, int col);

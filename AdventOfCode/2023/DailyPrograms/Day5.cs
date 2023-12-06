@@ -1,5 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using kirypto.AdventOfCode._2023.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using kirypto.AdventOfCode._2023.Repos;
 using static kirypto.AdventOfCode._2023.DailyPrograms.AlmanacMapper;
 
@@ -11,9 +13,22 @@ public class Day5 : IDailyProgram {
                 .FetchLines(inputRef)
                 .Where(s => s.Any())
                 .ToList();
-        ISet<long> seeds = Regex.Matches(inputLines[0], @"(\d+)")
-                .Select(match => long.Parse(match.Value))
-                .ToHashSet();
+        ISet<long> seeds;
+        if (part == 1) {
+            seeds = Regex.Matches(inputLines[0], @"(\d+)")
+                    .Select(match => long.Parse(match.Value))
+                    .ToHashSet();
+        } else {
+            seeds = Regex.Matches(inputLines[0], @"((\d+)\s+(\d+))")
+                    .SelectMany(pairMatch => LongRange(
+                            long.Parse(pairMatch.Groups[2].Value),
+                            long.Parse(pairMatch.Groups[3].Value)))
+                    .ToHashSet();
+        }
+
+
+
+        Console.WriteLine(seeds.Count);
         IDictionary<string, IList<AlmanacMapper>> mappers = new Dictionary<string, IList<AlmanacMapper>>();
         var currentMapper = "";
         foreach (string line in inputLines.Skip(1)) {
@@ -32,6 +47,14 @@ public class Day5 : IDailyProgram {
         long minLocation = seeds.Select(seed => almanac.MapSeedToLocation(seed))
                 .Min();
         Console.WriteLine($"Min location: {minLocation}");
+    }
+
+    private static IEnumerable<long> LongRange(long start, long count)
+    {
+        for (long i = 0; i < count; i++)
+        {
+            yield return start + i;
+        }
     }
 }
 
