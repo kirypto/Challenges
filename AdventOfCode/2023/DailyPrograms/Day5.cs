@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using C5;
-using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Repos;
+using AlmanacRange = C5.TreeDictionary<long, long>;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
 public class Day5 : IDailyProgram {
     public void Run(IInputRepository inputRepository, string inputRef, int part) {
-        System.Collections.Generic.IList<string> inputLines = inputRepository
+        IList<string> inputLines = inputRepository
                 .FetchLines(inputRef)
                 .Where(s => s.Any())
                 .ToList();
@@ -28,9 +27,9 @@ public class Day5 : IDailyProgram {
         }
 
 
-        Console.WriteLine(seeds.Count);
         var currentEntryList = new List<AlmanacMapEntry>();
-        System.Collections.Generic.IList<AlmanacMap> almanacMaps = new List<AlmanacMap>();
+        IList<AlmanacMap> almanacMaps = new List<AlmanacMap>();
+        var mapName = "";
         foreach (string line in inputLines.Skip(1)) {
             var mapNameMatch = Regex.Match(line, @"^([\w-]+)(?=( map:$))");
             MatchCollection matches = Regex.Matches(line, @"(\d+)");
@@ -42,13 +41,18 @@ public class Day5 : IDailyProgram {
                 ));
             } else {
                 if (currentEntryList.Any()) {
-                    almanacMaps.Add(new AlmanacMap(mapNameMatch.Value, currentEntryList));
+                    almanacMaps.Add(new AlmanacMap(mapName, currentEntryList));
                 }
+                mapName = mapNameMatch.Value;
                 currentEntryList = new List<AlmanacMapEntry>();
             }
         }
-        almanacMaps.ForEach(am => am.PrintToConsole());
-        throw new NotImplementedException();
+        almanacMaps.Add(new AlmanacMap(mapName, currentEntryList));
+
+        long minLocation = seeds
+                .Select(seed => almanacMaps.Aggregate(seed, (curr, map) => map.Map(curr)))
+                .Min();
+        Console.WriteLine($"Min seed location: {minLocation}");
     }
 
     private static IEnumerable<long> LongRange(long start, long count) {
@@ -61,18 +65,18 @@ public class Day5 : IDailyProgram {
 public readonly record struct AlmanacMapEntry(long destinationRangeStart, long sourceRangeStart, long rangeLength);
 
 public readonly record struct AlmanacMap {
-    private readonly TreeDictionary<long, long> _ranges;
+    private readonly AlmanacRange _ranges;
     private string Name { get; }
 
-    public AlmanacMap(string name, System.Collections.Generic.ICollection<AlmanacMapEntry> entries) {
+    public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries) {
         Name = name;
-        var ranges = new TreeDictionary<long, long> {
+        var ranges = new AlmanacRange {
                 [0] = 0,
         };
         foreach ((long destinationRangeStart, long sourceRangeStart, long rangeLength) in entries
                          .OrderBy(e => e.sourceRangeStart)) {
-            C5.KeyValuePair<long,long> newAfter = ranges.WeakPredecessor(sourceRangeStart + rangeLength);
-            C5.KeyValuePair<long,long> existingBefore = ranges.WeakPredecessor(sourceRangeStart);
+            C5.KeyValuePair<long, long> newAfter = ranges.WeakPredecessor(sourceRangeStart + rangeLength);
+            C5.KeyValuePair<long, long> existingBefore = ranges.WeakPredecessor(sourceRangeStart);
             if (newAfter != existingBefore) {
                 throw new NotImplementedException("Clean slice insert doesn't work...");
             }
