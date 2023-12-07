@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Repos;
+using static kirypto.AdventOfCode._2023.DailyPrograms.AlmanacMapEntry;
 using AlmanacRange = C5.TreeDictionary<long, long>;
+using AlmanacRangeEntry = C5.KeyValuePair<long, long>;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
@@ -53,6 +56,23 @@ public class Day5 : IDailyProgram {
                 .Select(seed => almanacMaps.Aggregate(seed, (curr, map) => map.Map(curr)))
                 .Min();
         Console.WriteLine($"Min seed location: {minLocation}");
+
+        Console.WriteLine("\n----\n");
+        var mergedMap = almanacMaps.Take(2).Aggregate((am1, am2) => am1.MergeWith(am2));
+        mergedMap.PrintToConsole();
+
+        seeds.ForEach(seed => Console.WriteLine($"Seed {seed} -> {mergedMap.Map(seed)}"));
+
+        Console.WriteLine("\n----\n");
+        almanacMaps[2].PrintToConsole();
+
+        Console.WriteLine("\n----\n");
+        mergedMap.MergeWith(almanacMaps[2]).PrintToConsole();
+
+
+
+        throw new NotImplementedException();
+
     }
 
     private static IEnumerable<long> LongRange(long start, long count) {
@@ -62,7 +82,14 @@ public class Day5 : IDailyProgram {
     }
 }
 
-public readonly record struct AlmanacMapEntry(long destinationRangeStart, long sourceRangeStart, long rangeLength);
+public readonly record struct AlmanacMapEntry(long destinationRangeStart, long sourceRangeStart, long rangeLength) {
+    public static AlmanacMapEntry AlmanacMapEntryFrom(long start, long rangeLength, long mappingValue) {
+        return new AlmanacMapEntry(
+                destinationRangeStart: start + mappingValue,
+                sourceRangeStart: start,
+                rangeLength: rangeLength);
+    }
+}
 
 public readonly record struct AlmanacMap {
     private readonly AlmanacRange _ranges;
@@ -71,12 +98,12 @@ public readonly record struct AlmanacMap {
     public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries) {
         Name = name;
         var ranges = new AlmanacRange {
-                [0] = 0,
+                [long.MinValue] = 0,
         };
         foreach ((long destinationRangeStart, long sourceRangeStart, long rangeLength) in entries
                          .OrderBy(e => e.sourceRangeStart)) {
-            C5.KeyValuePair<long, long> newAfter = ranges.WeakPredecessor(sourceRangeStart + rangeLength);
-            C5.KeyValuePair<long, long> existingBefore = ranges.WeakPredecessor(sourceRangeStart);
+            AlmanacRangeEntry newAfter = ranges.WeakPredecessor(sourceRangeStart + rangeLength);
+            AlmanacRangeEntry existingBefore = ranges.WeakPredecessor(sourceRangeStart);
             if (newAfter != existingBefore) {
                 throw new NotImplementedException("Clean slice insert doesn't work...");
             }
@@ -90,9 +117,37 @@ public readonly record struct AlmanacMap {
         return input + _ranges.WeakPredecessor(input).Value;
     }
 
+    public AlmanacMap MergeWith(AlmanacMap other, string? name = null) {
+        var newMapEntries = new List<AlmanacMapEntry>();
+        var currKey = long.MinValue;
+        while (true) {
+            AlmanacRangeEntry nextA = _ranges.TrySuccessor(currKey, out AlmanacRangeEntry nA)
+                    ? nA
+                    : new AlmanacRangeEntry(long.MaxValue, 0);
+            AlmanacRangeEntry nextB = other._ranges.TrySuccessor(currKey, out AlmanacRangeEntry nB)
+                    ? nB
+                    : new AlmanacRangeEntry(long.MaxValue, 0);
+
+            long nextKey = Math.Min(nextA.Key, nextB.Key);
+
+            if (nextKey == long.MaxValue) {
+                break;
+            }
+
+            newMapEntries.Add(AlmanacMapEntryFrom(
+                    start: currKey,
+                    nextKey - currKey,
+                    _ranges.WeakPredecessor(currKey).Value + other._ranges.WeakPredecessor(currKey).Value));
+            currKey = nextKey;
+        }
+        return new AlmanacMap(
+                name ?? $"{Name} -> {other.Name}",
+                newMapEntries);
+    }
+
     public void PrintToConsole() {
         Console.WriteLine($"Almanac Map '{Name}'");
-        foreach (C5.KeyValuePair<long, long> keyValuePair in _ranges) {
+        foreach (AlmanacRangeEntry keyValuePair in _ranges) {
             Console.WriteLine($"{keyValuePair.Key} -> {keyValuePair.Value}");
         }
     }
