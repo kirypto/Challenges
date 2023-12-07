@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Repos;
-using static kirypto.AdventOfCode._2023.DailyPrograms.AlmanacMapper;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
@@ -31,7 +31,9 @@ public class Day5 : IDailyProgram {
         Console.WriteLine(seeds.Count);
         var currentEntryList = new List<AlmanacMapEntry>();
         IList<AlmanacMap> almanacMaps = new List<AlmanacMap>();
+        var currentMap = "";
         foreach (string line in inputLines.Skip(1)) {
+            var mapNameMatch = Regex.Match(line, @"^([\w-]+)(?=( map:$))");
             MatchCollection matches = Regex.Matches(line, @"(\d+)");
             if (matches.Any()) {
                 currentEntryList.Add(new AlmanacMapEntry(
@@ -41,21 +43,13 @@ public class Day5 : IDailyProgram {
                 ));
             } else {
                 if (currentEntryList.Any()) {
-                    almanacMaps.Add(new AlmanacMap(currentEntryList));
+                    almanacMaps.Add(new AlmanacMap(mapNameMatch.Value, currentEntryList));
                 }
                 currentEntryList = new List<AlmanacMapEntry>();
             }
         }
-        long min = seeds.Select(seed => {
-                    long curr = seed;
-                    foreach (AlmanacMap almanacMap in almanacMaps) {
-                        curr = almanacMap.Map(curr);
-                    }
-                    return curr;
-                })
-                .Min();
-        Console.WriteLine($"Min location is {min}");
-        // throw new NotImplementedException();
+        almanacMaps.ForEach(am => am.PrintToConsole());
+        throw new NotImplementedException();
     }
 
     private static IEnumerable<long> LongRange(long start, long count)
@@ -64,42 +58,5 @@ public class Day5 : IDailyProgram {
         {
             yield return start + i;
         }
-    }
-}
-
-public record Almamac(IDictionary<string, IList<AlmanacMapper>> Mappers) {
-    public long MapSeedToLocation(long seed) => new List<string> {
-                    "seed-to-soil", "soil-to-fertilizer", "fertilizer-to-water", "water-to-light",
-                    "light-to-temperature", "temperature-to-humidity", "humidity-to-location",
-            }
-            .Select(mapName => Mappers[mapName])
-            .Aggregate(seed, (current, categoryMappers) => categoryMappers.Map(current));
-}
-
-public readonly record struct AlmanacMapper(MapperFunc Map, IsApplicableFunction IsApplicable) {
-    public delegate long MapperFunc(long input);
-
-    public delegate bool IsApplicableFunction(long input);
-
-    public static AlmanacMapper Identity() {
-        return new AlmanacMapper(input => input, _ => true);
-    }
-
-    public static AlmanacMapper AlmanacMapperFrom(IList<long> args) {
-        long destinationRangeStart = args[0];
-        long sourceRangeStart = args[1];
-        long rangeLength = args[2];
-        return new AlmanacMapper(
-                input => input + (destinationRangeStart - sourceRangeStart),
-                input => sourceRangeStart <= input && input < sourceRangeStart + rangeLength);
-    }
-}
-
-public static class AlmanacMapperExtensions {
-    public static long Map(this IList<AlmanacMapper> mappers, long input) {
-        return mappers
-                .Where(mapper => mapper.IsApplicable(input))
-                .FirstOrDefault(Identity())
-                .Map(input);
     }
 }

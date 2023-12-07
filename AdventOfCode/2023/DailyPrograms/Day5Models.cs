@@ -8,8 +8,10 @@ public readonly record struct AlmanacMapEntry(long destinationRangeStart, long s
 
 public readonly record struct AlmanacMap {
     private readonly TreeDictionary<long, long> _ranges;
+    public string Name { get; }
 
-    public AlmanacMap(System.Collections.Generic.ICollection<AlmanacMapEntry> entries) {
+    public AlmanacMap(string name, System.Collections.Generic.ICollection<AlmanacMapEntry> entries) {
+        Name = name;
         var ranges = new TreeDictionary<long, long> {
                 [0] = 0,
         };
@@ -31,7 +33,7 @@ public readonly record struct AlmanacMap {
     }
 
     public void PrintToConsole() {
-        Console.WriteLine("Resulting Almanac Map");
+        Console.WriteLine($"Almanac Map '{Name}'");
         foreach (KeyValuePair<long, long> keyValuePair in _ranges) {
             Console.WriteLine($"{keyValuePair.Key} -> {keyValuePair.Value}");
         }
