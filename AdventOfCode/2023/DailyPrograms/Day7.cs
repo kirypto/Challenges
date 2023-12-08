@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Repos;
 using static kirypto.AdventOfCode._2023.DailyPrograms.CardHelpers;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
 public class Day7 : IDailyProgram {
-    public static int PART { get; set; } = 1;
+    public static int PART { get; private set; } = 1;
 
     public void Run(IInputRepository inputRepository, string inputRef, int part) {
         PART = part;
@@ -25,6 +24,7 @@ public class Day7 : IDailyProgram {
     }
 }
 
+// ReSharper disable once NotAccessedPositionalProperty.Global
 public readonly record struct Hand(string Cards, long Bid, HandRank HandRank) : IComparable<Hand> {
     public Hand(string Cards, long Bid) : this(Cards, Bid, DeriveHandRank(Cards)) { }
 
@@ -82,11 +82,9 @@ public static class CardHelpers {
             pairCounts = cardCounts.Values.Count(count => count == 2);
         } else if (jokerCount == 1) {
             if (cardCounts.Values.Max() == 1) {
-                // Handle all different cards with 1 joker => 1 pair
-                pairCounts = 1;
+                pairCounts = 1; // Handle all different cards with 1 joker => 1 pair
             } else if (cardCounts.Values.Count(count => count == 2) == 2) {
-                // Handle 2 pair + 1 joker => full house
-                pairCounts = 1;
+                pairCounts = 1; // Handle 2 pair + 1 joker => full house
             } else {
                 pairCounts = 0;
             }
@@ -95,9 +93,6 @@ public static class CardHelpers {
         }
         bool onePair = pairCounts == 1;
         bool twoPairs = pairCounts == 2;
-        // if (Day7.PART == 2 && !fiveOfAKind && !fourOfAKind && !threeOfAKind && pairCounts == 0 && cards.Contains('J')) {
-        // onePair = true;
-        // }
         var fullHouse = false;
         if (threeOfAKind && onePair) {
             fullHouse = true;
@@ -127,8 +122,3 @@ public static class CardHelpers {
                 .Sum();
     }
 }
-// 249904293 #3 Too High -> Trying to fix J pair issue
-// 249845534 Too High
-// 249641748 Too High -> Tried moving J back to regular position in array
-// 249640985 #4 -> still wrong, doesn't say high/low
-// 249400220
