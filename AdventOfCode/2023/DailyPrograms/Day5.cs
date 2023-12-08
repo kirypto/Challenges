@@ -7,6 +7,7 @@ using kirypto.AdventOfCode._2023.Repos;
 using static kirypto.AdventOfCode._2023.DailyPrograms.AlmanacMapEntry;
 using AlmanacRanges = C5.TreeDictionary<long, long>;
 using AlmanacRangeEntry = C5.KeyValuePair<long, long>;
+using SeedRanges = C5.TreeDictionary<long, bool>;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
@@ -43,6 +44,15 @@ public class Day5 : IDailyProgram {
                     .Min();
             Console.WriteLine($"Lowest location number: {minLocation}");
         } else {
+            var seedRanges = new SeedRanges { [long.MinValue] = false };
+            Regex.Matches(inputLines[0], @"((\d+) (\d+))")
+                    .Select(seedRangeMatch => new {
+                            Start = long.Parse(seedRangeMatch.Groups[2].Value),
+                            Length = long.Parse(seedRangeMatch.Groups[3].Value)
+                    })
+                    .Select(obj => new {obj.Start, EndExclusive = obj.Start + obj.Length})
+                    .ForEach(obj => seedRanges.SpliceIn(obj.Start, obj.EndExclusive, true));
+
             throw new NotImplementedException();
         }
     }
@@ -131,5 +141,21 @@ public readonly record struct AlmanacMap {
             last = entry;
         }
         return rangeReduced;
+    }
+}
+
+public static class TreeDictionaryExtensions {
+    public static void SpliceIn<TKey, TVal>(
+            this C5.TreeDictionary<TKey, TVal> treeDictionary,
+            TKey keyStart,
+            TKey keyEndExclusive,
+            TVal val
+    ) {
+        TVal valAfter = treeDictionary.WeakPredecessor(keyEndExclusive).Value;
+        treeDictionary.RangeFromTo(keyStart, keyEndExclusive)
+                .ToList()
+                .ForEach(entry => treeDictionary.Remove(entry.Key));
+        treeDictionary[keyStart] = val;
+        treeDictionary[keyEndExclusive] = valAfter;
     }
 }
