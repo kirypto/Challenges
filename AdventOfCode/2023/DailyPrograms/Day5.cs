@@ -16,83 +16,63 @@ public class Day5 : IDailyProgram {
                 .FetchLines(inputRef)
                 .Where(s => s.Any())
                 .ToList();
-        ISet<long> seeds;
-        if (part == 1) {
-            seeds = Regex.Matches(inputLines[0], @"(\d+)")
-                    .Select(match => long.Parse(match.Value))
-                    .ToHashSet();
-        } else {
-            seeds = Regex.Matches(inputLines[0], @"((\d+)\s+(\d+))")
-                    .SelectMany(pairMatch => LongRange(
-                            long.Parse(pairMatch.Groups[2].Value),
-                            long.Parse(pairMatch.Groups[3].Value)))
-                    .ToHashSet();
-        }
-
 
         var currentEntryList = new List<AlmanacMapEntry>();
         IList<AlmanacMap> almanacMaps = new List<AlmanacMap>();
         var mapName = "";
         foreach (string line in inputLines.Skip(1)) {
-            var mapNameMatch = Regex.Match(line, @"^([\w-]+)(?=( map:$))");
-            MatchCollection matches = Regex.Matches(line, @"(\d+)");
-            if (matches.Any()) {
-                currentEntryList.Add(new AlmanacMapEntry(
-                        long.Parse(matches[0].Value),
-                        long.Parse(matches[1].Value),
-                        long.Parse(matches[2].Value)
-                ));
+            if (TryParseAlmanacMapEntry(line, out AlmanacMapEntry almanacMapEntry)) {
+                currentEntryList.Add(almanacMapEntry);
             } else {
                 if (currentEntryList.Any()) {
                     almanacMaps.Add(new AlmanacMap(mapName, currentEntryList));
                 }
-                mapName = mapNameMatch.Value;
+                mapName = Regex.Match(line, @"^([\w-]+)(?=( map:$))").Value;
                 currentEntryList = new List<AlmanacMapEntry>();
             }
         }
         almanacMaps.Add(new AlmanacMap(mapName, currentEntryList));
 
-        for (var count = 2; count <= almanacMaps.Count; count++) {
-            AlmanacMap mergedMap = Enumerable.Range(0, count)
-                    .Select(index => almanacMaps[index])
-                    .Aggregate((am1, am2) => am1.MergeWith(am2));
-            Console.WriteLine($"With Almanac Map {mergedMap.Name}");
-            seeds.ForEach(seed => Console.WriteLine($" --> Seed {seed} maps to {mergedMap.Map(seed)}"));
-        }
-
         AlmanacMap seedToLocationMap = almanacMaps
                 .Aggregate((am1, am2) => am1.MergeWith(am2));
-        long minLocation = seeds.Select(seed => seedToLocationMap.Map(seed))
-                .Min();
-        Console.WriteLine($"Lowest location number: {minLocation}");
-    }
 
-    private static IEnumerable<long> LongRange(long start, long count) {
-        for (long i = 0; i < count; i++) {
-            yield return start + i;
+        if (part == 1) {
+            long minLocation = Regex.Matches(inputLines[0], @"(\d+)")
+                    .Select(seedMatch => long.Parse(seedMatch.Value))
+                    .Select(seed => seedToLocationMap.Map(seed))
+                    .Min();
+            Console.WriteLine($"Lowest location number: {minLocation}");
+        } else {
+            throw new NotImplementedException();
         }
     }
 }
 
 public readonly record struct AlmanacMapEntry(long destinationRangeStart, long sourceRangeStart, long rangeLength) {
-    public static AlmanacMapEntry AlmanacMapEntryFrom(long start, long rangeLength, long mappingValue) {
-        return new AlmanacMapEntry(
-                destinationRangeStart: start + mappingValue,
-                sourceRangeStart: start,
-                rangeLength: rangeLength);
+    public static bool TryParseAlmanacMapEntry(string inputLine, out AlmanacMapEntry result) {
+        MatchCollection matches = Regex.Matches(inputLine, @"(\d+)");
+        if (matches.Any()) {
+            result = new AlmanacMapEntry(
+                    long.Parse(matches[0].Value),
+                    long.Parse(matches[1].Value),
+                    long.Parse(matches[2].Value));
+            return true;
+        }
+        result = new AlmanacMapEntry();
+        return false;
     }
 }
 
 public readonly record struct AlmanacMap {
     private readonly AlmanacRanges _ranges;
-    public string Name { get; }
+    private string Name { get; }
 
     public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries)
             : this(name, DeriveAlmanacRangesFromMapEntries(entries)) { }
 
     private AlmanacMap(string name, AlmanacRanges ranges) {
         Name = name;
-        _ranges = ReduceIdenticalRanges(name, ranges);
+        _ranges = ReduceIdenticalRanges(ranges);
     }
 
     public long Map(long input) {
@@ -109,30 +89,20 @@ public readonly record struct AlmanacMap {
 
             long rangeBStart = rangeAStart + currTransform;
             long rangeBEnd = rangeAEnd + currTransform;
-            List<AlmanacRangeEntry> foo;
-            if (other._ranges.Contains(rangeBStart)) {
-                foo = other._ranges.RangeFromTo(rangeBStart, rangeBEnd + 1).ToList();
-            } else {
-                foo = new List<AlmanacRangeEntry> { other._ranges.Predecessor(rangeBStart) }
-                        .Concat(other._ranges.RangeFromTo(rangeBStart, rangeBEnd + 1)).ToList();
-            }
-            foreach (AlmanacRangeEntry entry in foo) {
-                long newKey = entry.Key != long.MinValue && rangeAStart < entry.Key - currTransform
-                        ? entry.Key - currTransform
-                        : rangeAStart;
-                newRanges[newKey] = currTransform + entry.Value;
-            }
+            (other._ranges.Contains(rangeBStart)
+                            ? new List<AlmanacRangeEntry>()
+                            : new List<AlmanacRangeEntry> { other._ranges.Predecessor(rangeBStart) })
+                    .Concat(other._ranges.RangeFromTo(rangeBStart, rangeBEnd + 1))
+                    .ForEach(entry => {
+                        long newKey = entry.Key != long.MinValue && rangeAStart < entry.Key - currTransform
+                                ? entry.Key - currTransform
+                                : rangeAStart;
+                        newRanges[newKey] = currTransform + entry.Value;
+                    });
         }
         return new AlmanacMap(
                 name ?? $"{Name} -> {other.Name}",
                 newRanges);
-    }
-
-    public void PrintToConsole() {
-        Console.WriteLine($"Almanac Map '{Name}'");
-        foreach (AlmanacRangeEntry keyValuePair in _ranges) {
-            Console.WriteLine($"{keyValuePair.Key} -> {keyValuePair.Value}");
-        }
     }
 
     private static AlmanacRanges DeriveAlmanacRangesFromMapEntries(ICollection<AlmanacMapEntry> entries) {
@@ -150,13 +120,11 @@ public readonly record struct AlmanacMap {
         return ranges;
     }
 
-    private static AlmanacRanges ReduceIdenticalRanges(string name, AlmanacRanges range) {
+    private static AlmanacRanges ReduceIdenticalRanges(AlmanacRanges range) {
         var rangeReduced = new AlmanacRanges();
         AlmanacRangeEntry? last = null;
         foreach (AlmanacRangeEntry entry in range) {
             if (last != null && last.Value.Value == entry.Value) {
-                Console.WriteLine(
-                        $"{name} has same value ({entry.Value}) at both {last.Value.Key} and {entry.Key}, combining.");
                 continue;
             }
             rangeReduced[entry.Key] = entry.Value;
