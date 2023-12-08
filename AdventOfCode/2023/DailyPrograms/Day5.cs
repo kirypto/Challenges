@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Repos;
 using static kirypto.AdventOfCode._2023.DailyPrograms.AlmanacMapEntry;
-using AlmanacRange = C5.TreeDictionary<long, long>;
+using AlmanacRanges = C5.TreeDictionary<long, long>;
 using AlmanacRangeEntry = C5.KeyValuePair<long, long>;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
@@ -52,6 +52,8 @@ public class Day5 : IDailyProgram {
         }
         almanacMaps.Add(new AlmanacMap(mapName, currentEntryList));
         almanacMaps.ForEach(am => am.PrintToConsole());
+
+        almanacMaps[0].MergeWith(almanacMaps[1]);
         throw new NotImplementedException();
 
         long minLocation = seeds
@@ -92,12 +94,12 @@ public readonly record struct AlmanacMapEntry(long destinationRangeStart, long s
 }
 
 public readonly record struct AlmanacMap {
-    private readonly AlmanacRange _ranges;
+    private readonly AlmanacRanges _ranges;
     private string Name { get; }
 
     public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries) {
         Name = name;
-        var ranges = new AlmanacRange { [long.MinValue] = 0 };
+        var ranges = new AlmanacRanges { [long.MinValue] = 0 };
         foreach ((long destinationRangeStart, long sourceRangeStart, long rangeLength) in entries
                          .OrderBy(e => e.sourceRangeStart)) {
             AlmanacRangeEntry newAfter = ranges.WeakPredecessor(sourceRangeStart + rangeLength);
@@ -151,8 +153,8 @@ public readonly record struct AlmanacMap {
         }
     }
 
-    private static AlmanacRange ReduceIdenticalRanges(string name, AlmanacRange range) {
-        var rangeReduced = new AlmanacRange();
+    private static AlmanacRanges ReduceIdenticalRanges(string name, AlmanacRanges range) {
+        var rangeReduced = new AlmanacRanges();
         AlmanacRangeEntry? last = null;
         foreach (AlmanacRangeEntry entry in range) {
             if (last != null && last.Value.Value == entry.Value) {
