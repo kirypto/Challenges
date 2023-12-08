@@ -59,7 +59,12 @@ public class Day5 : IDailyProgram {
             Console.WriteLine($"With Almanac Map {mergedMap.Name}");
             seeds.ForEach(seed => Console.WriteLine($" --> Seed {seed} maps to {mergedMap.Map(seed)}"));
         }
-        throw new NotImplementedException();
+
+        AlmanacMap seedToLocationMap = almanacMaps
+                .Aggregate((am1, am2) => am1.MergeWith(am2));
+        long minLocation = seeds.Select(seed => seedToLocationMap.Map(seed))
+                .Min();
+        Console.WriteLine($"Lowest location number: {minLocation}");
     }
 
     private static IEnumerable<long> LongRange(long start, long count) {
