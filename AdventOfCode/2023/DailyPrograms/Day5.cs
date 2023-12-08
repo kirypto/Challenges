@@ -51,29 +51,14 @@ public class Day5 : IDailyProgram {
             }
         }
         almanacMaps.Add(new AlmanacMap(mapName, currentEntryList));
-        almanacMaps.ForEach(am => am.PrintToConsole());
 
-        almanacMaps[0].MergeWith(almanacMaps[1]);
-        throw new NotImplementedException();
-
-        long minLocation = seeds
-                .Select(seed => almanacMaps.Aggregate(seed, (curr, map) => map.Map(curr)))
-                .Min();
-        Console.WriteLine($"Min seed location: {minLocation}");
-
-        Console.WriteLine("\n----\n");
-        var mergedMap = almanacMaps.Take(2).Aggregate((am1, am2) => am1.MergeWith(am2));
-        mergedMap.PrintToConsole();
-
-        seeds.ForEach(seed => Console.WriteLine($"Seed {seed} -> {mergedMap.Map(seed)}"));
-
-        Console.WriteLine("\n----\n");
-        almanacMaps[2].PrintToConsole();
-
-        Console.WriteLine("\n----\n");
-        mergedMap.MergeWith(almanacMaps[2]).PrintToConsole();
-
-
+        for (var count = 2; count <= almanacMaps.Count; count++) {
+            AlmanacMap mergedMap = Enumerable.Range(0, count)
+                    .Select(index => almanacMaps[index])
+                    .Aggregate((am1, am2) => am1.MergeWith(am2));
+            Console.WriteLine($"With Almanac Map {mergedMap.Name}");
+            seeds.ForEach(seed => Console.WriteLine($" --> Seed {seed} maps to {mergedMap.Map(seed)}"));
+        }
         throw new NotImplementedException();
     }
 
@@ -95,7 +80,7 @@ public readonly record struct AlmanacMapEntry(long destinationRangeStart, long s
 
 public readonly record struct AlmanacMap {
     private readonly AlmanacRanges _ranges;
-    private string Name { get; }
+    public string Name { get; }
 
     public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries)
             : this(name, DeriveAlmanacRangesFromMapEntries(entries)) { }
@@ -110,31 +95,32 @@ public readonly record struct AlmanacMap {
     }
 
     public AlmanacMap MergeWith(AlmanacMap other, string? name = null) {
-        var newMapEntries = new List<AlmanacMapEntry>();
-        var currKey = long.MinValue;
-        while (true) {
-            AlmanacRangeEntry nextA = _ranges.TrySuccessor(currKey, out AlmanacRangeEntry nA)
-                    ? nA
-                    : new AlmanacRangeEntry(long.MaxValue, 0);
-            AlmanacRangeEntry nextB = other._ranges.TrySuccessor(currKey, out AlmanacRangeEntry nB)
-                    ? nB
-                    : new AlmanacRangeEntry(long.MaxValue, 0);
+        var newRanges = new AlmanacRanges();
+        foreach (long rangeAStart in _ranges.Keys) {
+            long currTransform = _ranges[rangeAStart];
+            long rangeAEnd = _ranges.TrySuccessor(rangeAStart, out AlmanacRangeEntry successor)
+                    ? successor.Key - 1
+                    : long.MaxValue;
 
-            long nextKey = Math.Min(nextA.Key, nextB.Key);
-
-            if (nextKey == long.MaxValue) {
-                break;
+            long rangeBStart = rangeAStart + currTransform;
+            long rangeBEnd = rangeAEnd + currTransform;
+            List<AlmanacRangeEntry> foo;
+            if (other._ranges.Contains(rangeBStart)) {
+                foo = other._ranges.RangeFromTo(rangeBStart, rangeBEnd + 1).ToList();
+            } else {
+                foo = new List<AlmanacRangeEntry> { other._ranges.Predecessor(rangeBStart) }
+                        .Concat(other._ranges.RangeFromTo(rangeBStart, rangeBEnd + 1)).ToList();
             }
-
-            newMapEntries.Add(AlmanacMapEntryFrom(
-                    start: currKey,
-                    nextKey - currKey,
-                    _ranges.WeakPredecessor(currKey).Value + other._ranges.WeakPredecessor(currKey).Value));
-            currKey = nextKey;
+            foreach (AlmanacRangeEntry entry in foo) {
+                long newKey = entry.Key != long.MinValue && rangeAStart < entry.Key - currTransform
+                        ? entry.Key - currTransform
+                        : rangeAStart;
+                newRanges[newKey] = currTransform + entry.Value;
+            }
         }
         return new AlmanacMap(
                 name ?? $"{Name} -> {other.Name}",
-                newMapEntries);
+                newRanges);
     }
 
     public void PrintToConsole() {
