@@ -13,13 +13,12 @@ public class Day7 : IDailyProgram {
                 .Select(inputLine => inputLine.Split(" "))
                 .Select(cardsAndBid => new Hand(cardsAndBid[0], long.Parse(cardsAndBid[1])))
                 .Order()
-                .Tap(hand => Console.Write($"--> {hand.Cards}: {hand} --> "))
-                .Select((hand, valueRank) => hand.Bid * valueRank)
-                .Tap(Console.WriteLine)
+                // .Tap(hand => Console.Write($"--> {hand.Cards}: "))
+                .Select((hand, valueRank) => hand.Bid * (valueRank + 1))
+                // .Tap(Console.WriteLine)
                 .Aggregate((w1, w2) => w1 + w2);
 
         Console.WriteLine($"Total Winnings: {totalWinnings}");
-        throw new NotImplementedException();
     }
 }
 
@@ -39,7 +38,7 @@ public readonly record struct HandRank(
         bool TwoPair,
         bool OnePair,
         bool HighCard,
-        long Order) : IComparable<HandRank> {
+        double Order) : IComparable<HandRank> {
     public int CompareTo(HandRank other) {
         return new[] {
                 FiveOfAKind.CompareTo(other.FiveOfAKind),
@@ -76,7 +75,10 @@ public static class CardHelpers {
                 DeriveOrder(cards));
     }
 
-    private static long DeriveOrder(string cards) {
-        return -1;
+    private static double DeriveOrder(string handCards) {
+        return handCards
+                .Select(card => SerializedCardFaces.IndexOf(card))
+                .Select((cardValue, cardPositionInHand) => cardValue * Math.Pow(13, 4 - cardPositionInHand))
+                .Sum();
     }
 }
