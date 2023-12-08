@@ -51,6 +51,8 @@ public class Day5 : IDailyProgram {
             }
         }
         almanacMaps.Add(new AlmanacMap(mapName, currentEntryList));
+        almanacMaps.ForEach(am => am.PrintToConsole());
+        throw new NotImplementedException();
 
         long minLocation = seeds
                 .Select(seed => almanacMaps.Aggregate(seed, (curr, map) => map.Map(curr)))
@@ -70,9 +72,7 @@ public class Day5 : IDailyProgram {
         mergedMap.MergeWith(almanacMaps[2]).PrintToConsole();
 
 
-
         throw new NotImplementedException();
-
     }
 
     private static IEnumerable<long> LongRange(long start, long count) {
@@ -97,9 +97,7 @@ public readonly record struct AlmanacMap {
 
     public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries) {
         Name = name;
-        var ranges = new AlmanacRange {
-                [long.MinValue] = 0,
-        };
+        var ranges = new AlmanacRange { [long.MinValue] = 0 };
         foreach ((long destinationRangeStart, long sourceRangeStart, long rangeLength) in entries
                          .OrderBy(e => e.sourceRangeStart)) {
             AlmanacRangeEntry newAfter = ranges.WeakPredecessor(sourceRangeStart + rangeLength);
@@ -110,7 +108,8 @@ public readonly record struct AlmanacMap {
             ranges[sourceRangeStart + rangeLength] = newAfter.Value;
             ranges[sourceRangeStart] = destinationRangeStart - sourceRangeStart;
         }
-        _ranges = ranges;
+
+        _ranges = ReduceIdenticalRanges(name, ranges);
     }
 
     public long Map(long input) {
@@ -150,5 +149,20 @@ public readonly record struct AlmanacMap {
         foreach (AlmanacRangeEntry keyValuePair in _ranges) {
             Console.WriteLine($"{keyValuePair.Key} -> {keyValuePair.Value}");
         }
+    }
+
+    private static AlmanacRange ReduceIdenticalRanges(string name, AlmanacRange range) {
+        var rangeReduced = new AlmanacRange();
+        AlmanacRangeEntry? last = null;
+        foreach (AlmanacRangeEntry entry in range) {
+            if (last != null && last.Value.Value == entry.Value) {
+                Console.WriteLine(
+                        $"{name} has same value ({entry.Value}) at both {last.Value.Key} and {entry.Key}, combining.");
+                continue;
+            }
+            rangeReduced[entry.Key] = entry.Value;
+            last = entry;
+        }
+        return rangeReduced;
     }
 }
