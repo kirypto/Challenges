@@ -97,20 +97,11 @@ public readonly record struct AlmanacMap {
     private readonly AlmanacRanges _ranges;
     private string Name { get; }
 
-    public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries) {
-        Name = name;
-        var ranges = new AlmanacRanges { [long.MinValue] = 0 };
-        foreach ((long destinationRangeStart, long sourceRangeStart, long rangeLength) in entries
-                         .OrderBy(e => e.sourceRangeStart)) {
-            AlmanacRangeEntry newAfter = ranges.WeakPredecessor(sourceRangeStart + rangeLength);
-            AlmanacRangeEntry existingBefore = ranges.WeakPredecessor(sourceRangeStart);
-            if (newAfter != existingBefore) {
-                throw new NotImplementedException("Clean slice insert doesn't work...");
-            }
-            ranges[sourceRangeStart + rangeLength] = newAfter.Value;
-            ranges[sourceRangeStart] = destinationRangeStart - sourceRangeStart;
-        }
+    public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries)
+            : this(name, DeriveAlmanacRangesFromMapEntries(entries)) { }
 
+    private AlmanacMap(string name, AlmanacRanges ranges) {
+        Name = name;
         _ranges = ReduceIdenticalRanges(name, ranges);
     }
 
@@ -151,6 +142,21 @@ public readonly record struct AlmanacMap {
         foreach (AlmanacRangeEntry keyValuePair in _ranges) {
             Console.WriteLine($"{keyValuePair.Key} -> {keyValuePair.Value}");
         }
+    }
+
+    private static AlmanacRanges DeriveAlmanacRangesFromMapEntries(ICollection<AlmanacMapEntry> entries) {
+        var ranges = new AlmanacRanges { [long.MinValue] = 0 };
+        foreach ((long destinationRangeStart, long sourceRangeStart, long rangeLength) in entries
+                         .OrderBy(e => e.sourceRangeStart)) {
+            AlmanacRangeEntry newAfter = ranges.WeakPredecessor(sourceRangeStart + rangeLength);
+            AlmanacRangeEntry existingBefore = ranges.WeakPredecessor(sourceRangeStart);
+            if (newAfter != existingBefore) {
+                throw new NotImplementedException("Clean slice insert doesn't work...");
+            }
+            ranges[sourceRangeStart + rangeLength] = newAfter.Value;
+            ranges[sourceRangeStart] = destinationRangeStart - sourceRangeStart;
+        }
+        return ranges;
     }
 
     private static AlmanacRanges ReduceIdenticalRanges(string name, AlmanacRanges range) {
