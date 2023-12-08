@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using kirypto.AdventOfCode._2023.DailyPrograms;
 using kirypto.AdventOfCode._2023.Repos;
-
-Console.WriteLine("Hello, World!");
 
 IInputRepository inputRepository = new FileInputRepository();
 
@@ -28,7 +27,14 @@ if (!int.TryParse(Console.ReadLine(), out int day)) {
 Console.Write("Part: ");
 int part = int.Parse(Console.ReadLine() ?? "");
 
-Console.WriteLine("\n+==============\n| Sample\n+==============");
+Console.WriteLine("\n+==============\n Sample \n+==============");
+Stopwatch stopwatch = Stopwatch.StartNew();
 dayFunctions[day].Run(inputRepository, $"day{day}-part{part}", part);
-Console.WriteLine("\n+==============\n| Real\n+==============");
+stopwatch.Stop();
+Console.WriteLine($"[[Run time: {stopwatch.ElapsedMilliseconds}ms]]");
+
+Console.WriteLine("\n+==============\n  Real  \n+==============");
+stopwatch.Restart();
 dayFunctions[day].Run(inputRepository, $"day{day}-real", part);
+stopwatch.Stop();
+Console.WriteLine($"[[Run time: {stopwatch.ElapsedMilliseconds}ms]]");
