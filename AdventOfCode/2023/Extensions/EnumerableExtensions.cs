@@ -17,4 +17,18 @@ public static class EnumerableExtensions {
             return t;
         });
     }
+
+    public static IEnumerable<T> InfinitelyRepeat<T>(this IEnumerable<T> enumerable) {
+        IList<T> viewed = new List<T>();
+        foreach (T t in enumerable) {
+            viewed.Add(t);
+            yield return t;
+        }
+        while (true) {
+            foreach (T t in viewed) {
+                yield return t;
+            }
+        }
+        // ReSharper disable once IteratorNeverReturns
+    }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Repos;
 using Graph = System.Collections.Generic.Dictionary<string, kirypto.AdventOfCode._2023.DailyPrograms.GraphNode>;
 
@@ -18,10 +19,8 @@ public partial class Day8 : IDailyProgram {
                 .Select(nodeMatches => new GraphNode(nodeMatches[0].Value, nodeMatches[1].Value, nodeMatches[2].Value))
                 .ToDictionary(node => node.Name);
 
-        string resultNode = graphNodes.FollowPath("AAA", path);
-        Console.WriteLine($"Started at AAA, followed {path}, ended at {resultNode}");
-
-        throw new NotImplementedException();
+        int steps = graphNodes.FindAlongPath("AAA", "ZZZ", path);
+        Console.WriteLine($"Started at AAA, followed {path}, found ZZZ after {steps}");
     }
 
     [GeneratedRegex("([A-Z])+")]
@@ -39,11 +38,27 @@ public static class GraphExtensions {
         return graph[fromNode].Right;
     }
 
+    private static string Move(this Graph graph, string fromNode, char moveDirection) {
+        return moveDirection switch {
+                'L' => graph.MoveLeft(fromNode),
+                'R' => graph.MoveRight(fromNode),
+                _ => throw new NotImplementedException($"Got invalid movement {moveDirection}"),
+        };
+    }
+
     public static string FollowPath(this Graph graph, string fromNode, string path) {
-        return path.Aggregate(fromNode, (currNode, moveDirection) => moveDirection switch {
-                'L' => graph.MoveLeft(currNode),
-                'R' => graph.MoveRight(currNode),
-                _ => throw new NotImplementedException(),
-        });
+        return path.Aggregate(fromNode, graph.Move);
+    }
+
+    public static int FindAlongPath(this Graph graph, string fromNode, string targetNode, string path) {
+        var steps = 0;
+        string currentNode = fromNode;
+        using IEnumerator<char> pathMovements = path.InfinitelyRepeat().GetEnumerator();
+        while (currentNode != targetNode) {
+            pathMovements.MoveNext();
+            currentNode = graph.Move(currentNode, pathMovements.Current);
+            steps++;
+        }
+        return steps;
     }
 }
