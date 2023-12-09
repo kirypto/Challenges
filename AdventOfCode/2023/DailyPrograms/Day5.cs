@@ -53,7 +53,13 @@ public class Day5 : IDailyProgram {
                     .Select(obj => new {obj.Start, EndExclusive = obj.Start + obj.Length})
                     .ForEach(obj => seedRanges.SpliceIn(obj.Start, obj.EndExclusive, true));
 
-            throw new NotImplementedException();
+            var lowestSeedLocationPair = seedToLocationMap.Keys
+                    .Select(seed => new {Seed = seed, Location = seedToLocationMap.Map(seed)})
+                    .Where(obj => seedRanges.WeakPredecessor(obj.Seed).Value)
+                    .OrderBy(obj => obj.Location)
+                    .First();
+            Console.WriteLine($"The lowest location of all seed ranges is {lowestSeedLocationPair.Location} " +
+                    $"(seed {lowestSeedLocationPair.Seed})");
         }
     }
 }
@@ -76,6 +82,7 @@ public readonly record struct AlmanacMapEntry(long destinationRangeStart, long s
 public readonly record struct AlmanacMap {
     private readonly AlmanacRanges _ranges;
     private string Name { get; }
+    public IList<long> Keys => _ranges.Keys.ToList();
 
     public AlmanacMap(string name, ICollection<AlmanacMapEntry> entries)
             : this(name, DeriveAlmanacRangesFromMapEntries(entries)) { }
