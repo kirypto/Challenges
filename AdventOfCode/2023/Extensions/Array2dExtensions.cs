@@ -16,10 +16,10 @@ public static class Array2dExtensions {
         return result;
     }
 
-    public static void PrintToConsole<T>(this T[,] array) {
+    public static void PrintToConsole<T>(this T[,] array, int cellWidth = 2) {
         for (var i = 0; i < array.GetLength(0); i++) {
             for (var j = 0; j < array.GetLength(1); j++) {
-                Console.Write($"{array[i, j]} ");
+                Console.Write($"{array[i, j]}".PadRight(cellWidth));
             }
             Console.WriteLine();
         }
