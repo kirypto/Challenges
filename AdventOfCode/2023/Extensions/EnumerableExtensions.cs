@@ -18,7 +18,7 @@ public static class EnumerableExtensions {
         });
     }
 
-    public static IEnumerable<T> InfinitelyRepeat<T>(this IEnumerable<T> enumerable) {
+    public static IEnumerator<T> InfinitelyRepeat<T>(this IEnumerable<T> enumerable) {
         IList<T> viewed = new List<T>();
         foreach (T t in enumerable) {
             viewed.Add(t);

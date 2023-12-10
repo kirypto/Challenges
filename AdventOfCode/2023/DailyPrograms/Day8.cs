@@ -19,11 +19,19 @@ public partial class Day8 : IDailyProgram {
                 .Select(nodeMatches => new GraphNode(nodeMatches[0].Value, nodeMatches[1].Value, nodeMatches[2].Value))
                 .ToDictionary(node => node.Name);
 
-        int steps = graphNodes.FindAlongPath("AAA", "ZZZ", path);
-        Console.WriteLine($"Started at AAA, followed {path}, found ZZZ after {steps}");
+        if (part == 1) {
+            int steps = graphNodes.FindAlongPath("AAA", "ZZZ", path);
+            Console.WriteLine($"Started at AAA, followed {path}, found ZZZ after {steps}");
+        } else {
+            HashSet<string> startingNodes = graphNodes.Keys
+                    .Where(node => node.EndsWith("A"))
+                    .ToHashSet();
+            int steps = graphNodes.FindAlongPathInParallel(startingNodes, path, node => node.EndsWith("Z"));
+            Console.WriteLine($"Found that all nodes end with Z after {steps} steps.");
+        }
     }
 
-    [GeneratedRegex("([A-Z])+")]
+    [GeneratedRegex("([0-9A-Z])+")]
     private static partial Regex NodeMatcher();
 }
 
@@ -53,10 +61,29 @@ public static class GraphExtensions {
     public static int FindAlongPath(this Graph graph, string fromNode, string targetNode, string path) {
         var steps = 0;
         string currentNode = fromNode;
-        using IEnumerator<char> pathMovements = path.InfinitelyRepeat().GetEnumerator();
+        using IEnumerator<char> pathMovements = path.InfinitelyRepeat();
         while (currentNode != targetNode) {
             pathMovements.MoveNext();
             currentNode = graph.Move(currentNode, pathMovements.Current);
+            steps++;
+        }
+        return steps;
+    }
+
+    public static int FindAlongPathInParallel(
+            this Graph graph, ISet<string> fromNodes, string path, Func<string, bool> isGoal
+    ) {
+        var steps = 0;
+        ISet<string> currentNodes = fromNodes;
+        using IEnumerator<char> pathMovements = path.InfinitelyRepeat();
+        while (!currentNodes.All(isGoal)) {
+            // if (steps % 100 == 0) {
+                // Console.Write(".");
+            // }
+            pathMovements.MoveNext();
+            currentNodes = currentNodes
+                    .Select(node => graph.Move(node, pathMovements.Current))
+                    .ToHashSet();
             steps++;
         }
         return steps;
