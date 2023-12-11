@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Repos;
 using static kirypto.AdventOfCode._2023.DailyPrograms.OasisHistoryRecord;
 
@@ -13,13 +12,13 @@ public class Day9 : IDailyProgram {
         long sumOfPredictions = inputRepository.FetchLines(inputRef)
                 .Select(ParseOasisHistoryRecord)
                 .Select(PredictNext)
-                // .Tap(prediction => Console.WriteLine($"Predicted {prediction}"))
+                .Select(obj => part == 1 ? obj.next : obj.previous)
                 .Sum();
 
         Console.WriteLine($"Sum of predictions: {sumOfPredictions}");
     }
 
-    private static long PredictNext(OasisHistoryRecord historyRecord) {
+    private static (long next, long previous) PredictNext(OasisHistoryRecord historyRecord) {
         int observationsCount = historyRecord.Observations.Count;
         var predictMatrix = new long[observationsCount + 1, observationsCount + 1];
         for (var col = 0; col < observationsCount; col++) {
@@ -35,7 +34,12 @@ public class Day9 : IDailyProgram {
             lastVal += predictMatrix[row, col - 1];
             predictMatrix[row, col] = lastVal;
         }
-        return predictMatrix[0, observationsCount];
+        long next = predictMatrix[0, observationsCount];
+        long previous = 0;
+        for (int row = observationsCount - 1; row >= 0; row--) {
+            previous = predictMatrix[row, 0] - previous;
+        }
+        return (next, previous);
     }
 }
 
