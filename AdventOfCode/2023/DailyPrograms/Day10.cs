@@ -25,26 +25,24 @@ public class Day10 : IDailyProgram {
                 }
             }
         }
-        pipeMap.PrintToConsole();
-        Console.WriteLine($"Starting position of animal: {startRow},{startCol}");
-
 
         var visited = new bool[rowCount, colCount];
         var distanceFromStart = new int[rowCount, colCount];
         var explorationQueue = new ExplorationQueue { new(new Position(startRow, startCol), 0) };
+        int maxDistanceOnLoop = -1;
         while (explorationQueue.Any()) {
             ((int row, int col), int stepsSoFar) = explorationQueue.DeleteMin();
             if (visited[row, col]) {
                 continue;
             }
+            maxDistanceOnLoop = Math.Max(maxDistanceOnLoop, stepsSoFar);
             visited[row, col] = true;
             distanceFromStart[row, col] = stepsSoFar;
             pipeMap.GetSuccessors(new Position(row, col))
+                    .Where(position => !visited[position.Row, position.Col])
                     .ForEach(successor => explorationQueue.Add(new TraveledPosition(successor, stepsSoFar + 1)));
         }
-        visited.PrintToConsole(6);
-        distanceFromStart.PrintToConsole();
-        throw new NotImplementedException();
+        Console.WriteLine($"Max distance on loop from creature is {maxDistanceOnLoop}");
     }
 }
 
@@ -77,3 +75,4 @@ public static class PipeMapExtensions {
         return successors;
     }
 }
+// #1 6797 -> too low
