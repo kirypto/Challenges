@@ -35,7 +35,12 @@ public class Day3 : IDailyProgram {
     }
 }
 
-public readonly record struct Position(int Row, int Col);
+public readonly record struct Position(int Row, int Col) : IComparable<Position> {
+    public int CompareTo(Position other) {
+        int rowComparison = Row.CompareTo(other.Row);
+        return rowComparison != 0 ? rowComparison : Col.CompareTo(other.Col);
+    }
+}
 
 public readonly record struct PartNumber(int Number, Position Position) {
     public int Length => Number.ToString().Length;
