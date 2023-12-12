@@ -24,16 +24,20 @@ public class Day11 : IDailyProgram {
                 }
             }
         }
+        // Not sure why exactly the the request in "making it 1000000 times longer" required 1000000 - 1. For the
+        // samples, 9 (10 - 1) matched the "if 10 times longer" value, and same for 99 (100 - 1) for "if 100 times
+        // longer".
+        int shiftPerBlankRow = part == 1 ? 1 : 1000000 - 1;
         IList<int> rowShift = Enumerable.Range(0, rowCount)
-                .Select(index => rowsWithStars.Where((b, i) => !b && i < index).Count())
+                .Select(index => rowsWithStars.Where((b, i) => !b && i < index).Count() * shiftPerBlankRow)
                 .ToList();
         IList<int> colShift = Enumerable.Range(0, colCount)
-                .Select(index => colsWithStars.Where((b, i) => !b && i < index).Count())
+                .Select(index => colsWithStars.Where((b, i) => !b && i < index).Count() * shiftPerBlankRow)
                 .ToList();
         // Console.WriteLine(string.Join(",", rowShift));
         // Console.WriteLine(string.Join(",", colShift));
         ISet<Position> previousStars = new HashSet<Position>();
-        int sumOfAllPairDistances = stars
+        long sumOfAllPairDistances = stars
                 .Order()
                 // .Tap(star => Console.Write($"{star} --> "))
                 .Select(star => new Position(star.Row + rowShift[star.Row], star.Col + colShift[star.Col]))
@@ -41,7 +45,7 @@ public class Day11 : IDailyProgram {
                 .Select(star => new {
                         Star = star,
                         SumOfDistancesSoFar = previousStars
-                                .Aggregate(0, (curr, other) => curr + star.ManhattenDistanceTo(other)),
+                                .Aggregate(0L, (curr, other) => curr + star.ManhattenDistanceTo(other)),
                 })
                 .Tap(obj => previousStars.Add(obj.Star))
                 .Select(obj => obj.SumOfDistancesSoFar)
