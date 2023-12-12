@@ -21,6 +21,7 @@ IDictionary<int, IDailyProgram> dayFunctions = new Dictionary<int, IDailyProgram
         { 9, new Day9() },
         { 10, new Day10() },
         { 11, new Day11() },
+        { 12, new Day12() },
 };
 
 Console.Write("Day: ");
