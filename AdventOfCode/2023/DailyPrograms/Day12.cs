@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode._2023.Repos;
+using static System.Linq.Enumerable;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
@@ -17,20 +18,25 @@ public class Day12 : IDailyProgram {
     private static int statusPartIndex = -1;
     private static int statusConditionIndex = -1;
     private static string statusDescription = "";
+    private static DateTime lastPrint = DateTime.Now;
 
     public void Run(IInputRepository inputRepository, string inputRef, int part) {
         List<Part> parts = inputRepository.FetchLines(inputRef)
                 .Select(line => line.Split(" "))
-                .Select(splitLine => new Part(splitLine[0], ConstructConditionMatcher(splitLine[1])))
+                .Select(splitLine => new Part(
+                        string.Join("?", Range(0, part == 1 ? 1 : 5).Select(_ => splitLine[0])),
+                        ConstructConditionMatcher(string.Join(",", Range(0, part == 1 ? 1 : 5)
+                                .Select(_ => splitLine[1])))
+                ))
                 .ToList();
         totalPartCount = parts.Count;
         int sum = parts.Select((p, i) => {
-                    UpdateStatus(partIndex:i);
+                    UpdateStatus(partIndex: i);
                     return p.PossibleConditionCount;
                 })
                 .Sum();
         UpdateStatus(
-                partIndex:parts.Count, conditionIndex:totalConditionLength,
+                partIndex: parts.Count, conditionIndex: totalConditionLength,
                 description: "                                                                                       ");
         Console.WriteLine();
         Console.WriteLine($"Sum: {sum}");
@@ -49,9 +55,12 @@ public class Day12 : IDailyProgram {
         statusPartIndex = partIndex ?? statusPartIndex;
         statusConditionIndex = conditionIndex ?? statusConditionIndex;
         statusDescription = description ?? statusDescription;
-        Console.Write($"\rPart {statusPartIndex} ({100f * statusPartIndex / totalPartCount:F0}%), " +
-                $"Condition position ({100f * statusConditionIndex / totalConditionLength:F0}%) " +
-                $"{statusDescription}");
+        if (DateTime.Now - lastPrint > TimeSpan.FromSeconds(1)) {
+            Console.Write($"\rPart {statusPartIndex} ({100f * statusPartIndex / totalPartCount:F0}%), " +
+                    $"Condition position ({100f * statusConditionIndex / totalConditionLength:F0}%) " +
+                    $"{statusDescription}");
+            lastPrint = DateTime.Now;
+        }
     }
 }
 
@@ -68,7 +77,7 @@ public readonly record struct Part(string PartialCondition, Regex ConditionMatch
                     .SelectMany(condition => SubstituteUnknown(condition, i))
                     .Where(condition => conditionMatcher.Match(condition).Success)
                     .ToHashSet();
-            Day12.UpdateStatus(conditionIndex:1);
+            Day12.UpdateStatus(conditionIndex: i);
             // Console.Write($"{possibleConditions.Count}, ");
         }
         // Console.WriteLine($"[final] {possibleConditions.Count}: ");
