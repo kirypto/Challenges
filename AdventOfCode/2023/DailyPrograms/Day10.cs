@@ -25,6 +25,12 @@ public class Day10 : IDailyProgram {
                 }
             }
         }
+        PipeMapExtensions.InitializeSDirections(
+                startRow > 0 && "|7F".Contains(pipeMap[startRow - 1, startCol]),
+                startRow < rowCount - 1 && "|JL".Contains(pipeMap[startRow + 1, startCol]),
+                startCol > 0 && "-FL".Contains(pipeMap[startRow, startCol - 1]),
+                startCol < colCount && "-J7".Contains(pipeMap[startRow, startCol + 1])
+        );
 
         var visited = new bool[rowCount, colCount];
         var distanceFromStart = new int[rowCount, colCount];
@@ -53,10 +59,22 @@ public readonly record struct TraveledPosition(Position Position, int Steps) : I
 }
 
 public static class PipeMapExtensions {
-    private static readonly ISet<char> _leftChars = "S-J7".ToHashSet();
-    private static readonly ISet<char> _rightChars = "S-LF".ToHashSet();
-    private static readonly ISet<char> _upChars = "S|LJ".ToHashSet();
-    private static readonly ISet<char> _downChars = "S|7F".ToHashSet();
+    private static readonly ISet<char> _leftChars = "-J7".ToHashSet();
+    private static readonly ISet<char> _rightChars = "-LF".ToHashSet();
+    private static readonly ISet<char> _upChars = "|LJ".ToHashSet();
+    private static readonly ISet<char> _downChars = "|7F".ToHashSet();
+
+    public static void InitializeSDirections(bool up, bool down, bool left, bool right) {
+        _upChars.Remove('S');
+        _downChars.Remove('S');
+        _leftChars.Remove('S');
+        _rightChars.Remove('S');
+        if (up) _upChars.Add('S');
+        if (down) _downChars.Add('S');
+        if (left) _leftChars.Add('S');
+        if (right) _rightChars.Add('S');
+    }
+
     public static ISet<Position> GetSuccessors(this char[,] pipeMap, Position position) {
         char current = pipeMap[position.Row, position.Col];
         var successors = new HashSet<Position>();
