@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using static System.Linq.Enumerable;
 
 namespace kirypto.AdventOfCode._2023.Extensions;
 
@@ -26,8 +28,13 @@ public static class Array2dExtensions {
     }
 
     public static T[] GetRow<T>(this T[,] array, int row) {
-        return Enumerable.Range(0, array.GetLength(1))
+        return Range(0, array.GetLength(1))
                 .Select(col => array[row, col])
                 .ToArray();
+    }
+
+    public static IEnumerable<T> EnumerateCol<T>(this T[,] array, int col) {
+        return Range(0, array.GetLength(0))
+                .Select(row => array[row, col]);
     }
 }
