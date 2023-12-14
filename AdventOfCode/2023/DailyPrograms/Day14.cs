@@ -17,12 +17,21 @@ public class Day14 : IDailyProgram {
             int totalLoad = rockPlatform.DetermineNorthernLoad();
             Console.WriteLine($"Total load: {totalLoad}");
         } else {
+            rockPlatform.TiltCycle();
+            rockPlatform.PrintToConsole();
             throw new NotImplementedException();
         }
     }
 }
 
 public static class RockPlatformExtensions {
+    public static void TiltCycle(this char[,] rocPlatform) {
+        rocPlatform.TiltNorth();
+        rocPlatform.TiltWest();
+        rocPlatform.TiltSouth();
+        rocPlatform.TiltEast();
+    }
+
     public static void TiltNorth(this char[,] rockPlatform) {
         int rowCount = rockPlatform.GetLength(0);
         int colCount = rockPlatform.GetLength(1);
@@ -38,6 +47,69 @@ public static class RockPlatformExtensions {
                         break;
                     case '#':
                         lastRockIndex = row;
+                        break;
+                }
+            }
+        }
+    }
+
+    public static void TiltEast(this char[,] rockPlatform) {
+        int rowCount = rockPlatform.GetLength(0);
+        int colCount = rockPlatform.GetLength(1);
+        for (var row = 0; row < rowCount; row++) {
+            int lastRockIndex = colCount;
+            for (int col = colCount - 1; col >= 0; col--) {
+                char c = rockPlatform[row, col];
+                switch (c) {
+                    case 'O':
+                        lastRockIndex--;
+                        rockPlatform[row, col] = '.';
+                        rockPlatform[row, lastRockIndex] = 'O';
+                        break;
+                    case '#':
+                        lastRockIndex = col;
+                        break;
+                }
+            }
+        }
+    }
+
+    public static void TiltSouth(this char[,] rockPlatform) {
+        int rowCount = rockPlatform.GetLength(0);
+        int colCount = rockPlatform.GetLength(1);
+        for (var col = 0; col < colCount; col++) {
+            int lastRockIndex = rowCount;
+            for (int row = rowCount - 1; row >= 0; row--) {
+                char c = rockPlatform[row, col];
+                switch (c) {
+                    case 'O':
+                        lastRockIndex--;
+                        rockPlatform[row, col] = '.';
+                        rockPlatform[lastRockIndex, col] = 'O';
+                        break;
+                    case '#':
+                        lastRockIndex = row;
+                        break;
+                }
+            }
+        }
+    }
+
+    public static void TiltWest(this char[,] rockPlatform) {
+        int rowCount = rockPlatform.GetLength(0);
+        int colCount = rockPlatform.GetLength(1);
+        for (var row = 0; row < rowCount; row++) {
+            int lastRockIndex = -1;
+            for (var col = 0; col < colCount; col++) {
+                char c = rockPlatform[row, col];
+                switch (c) {
+                    case 'O':
+                        lastRockIndex++;
+                        rockPlatform[row, col] = '.';
+                        rockPlatform[row, lastRockIndex] = 'O';
+                        break;
+                    case '#':
+                        lastRockIndex = col;
                         break;
                 }
             }
