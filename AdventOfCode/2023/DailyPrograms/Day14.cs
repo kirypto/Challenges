@@ -17,9 +17,27 @@ public class Day14 : IDailyProgram {
             int totalLoad = rockPlatform.DetermineNorthernLoad();
             Console.WriteLine($"Total load: {totalLoad}");
         } else {
-            rockPlatform.TiltCycle();
+            Console.Write("Running Tilt Cycles... 0%");
+            const int totalCycles = 1000000000;
+            DateTime start = DateTime.Now;
+            for (var i = 0; i < totalCycles; i++) {
+                rockPlatform.TiltCycle();
+                if (i % 1000 == 0) {
+                    float percentDone = 100f * i / totalCycles;
+                    double tiltsPerSecond = i / (DateTime.Now - start).TotalSeconds;
+                    Console.Write($"                   \r" +
+                            $"Running, {percentDone:F5}% done @ {tiltsPerSecond:F2} tilts cycles per second...");
+                    if (i % 10_000_000 == 0) {
+                        Console.WriteLine($"\nBackup of cycle {i}:");
+                        rockPlatform.PrintToConsole();
+                    }
+                }
+            }
+            Console.WriteLine("\nFinal state:");
             rockPlatform.PrintToConsole();
-            throw new NotImplementedException();
+            Console.WriteLine($"Total northern load: {rockPlatform.DetermineNorthernLoad()}");
+
+            // throw new NotImplementedException();
         }
     }
 }
@@ -53,7 +71,7 @@ public static class RockPlatformExtensions {
         }
     }
 
-    public static void TiltEast(this char[,] rockPlatform) {
+    private static void TiltEast(this char[,] rockPlatform) {
         int rowCount = rockPlatform.GetLength(0);
         int colCount = rockPlatform.GetLength(1);
         for (var row = 0; row < rowCount; row++) {
@@ -74,7 +92,7 @@ public static class RockPlatformExtensions {
         }
     }
 
-    public static void TiltSouth(this char[,] rockPlatform) {
+    private static void TiltSouth(this char[,] rockPlatform) {
         int rowCount = rockPlatform.GetLength(0);
         int colCount = rockPlatform.GetLength(1);
         for (var col = 0; col < colCount; col++) {
@@ -95,7 +113,7 @@ public static class RockPlatformExtensions {
         }
     }
 
-    public static void TiltWest(this char[,] rockPlatform) {
+    private static void TiltWest(this char[,] rockPlatform) {
         int rowCount = rockPlatform.GetLength(0);
         int colCount = rockPlatform.GetLength(1);
         for (var row = 0; row < rowCount; row++) {
