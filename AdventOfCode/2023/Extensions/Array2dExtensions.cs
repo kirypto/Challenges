@@ -26,15 +26,17 @@ public static class Array2dExtensions {
             Console.WriteLine();
         }
     }
-
-    public static T[] GetRow<T>(this T[,] array, int row) {
+    public static IEnumerable<T> EnumerateRow<T>(this T[,] array, int row) {
         return Range(0, array.GetLength(1))
-                .Select(col => array[row, col])
-                .ToArray();
+                .Select(col => array[row, col]);
     }
 
     public static IEnumerable<T> EnumerateCol<T>(this T[,] array, int col) {
         return Range(0, array.GetLength(0))
                 .Select(row => array[row, col]);
+    }
+
+    public static T[] GetRow<T>(this T[,] array, int row) {
+        return array.EnumerateRow(row).ToArray();
     }
 }
