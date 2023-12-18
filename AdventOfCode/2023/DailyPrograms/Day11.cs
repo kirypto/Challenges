@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode._2023.Extensions;
+using kirypto.AdventOfCode._2023.Models;
 using kirypto.AdventOfCode._2023.Repos;
 using static System.Math;
 

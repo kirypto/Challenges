@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode._2023.Extensions;
+using kirypto.AdventOfCode._2023.Models;
 using kirypto.AdventOfCode._2023.Repos;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
@@ -32,13 +33,6 @@ public class Day3 : IDailyProgram {
                     .Sum();
             Console.WriteLine($"Sum of gear ratios: {gearRatioSum}");
         }
-    }
-}
-
-public readonly record struct Position(int Row, int Col) : IComparable<Position> {
-    public int CompareTo(Position other) {
-        int rowComparison = Row.CompareTo(other.Row);
-        return rowComparison != 0 ? rowComparison : Col.CompareTo(other.Col);
     }
 }
 
