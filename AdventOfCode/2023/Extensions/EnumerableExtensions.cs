@@ -20,6 +20,13 @@ public static class EnumerableExtensions {
         });
     }
 
+    public static IEnumerable<T> Tap<T>(this IEnumerable<T> enumerable, Action<T, int> action) {
+        return enumerable.Select((t, i) => {
+            action(t, i);
+            return t;
+        });
+    }
+
     public static IEnumerator<T> InfinitelyRepeat<T>(this IEnumerable<T> enumerable) {
         IList<T> viewed = new List<T>();
         foreach (T t in enumerable) {
