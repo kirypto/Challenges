@@ -4,7 +4,6 @@ using System.Linq;
 using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Models;
 using kirypto.AdventOfCode._2023.Repos;
-using static System.Math;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
@@ -52,11 +51,5 @@ public class Day11 : IDailyProgram {
                 .Select(obj => obj.SumOfDistancesSoFar)
                 .Sum();
         Console.WriteLine($"Sum of all pair star distances: {sumOfAllPairDistances}");
-    }
-}
-
-public static class PositionExtensions {
-    public static int ManhattenDistanceTo(this Position source, Position destination) {
-        return Abs(destination.Row - source.Row) + Abs(destination.Col - source.Col);
     }
 }
