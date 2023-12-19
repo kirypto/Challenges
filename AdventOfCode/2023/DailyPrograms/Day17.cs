@@ -45,21 +45,33 @@ public class Day17 : IDailyProgram {
         };
 
         ISet<ExplorationVisit> visited = new HashSet<ExplorationVisit>();
+        Path currentBestPath = new List<Position>();
+        var currentBestCost = double.MaxValue;
         while (queue.Any()) {
             State current = queue.DeleteMin();
+            if (current.CostSoFar >= currentBestCost) {
+                Console.Write(".");
+                continue;
+            }
             ExplorationVisit visit = ExplorationVisitFrom(current);
             if (visited.Contains(visit)) {
+                // Problem might be here, possibly throwing away a different path to a current place. Not sure why
                 continue;
             }
             if (current.Position == goal) {
-                return current.Path;
+                currentBestPath = current.Path;
+                currentBestCost = current.CostSoFar;
+                Console.WriteLine($"Found a new minimum: {currentBestCost}");
             }
 
             visited.Add(visit);
-            GetSuccessors(current, cityMap, goal, averageCost)
-                    .ForEach(state => {
-                        queue.Add(state);
-                    });
+            foreach (var successor in GetSuccessors(current, cityMap, goal, averageCost)) {
+                if (successor.CostSoFar < currentBestCost) {
+                    queue.Add(successor);
+                } else {
+                    Console.Write(".");
+                }
+            }
         }
         throw new InvalidOperationException("Should not be here");
     }
@@ -101,7 +113,7 @@ public record State(
 ) : IComparable<State> {
     public int CompareTo(State? other) => other == null ? -1 : Value.CompareTo(other.Value);
 
-    private double Value => CostSoFar + EstimateToGoal;
+    public double Value => CostSoFar + EstimateToGoal;
 
     public Path Path => Parent == null
             ? new List<Position> { Position }
