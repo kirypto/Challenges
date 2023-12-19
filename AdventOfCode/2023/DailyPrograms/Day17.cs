@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
 using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Models;
 using kirypto.AdventOfCode._2023.Repos;
+using static kirypto.AdventOfCode._2023.DailyPrograms.ExplorationVisit;
 using ExplorationQueue = C5.IntervalHeap<kirypto.AdventOfCode._2023.DailyPrograms.State>;
 using Path = System.Collections.Generic.IList<kirypto.AdventOfCode._2023.Models.Position>;
 using CityMap = int[,];
@@ -17,39 +18,59 @@ public class Day17 : IDailyProgram {
                 .Trim()
                 .To2DCharArray("\n")
                 .ApplyMask((chars, row, col) => chars[row, col] - '0');
+        int rowCount = cityMap.GetLength(0);
+        int colCount = cityMap.GetLength(1);
         Path bestLavaFlow = FindBestLavaFlow(
                 cityMap,
                 new Position(0, 0),
-                new Position(cityMap.GetLength(0), cityMap.GetLength(1))
+                new Position(rowCount - 1, colCount - 1)
         );
-        Console.WriteLine(bestLavaFlow.Count);
+        new char[rowCount, colCount]
+                .ApplyMask((_, row, col) => bestLavaFlow.Contains(new Position(row, col)) ? '#' : '.')
+                .PrintToConsole();
+
+        int totalHeatLoss = bestLavaFlow
+                .Skip(1) // Don't include starting position
+                .Select(position => cityMap[position.Row, position.Col])
+                .Sum();
+        Console.WriteLine($"Minimal lava heat loss is {totalHeatLoss}");
     }
 
     private static Path FindBestLavaFlow(CityMap cityMap, Position start, Position goal) {
+        double averageCost = Enumerable.Range(0, cityMap.GetLength(0))
+                .SelectMany(cityMap.EnumerateRow)
+                .Average();
         var queue = new ExplorationQueue {
-                new(new List<Position> {start}, 0, start.ManhattenDistanceTo(goal)),
+                new(start, 0, start.EuclideanDistanceTo(goal)),
         };
 
+        ISet<ExplorationVisit> visited = new HashSet<ExplorationVisit>();
         while (queue.Any()) {
             State current = queue.DeleteMin();
-            Console.WriteLine($"Exploring {current.Path[^1]}: {current.CostSoFar} : {current.EstimateToGoal}");
-            Thread.Sleep(1000);
-            if (current.Path[^1] == goal) {
+            ExplorationVisit visit = ExplorationVisitFrom(current);
+            if (visited.Contains(visit)) {
+                continue;
+            }
+            if (current.Position == goal) {
                 return current.Path;
             }
 
-            queue.AddAll(GetSuccessors(current, cityMap, goal));
+            visited.Add(visit);
+            GetSuccessors(current, cityMap, goal, averageCost)
+                    .ForEach(state => {
+                        queue.Add(state);
+                    });
         }
         throw new InvalidOperationException("Should not be here");
     }
 
-    private static IEnumerable<State> GetSuccessors(State current, CityMap cityMap, Position goal) {
-        Position currentPosition = current.Path[^1];
+    private static IEnumerable<State> GetSuccessors(State current, CityMap cityMap, Position goal, double averageCost) {
+        Position currentPosition = current.Position;
         Position? dissallowed = null;
-        if (current.Path.Count >= 4) {
-            var back3 = current.Path[^4];
-            var back2 = current.Path[^3];
-            var back1 = current.Path[^2];
+        if (current.Parent != null && current.Parent.Parent != null && current.Parent.Parent.Parent != null) {
+            var back1 = current.Parent.Position;
+            var back2 = current.Parent.Parent.Position;
+            var back3 = current.Parent.Parent.Parent.Position;
             int lastDiffRow = currentPosition.Row - back1.Row;
             int lastDiffCol = currentPosition.Col - back1.Col;
             if (lastDiffRow == back1.Row - back2.Row && lastDiffRow == back2.Row - back3.Row
@@ -62,16 +83,39 @@ public class Day17 : IDailyProgram {
                 .Where(pos => pos.Col >= 0)
                 .Where(pos => pos.Row < cityMap.GetLength(0))
                 .Where(pos => pos.Col < cityMap.GetLength(1))
+                .Where(pos => pos != current.Parent?.Position)
                 .Where(pos => pos != dissallowed)
                 .Select(pos => new State(
-                        current.Path.Append(pos).ToList(),
+                        pos,
                         current.CostSoFar + cityMap[pos.Row, pos.Col],
-                        pos.ManhattenDistanceTo(goal)));
+                        pos.ManhattenDistanceTo(goal) * averageCost,
+                        current));
     }
 }
 
-public readonly record struct State(Path Path, float CostSoFar, float EstimateToGoal) : IComparable<State> {
-    public int CompareTo(State other) {
-        return (CostSoFar + EstimateToGoal).CompareTo(other.CostSoFar + other.EstimateToGoal);
+public record State(
+        Position Position,
+        float CostSoFar,
+        double EstimateToGoal,
+        State? Parent = null
+) : IComparable<State> {
+    public int CompareTo(State? other) => other == null ? -1 : Value.CompareTo(other.Value);
+
+    private double Value => CostSoFar + EstimateToGoal;
+
+    public Path Path => Parent == null
+            ? new List<Position> { Position }
+            : Parent.Path.Append(Position).ToList();
+}
+
+// Used only in hash set
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+public readonly record struct ExplorationVisit(Position Current, Position? Back1, Position? Back2, Position? Back3) {
+    public static ExplorationVisit ExplorationVisitFrom(State state) {
+        return new ExplorationVisit(
+                state.Position,
+                state.Parent?.Position,
+                state.Parent?.Parent?.Position,
+                state.Parent?.Parent?.Parent?.Position);
     }
 }

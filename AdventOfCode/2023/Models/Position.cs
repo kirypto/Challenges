@@ -16,6 +16,10 @@ public static class PositionExtensions {
         return Abs(destination.Row - source.Row) + Abs(destination.Col - source.Col);
     }
 
+    public static double EuclideanDistanceTo(this Position source, Position destination) {
+        return Sqrt(Pow(destination.Row - source.Row, 2) + Pow(destination.Col - source.Col, 2));
+    }
+
     public static IEnumerable<Position> GetAdjacentPositions(this Position position) {
         yield return position with { Row = position.Row - 1 };
         yield return position with { Row = position.Row + 1 };
