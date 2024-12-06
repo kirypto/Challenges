@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode._2023.Extensions;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
 using static kirypto.AdventOfCode._2023.DailyPrograms.AlmanacMapEntry;
 using AlmanacRanges = C5.TreeDictionary<long, long>;
 using AlmanacRangeEntry = C5.KeyValuePair<long, long>;

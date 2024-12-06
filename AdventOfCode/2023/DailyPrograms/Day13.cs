@@ -1,6 +1,6 @@
 ﻿using System;
 using kirypto.AdventOfCode._2023.Extensions;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
 using static System.Linq.Enumerable;
 using MirrorMap = char[,];
 

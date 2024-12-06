@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Models;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
 using ExplorationQueue = C5.IntervalHeap<kirypto.AdventOfCode._2023.DailyPrograms.TraveledPosition>;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;

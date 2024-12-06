@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Models;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 

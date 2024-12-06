@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode._2023.Extensions;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
 using Graph = System.Collections.Generic.Dictionary<string, kirypto.AdventOfCode._2023.DailyPrograms.GraphNode>;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;

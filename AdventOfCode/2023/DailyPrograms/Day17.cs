@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using kirypto.AdventOfCode._2023.Extensions;
 using kirypto.AdventOfCode._2023.Models;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
 using static kirypto.AdventOfCode._2023.DailyPrograms.ExplorationVisit;
 using ExplorationQueue = C5.IntervalHeap<kirypto.AdventOfCode._2023.DailyPrograms.State>;
 using Path = System.Collections.Generic.IList<kirypto.AdventOfCode._2023.Models.Position>;

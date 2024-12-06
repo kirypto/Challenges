@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using kirypto.AdventOfCode._2023.DailyPrograms;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.Repositories;
 
 IInputRepository inputRepository = new FileInputRepository();
 

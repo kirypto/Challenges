@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
 using static kirypto.AdventOfCode._2023.DailyPrograms.CardHelpers;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;

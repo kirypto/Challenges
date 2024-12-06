@@ -1,6 +1,7 @@
 ﻿using System.IO;
+using kirypto.AdventOfCode.Common.Interfaces;
 
-namespace kirypto.AdventOfCode._2023.Repos;
+namespace kirypto.AdventOfCode.Common.Repositories;
 
 public class FileInputRepository : IInputRepository {
     private const string _INPUTS_DIR = "Data\\InputFiles";

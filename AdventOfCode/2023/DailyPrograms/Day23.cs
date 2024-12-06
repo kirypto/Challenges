@@ -1,5 +1,5 @@
 using System;
-using kirypto.AdventOfCode._2023.Repos;
+using kirypto.AdventOfCode.Common.Interfaces;
 
 namespace kirypto.AdventOfCode._2023.DailyPrograms;
 
