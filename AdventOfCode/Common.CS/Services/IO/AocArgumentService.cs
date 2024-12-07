@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+using System;
+using System.CommandLine;
 using System.Linq;
 
 namespace kirypto.AdventOfCode.Common.Services.IO;
@@ -23,6 +24,12 @@ public static class AocArgumentService {
                 IsRequired = true,
         };
 
+        var verboseOption = new Option<bool>(
+                ["-v", "--verbose"],
+                "Whether or not to print dev logs.") {
+                IsRequired = false,
+        };
+
         var usageOption = new Option<bool>(
                 ["-u", "--usage"],
                 "Displays this usage message.") {
@@ -33,6 +40,7 @@ public static class AocArgumentService {
                 dayOption,
                 partOption,
                 inputFileOption,
+                verboseOption,
                 usageOption,
         };
 
@@ -40,19 +48,22 @@ public static class AocArgumentService {
 
         if (args.Any(arg => arg is "-u" or "--usage")) {
             rootCommand.Invoke("--help");
-            return default; // Early exit, no need to parse further
+            Environment.Exit(-1);
         }
 
         var parsedArguments = new AocProgramArguments();
 
         rootCommand.SetHandler(
-                (day, part, input, _) => {
+                (day, part, input, verbose, _) => {
+                    DailyProgramLogger.Initialize(verbose);
                     parsedArguments = new AocProgramArguments(day, part, input);
                 },
-                dayOption, partOption, inputFileOption, usageOption
+                dayOption, partOption, inputFileOption, verboseOption, usageOption
         );
 
-        rootCommand.Invoke(args);
+        if (0 != rootCommand.Invoke(args)) {
+            Environment.Exit(-1);
+        }
 
         return parsedArguments;
     }
