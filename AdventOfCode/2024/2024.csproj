@@ -5,11 +5,12 @@
         <LangVersion>preview</LangVersion>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>disable</Nullable>
-        <RootNamespace>kirypto.AdventOfCode.Common</RootNamespace>
+        <RootNamespace>kirypto.AdventOfCode._2024</RootNamespace>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+      <ProjectReference Include="..\Common.CS\Common.CS.csproj" />
     </ItemGroup>
 
 </Project>
