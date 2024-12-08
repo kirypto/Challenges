@@ -7,7 +7,7 @@ public class FileInputRepository : IInputRepository {
     private const string _INPUTS_DIR = "Data\\InputFiles";
 
     public string Fetch(string inputRef) {
-        string inputFilePath = Path.Combine(_INPUTS_DIR, inputRef + ".txt");
+        string inputFilePath = Path.Combine(_INPUTS_DIR, inputRef.EndsWith(".txt") ? inputRef : inputRef + ".txt");
         return File.ReadAllText(inputFilePath);
     }
 }
