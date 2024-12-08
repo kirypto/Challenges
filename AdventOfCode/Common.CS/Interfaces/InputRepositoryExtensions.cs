@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace kirypto.AdventOfCode.Common.Interfaces;
 
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")] // Library
 public static class InputRepositoryExtensions {
     public static IList<string> FetchLines(this IInputRepository repository, string inputRef) {
         return repository.Fetch(inputRef)

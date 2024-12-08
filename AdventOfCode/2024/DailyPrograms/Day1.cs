@@ -7,7 +7,7 @@ using kirypto.AdventOfCode.Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
-namespace kirypto.AdventOfCode._2024;
+namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
 [DailyProgram(1)]
 public class Day1 : IDailyProgram {
