@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish Linux to Root" type="DotNetFolderPublish" factoryName="Publish to folder">
+    <riderPublish configuration="Release" platform="Any CPU" produce_single_file="true" runtime="linux-x64" target_folder="$PROJECT_DIR$/../.." target_framework="net8.0" uuid_high="4884411031483205608" uuid_low="-5911794590802864738" />
+    <method v="2" />
+  </configuration>
+</component>
