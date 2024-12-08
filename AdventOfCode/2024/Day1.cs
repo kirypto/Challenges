@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Extensions;
 using kirypto.AdventOfCode.Common.Interfaces;
@@ -27,6 +28,10 @@ public class Day1 : IDailyProgram {
         Logger.LogInformation($"List A: {listA.CommaDelimited()}");
         Logger.LogInformation($"List B: {listB.CommaDelimited()}");
 
+        return part == 1 ? Part1(listA, listB) : Part2(listA, listB);
+    }
+
+    private static string Part1(SortedList<int, int> listA, SortedList<int, int> listB) {
         Logger.LogInformation("Summing differences...");
         int result = 0;
         while (listA.Count > 0 && listB.Count > 0) {
@@ -57,5 +62,12 @@ public class Day1 : IDailyProgram {
         }
         Logger.LogInformation("Done!");
         return result.ToString();
+    }
+
+    private static string Part2(SortedList<int, int> listA, SortedList<int, int> listB) {
+        return listA.Keys
+                .Select(itemA => listB.TryGetValue(itemA, out int count) ? itemA * count : 0)
+                .Sum()
+                .ToString();
     }
 }
