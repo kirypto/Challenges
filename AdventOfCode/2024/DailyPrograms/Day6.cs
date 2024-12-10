@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -22,9 +21,9 @@ public class Day6 : IDailyProgram {
             for (int col = 0; col < colCount; col++) {
                 char cellChar = mapLines[row][col];
                 map[row, col] = cellChar switch {
-                        '.' => new Cell(false, false),
-                        '^' => new Cell(false, false),
-                        '#' => new Cell(true, false),
+                        '.' => new Cell { Obstacle = false },
+                        '^' => new Cell { Obstacle = false },
+                        '#' => new Cell { Obstacle = true },
                         _ => throw new ArgumentException($"Invalid cell char '{cellChar}'"),
                 };
                 if (cellChar == '^') {
@@ -34,19 +33,25 @@ public class Day6 : IDailyProgram {
         }
         Logger.LogInformation($"Initial position: {position}");
 
-        int distinctPositions = 0;
+        int distinctVisitCellCount = 0;
+        int possibleLoopCounts = 0;
         while (IsWithinBounds(position, rowCount, colCount)) {
             Logger.LogInformation($"Current: {position} {direction}");
 
-            if (!map[position.Y, position.X].Visited) {
-                distinctPositions++;
-                map[position.Y, position.X].Visited = true;
+            if (map[position.Y, position.X].WasVisited()) {
+                distinctVisitCellCount++;
             }
+            map[position.Y, position.X].SetVisited(direction);
 
             Coord nextPosition = position.Move(direction);
             if (!IsWithinBounds(nextPosition, rowCount, colCount)) {
                 Logger.LogInformation("Found edge");
                 break;
+            }
+
+            if (CouldMakeLoop(position, nextPosition, direction, map)) {
+                Logger.LogInformation("Found loop");
+                possibleLoopCounts++;
             }
             Cell nextCell = map[nextPosition.Y, nextPosition.X];
             if (nextCell.Obstacle) {
@@ -56,7 +61,15 @@ public class Day6 : IDailyProgram {
             }
             position = nextPosition;
         }
-        return distinctPositions.ToString();
+        Logger.LogInformation($"Part 1: {distinctVisitCellCount}, part 2: {possibleLoopCounts}");
+        return (part == 1 ? distinctVisitCellCount : possibleLoopCounts).ToString();
+    }
+
+    private static bool CouldMakeLoop(Coord position, Coord nextPosition, CardinalDirection direction, Cell[,] map) {
+        bool nextIsObstacle = map[nextPosition.Y, nextPosition.X].Obstacle;
+        CardinalDirection directionIfTurned = direction.Rotate90Clockwise();
+        bool wouldBeLoopIfTurnedInPlace = map[position.Y, position.X].WasVisited(directionIfTurned);
+        return wouldBeLoopIfTurnedInPlace && !nextIsObstacle;
     }
 
     private static bool IsWithinBounds(Coord position, int rowCount, int colCount) {
@@ -97,4 +110,36 @@ public static class CardinalDirectionExtensions {
     }
 }
 
-internal record struct Cell(bool Obstacle, bool Visited);
+internal record struct Cell(
+        bool Obstacle,
+        bool VisitedFacingNorth,
+        bool VisitedFacingEast,
+        bool VisitedFacingSouth,
+        bool VisitedFacingWest) {
+    internal bool WasVisited(CardinalDirection? facing = null) {
+        return facing switch {
+                CardinalDirection.North => VisitedFacingNorth,
+                CardinalDirection.East => VisitedFacingEast,
+                CardinalDirection.South => VisitedFacingSouth,
+                CardinalDirection.West => VisitedFacingWest,
+                _ => VisitedFacingNorth || VisitedFacingEast || VisitedFacingSouth || VisitedFacingSouth,
+        };
+    }
+
+    internal void SetVisited(CardinalDirection facing) {
+        switch (facing) {
+            case CardinalDirection.North:
+                VisitedFacingNorth = true;
+                break;
+            case CardinalDirection.East:
+                VisitedFacingEast = true;
+                break;
+            case CardinalDirection.South:
+                VisitedFacingSouth = true;
+                break;
+            case CardinalDirection.West:
+                VisitedFacingWest = true;
+                break;
+        }
+    }
+}
