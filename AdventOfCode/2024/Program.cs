@@ -22,7 +22,7 @@ public static class Program {
                 .FirstOrDefault(DefaultDailyProgram);
 
         string result = program.Run(
-                new FileInputRepository(),
+                new FileInputRepository(args.InputFile),
                 args.InputFile,
                 args.Part
         );

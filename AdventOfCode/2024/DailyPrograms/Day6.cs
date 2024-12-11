@@ -13,7 +13,7 @@ namespace kirypto.AdventOfCode._2024.DailyPrograms;
 public class Day6 : IDailyProgram {
     public string Run(IInputRepository inputRepository, string inputRef, int part) {
         Logger.LogInformation("Day6");
-        IList<string> mapLines = inputRepository.FetchLines(inputRef);
+        IList<string> mapLines = inputRepository.FetchLines();
         int rowCount = mapLines.Count;
         int colCount = mapLines[0].Length;
 

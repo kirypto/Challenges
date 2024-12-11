@@ -7,8 +7,8 @@ namespace kirypto.AdventOfCode.Common.Interfaces;
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")] // Library
 public static class InputRepositoryExtensions {
-    public static IList<string> FetchLines(this IInputRepository repository, string inputRef) {
-        return repository.Fetch(inputRef)
+    public static IList<string> FetchLines(this IInputRepository repository) {
+        return repository.Fetch()
                 .ReplaceLineEndings()
                 .TrimEnd(Environment.NewLine.ToCharArray())
                 .Split(Environment.NewLine);
@@ -16,12 +16,11 @@ public static class InputRepositoryExtensions {
 
     public static IList<Tuple<T1, T2>> FetchRegexParsedLines<T1, T2>(
             this IInputRepository repository,
-            string inputRef,
             string pattern
     ) where T1 : IConvertible where T2 : IConvertible {
         Regex regex = new Regex(pattern);
         var results = new List<Tuple<T1, T2>>();
-        foreach (string line in repository.FetchLines(inputRef)) {
+        foreach (string line in repository.FetchLines()) {
             var match = regex.Match(line);
             if (!match.Success) {
                 throw new FormatException($"Line `{line}` does not match regex `{regex}`");

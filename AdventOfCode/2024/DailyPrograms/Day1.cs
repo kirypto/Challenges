@@ -12,7 +12,7 @@ namespace kirypto.AdventOfCode._2024.DailyPrograms;
 [DailyProgram(1)]
 public class Day1 : IDailyProgram {
     public string Run(IInputRepository inputRepository, string inputRef, int part) {
-        var nums = inputRepository.FetchRegexParsedLines<int, int>(inputRef, @"(\d+)\s+(\d+)");
+        var nums = inputRepository.FetchRegexParsedLines<int, int>(@"(\d+)\s+(\d+)");
         Logger.LogInformation($"Nums ({nums.Count}): [[{nums[0].Item1},{nums[0].Item2}],...]");
         SortedList<int, int> listA = [];
         SortedList<int, int> listB = [];
