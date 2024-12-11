@@ -94,7 +94,12 @@ public class Day06 : IDailyProgram {
     }
 }
 
-public readonly record struct Coord(int X, int Y);
+public readonly record struct Coord(int X, int Y) : IComparable<Coord> {
+    public int CompareTo(Coord other) {
+        int xComparison = X.CompareTo(other.X);
+        return xComparison != 0 ? xComparison : Y.CompareTo(other.Y);
+    }
+}
 
 public readonly record struct DirectedCoord(Coord Coord, CardinalDirection Direction) {
     public int Y => Coord.Y;
