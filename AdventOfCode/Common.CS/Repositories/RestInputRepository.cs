@@ -29,13 +29,23 @@ public class RestInputRepository : IInputRepository {
 
         switch (_fetchCode) {
             case "real":
-                HttpResponseMessage response = _httpClient
+                HttpResponseMessage real = _httpClient
                         .GetAsync($"https://adventofcode.com/2024/day/{_day}/input")
                         .Result;
-                response.EnsureSuccessStatusCode();
-                return response.Content.ReadAsStringAsync().Result;
+                real.EnsureSuccessStatusCode();
+                return real.Content.ReadAsStringAsync().Result;
             case "example":
-                throw new NotImplementedException();
+                HttpResponseMessage example = _httpClient
+                        .GetAsync($"https://adventofcode.com/2024/day/{_day}")
+                        .Result;
+                example.EnsureSuccessStatusCode();
+                string result = example.Content.ReadAsStringAsync().Result;
+
+                Match match = Regex.Match(result, @"example[^\n]+</p>[^<]+<pre><code>((.|\n)+?)</code></pre>");
+                if (!match.Success) {
+                    throw new ApplicationException("Regex didn't match, and you should have known better.");
+                }
+                return match.Groups[1].Value;
             default:
                 throw new ArgumentException($"Unknown fetch code {_fetchCode}");
         }
