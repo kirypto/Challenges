@@ -1,14 +1,43 @@
 using System;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode.Common.Interfaces;
-using kirypto.AdventOfCode.Common.Services.IO;
 using Microsoft.Extensions.Logging;
+using static System.Environment;
+using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode.Common.Repositories;
 
-public class RestInputRepository(int day, string fetchCode) : IInputRepository {
+public class RestInputRepository : IInputRepository {
+    private const string _SESSION_TOKEN_VAR = "AocSessionToken";
+    private readonly int _day;
+    private readonly string _fetchCode;
+    private readonly HttpClient _httpClient;
+    public RestInputRepository(int day, string fetchCode) {
+        _day = day;
+        _fetchCode = fetchCode;
+        string sessionToken = GetEnvironmentVariable(_SESSION_TOKEN_VAR);
+        if (string.IsNullOrWhiteSpace(sessionToken)) {
+            throw new ArgumentException($"{_SESSION_TOKEN_VAR} environment var must be set to fetch inputs.");
+        }
+        _httpClient = new HttpClient();
+        _httpClient.DefaultRequestHeaders.Add("Cookie", $"session={sessionToken}");
+    }
+
     public string Fetch() {
-        DailyProgramLogger.Logger.LogInformation($"Fetching {fetchCode} input from website for day {day}");
-        throw new NotImplementedException();
+        Logger.LogInformation($"Fetching {_fetchCode} input from website for day {_day}");
+
+        switch (_fetchCode) {
+            case "real":
+                HttpResponseMessage response = _httpClient
+                        .GetAsync($"https://adventofcode.com/2024/day/{_day}/input")
+                        .Result;
+                response.EnsureSuccessStatusCode();
+                return response.Content.ReadAsStringAsync().Result;
+            case "example":
+                throw new NotImplementedException();
+            default:
+                throw new ArgumentException($"Unknown fetch code {_fetchCode}");
+        }
     }
 }
