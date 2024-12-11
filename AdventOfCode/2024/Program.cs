@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Interfaces;
-using kirypto.AdventOfCode.Common.Repositories;
 using kirypto.AdventOfCode.Common.Services.IO;
 using Microsoft.Extensions.Logging;
+using static kirypto.AdventOfCode.Common.Repositories.InputRepositoryFactory;
 using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode._2024;
@@ -21,8 +21,10 @@ public static class Program {
                 .OfType<IDailyProgram>()
                 .FirstOrDefault(DefaultDailyProgram);
 
+        IInputRepository inputRepository = CreateInputRepository(args);
+
         string result = program.Run(
-                new FileInputRepository(args.InputFile),
+                inputRepository,
                 args.Part
         );
         Console.WriteLine(result);

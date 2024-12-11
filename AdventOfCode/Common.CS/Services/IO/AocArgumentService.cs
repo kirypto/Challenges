@@ -6,43 +6,45 @@ namespace kirypto.AdventOfCode.Common.Services.IO;
 
 public static class AocArgumentService {
     public static AocProgramArguments Parse(string[] args) {
-        var dayOption = new Option<int>(
+        Option<int> dayOption = new(
                 ["-d", "--day"],
                 "Specifies the day to run (1-25).") {
                 IsRequired = true,
         };
 
-        var partOption = new Option<int>(
+        Option<int> partOption = new(
                 ["-p", "--part"],
                 "Specifies the part to run (1 or 2).") {
                 IsRequired = true,
         };
 
-        var inputFileOption = new Option<string>(
+        Option<string> inputFileOption = new(
                 ["-i", "--input"],
                 "The path to the file to use as input.") {
-                IsRequired = true,
+                IsRequired = false,
         };
 
-        var verboseOption = new Option<bool>(
+        Option<string> fetchInputOption = new(
+                ["-f", "--fetch"],
+                "Instruct the program to fetch from the website (specify 'real' or 'example').") {
+                IsRequired = false,
+        };
+
+        Option<bool> verboseOption = new(
                 ["-v", "--verbose"],
                 "Whether or not to print dev logs.") {
                 IsRequired = false,
         };
 
-        var usageOption = new Option<bool>(
+        Option<bool> usageOption = new(
                 ["-u", "--usage"],
                 "Displays this usage message.") {
                 IsRequired = false,
         };
 
-        var rootCommand = new RootCommand {
-                dayOption,
-                partOption,
-                inputFileOption,
-                verboseOption,
-                usageOption,
-        };
+        RootCommand rootCommand = [
+                dayOption, partOption, inputFileOption, fetchInputOption, verboseOption, usageOption
+        ];
 
         rootCommand.Description = "Advent Of Code Runner";
 
@@ -51,14 +53,22 @@ public static class AocArgumentService {
             Environment.Exit(-1);
         }
 
-        var parsedArguments = new AocProgramArguments();
+        rootCommand.AddValidator(result => {
+            bool inputWasProvided = result.GetValueForOption(inputFileOption) != null;
+            bool fetchWasProvided = result.GetValueForOption(fetchInputOption) != null;
+            if (inputWasProvided && fetchWasProvided) {
+                result.ErrorMessage = "You must specify either --input or --fetch, but not both.";
+            }
+        });
+
+        AocProgramArguments parsedArguments = new();
 
         rootCommand.SetHandler(
-                (day, part, input, verbose, _) => {
+                (day, part, input, fetch, verbose, _) => {
                     DailyProgramLogger.Initialize(verbose);
-                    parsedArguments = new AocProgramArguments(day, part, input);
+                    parsedArguments = new AocProgramArguments(day, part, input, fetch);
                 },
-                dayOption, partOption, inputFileOption, verboseOption, usageOption
+                dayOption, partOption, inputFileOption, fetchInputOption, verboseOption, usageOption
         );
 
         if (0 != rootCommand.Invoke(args)) {
