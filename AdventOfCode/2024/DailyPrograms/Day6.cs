@@ -11,7 +11,7 @@ namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
 [DailyProgram(6)]
 public class Day6 : IDailyProgram {
-    public string Run(IInputRepository inputRepository, string inputRef, int part) {
+    public string Run(IInputRepository inputRepository, int part) {
         Logger.LogInformation("Day6");
         IList<string> mapLines = inputRepository.FetchLines();
         int rowCount = mapLines.Count;

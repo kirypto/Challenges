@@ -23,7 +23,6 @@ public static class Program {
 
         string result = program.Run(
                 new FileInputRepository(args.InputFile),
-                args.InputFile,
                 args.Part
         );
         Console.WriteLine(result);
@@ -32,7 +31,7 @@ public static class Program {
     private static IDailyProgram DefaultDailyProgram => new DefaultProgram();
 
     private class DefaultProgram : IDailyProgram {
-        public string Run(IInputRepository inputRepository, string inputRef, int part) {
+        public string Run(IInputRepository inputRepository, int part) {
             Logger.LogInformation("No matching daily program found, returning default answer.");
             return "42";
         }
