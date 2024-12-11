@@ -45,7 +45,9 @@ public class RestInputRepository : IInputRepository {
                 if (!match.Success) {
                     throw new ApplicationException("Regex didn't match, and you should have known better.");
                 }
-                return match.Groups[1].Value;
+                string exampleContent = match.Groups[1].Value;
+                Logger.LogInformation($"Pulled example from webpage: \n{exampleContent}");
+                return exampleContent;
             default:
                 throw new ArgumentException($"Unknown fetch code {_fetchCode}");
         }
