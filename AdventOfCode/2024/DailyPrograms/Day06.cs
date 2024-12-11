@@ -10,7 +10,7 @@ using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
 [DailyProgram(6)]
-public class Day6 : IDailyProgram {
+public class Day06 : IDailyProgram {
     public string Run(IInputRepository inputRepository, int part) {
         Logger.LogInformation("Day6");
         IList<string> mapLines = inputRepository.FetchLines();
