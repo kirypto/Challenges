@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace kirypto.AdventOfCode.Common.Interfaces;
@@ -12,6 +13,19 @@ public static class InputRepositoryExtensions {
                 .ReplaceLineEndings()
                 .TrimEnd(Environment.NewLine.ToCharArray())
                 .Split(Environment.NewLine);
+    }
+
+    public static char[,] FetchAs2DCharArray(this IInputRepository repository) {
+        IList<string> lines = repository.FetchLines();
+        int rows = lines.Count;
+        int cols = lines[0].Length;
+        char[,] result = new char[rows, cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                result[i, j] = lines[i][j];
+            }
+        }
+        return result;
     }
 
     public static IList<Tuple<T1, T2>> FetchRegexParsedLines<T1, T2>(
