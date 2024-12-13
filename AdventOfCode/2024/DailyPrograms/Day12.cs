@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Extensions;
 using kirypto.AdventOfCode.Common.Interfaces;
 using Microsoft.Extensions.Logging;
+using static System.Enum;
 using static System.Linq.Enumerable;
 using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
@@ -35,28 +34,18 @@ public class Day12 : IDailyProgram {
             while (currentBatch.Count > 0) {
                 Coord focus = currentBatch.First();
                 currentBatch.Remove(focus);
+                visited.Add(focus);
+                plotArea++;
                 Logger.LogInformation($"Focus: {focus}");
-                if (!garden.TryGetValue(focus.Y, focus.X, out char focusType)) {
-                    plotPerimeter++;
-                    Logger.LogInformation($"Out of bounds, '{plotType}' is now {plotArea} x {plotPerimeter}");
-                } else if (focusType == plotType) {
-                    visited.Add(focus);
-                    plotArea++;
-                    Logger.LogInformation($"Growing plot, '{plotType}' is now {plotArea} x {plotPerimeter}");
-                    foreach (Coord adjacentCoord in Enum.GetValues<CardinalDirection>()
-                                     .Select(direction => focus.Move(direction))) {
-                        if (!visited.Contains(adjacentCoord)) {
-                            Logger.LogInformation($"  --> Adding new coord to batch {adjacentCoord}");
-                            currentBatch.Add(adjacentCoord);
-                        } else if (garden.TryGetValue(adjacentCoord.Y, adjacentCoord.X, out char adjPlotType)
-                                   && adjPlotType != plotType) {
-                            plotPerimeter++;
-                            Logger.LogInformation($"  --> Adjacent plot {adjacentCoord} is different type, perim now {plotPerimeter}");
-                        }
+
+                foreach (Coord adjacentCoord in GetValues<CardinalDirection>().Select(d => focus.Move(d))) {
+                    if (!garden.TryGetValue(adjacentCoord.Y, adjacentCoord.X, out char adjPlotType)
+                        || adjPlotType != plotType) {
+                        plotPerimeter++;
+                        Logger.LogInformation($" --> Adjacent is other, increment perim to {plotPerimeter}");
+                    } else if (!visited.Contains(adjacentCoord)) {
+                        currentBatch.Add(adjacentCoord);
                     }
-                } else {
-                    plotPerimeter++;
-                    Logger.LogInformation($"Found different plot type, '{plotType}' is now {plotArea} x {plotPerimeter}.");
                 }
             }
             fenceCost += plotArea * plotPerimeter;
