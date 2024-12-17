@@ -4,6 +4,7 @@ using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Extensions;
 using kirypto.AdventOfCode.Common.Interfaces;
 using Microsoft.Extensions.Logging;
+using static System.ConsoleColor;
 using static System.Enum;
 using static System.Linq.Enumerable;
 using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
@@ -30,7 +31,10 @@ public class Day12 : IDailyProgram {
             int plotArea = 0;
             int plotPerimeter = 0;
             int plotSides = 0;
-            bool[,] batchFences = new bool[rowCount + 1, colCount + 1];
+            Dictionary<FenceType, bool[,]> fences = new() {
+                    { FenceType.NorthSouth, new bool[rowCount, colCount + 1] },
+                    { FenceType.EastWest, new bool[rowCount + 1, colCount] },
+            };
 
             HashSet<Coord> currentBatch = [currPos];
             while (currentBatch.Count > 0) {
@@ -38,38 +42,87 @@ public class Day12 : IDailyProgram {
                 currentBatch.Remove(focus);
                 visited.Add(focus);
                 plotArea++;
-                Logger.LogInformation($"Focus: {focus}");
+                Logger.LogInformation("Focus: {focus}", focus);
 
                 foreach (Coord adjacentCoord in GetValues<CardinalDirection>().Select(d => focus.Move(d))) {
                     if (!garden.TryGetValue(adjacentCoord.Y, adjacentCoord.X, out char adjPlotType)
                         || adjPlotType != plotType) {
                         plotPerimeter++;
-                        Logger.LogInformation(
-                                $" --> Adjacent {adjacentCoord} is other, increment perim to {plotPerimeter}");
+                        Logger.LogInformation(" --> Adjacent {adjacentCoord} is other, increment perim to {plotPerimeter}",
+                                adjacentCoord, plotPerimeter);
 
                         (FenceType fenceType, Coord fenceCoord) = GetFence(focus, adjacentCoord);
-                        batchFences[fenceCoord.Y, fenceCoord.X] = true;
-                        Logger.LogInformation($"    --> {fenceType} @ {fenceCoord}");
+                        fences[fenceType][fenceCoord.Y, fenceCoord.X] = true;
+                        Logger.LogInformation("    --> {fenceType} @ {fenceCoord}", fenceType, fenceCoord);
                         (Coord prevFence, Coord nextFence) = GetAdjacentFences(fenceCoord, fenceType);
-                        if ((batchFences.TryGetValue(prevFence.Y, prevFence.X, out bool hasPreviousAdjacentFence)
+                        if ((fences[fenceType].TryGetValue(prevFence.Y, prevFence.X, out bool hasPreviousAdjacentFence)
                                     && hasPreviousAdjacentFence)
-                            || (batchFences.TryGetValue(nextFence.Y, nextFence.X, out bool hasNextAdjacentFence)
+                            || (fences[fenceType].TryGetValue(nextFence.Y, nextFence.X, out bool hasNextAdjacentFence)
                                     && hasNextAdjacentFence)) {
                             Logger.LogInformation("    --> Already counted this fence side, skipping.");
                         } else {
                             plotSides++;
-                            Logger.LogInformation($"    --> New fence side seen, incremented count to {plotSides}.");
+                            Logger.LogInformation("    --> New fence side seen, incremented count to {plotSides}.", plotSides);
                         }
                     } else if (!visited.Contains(adjacentCoord)) {
                         currentBatch.Add(adjacentCoord);
                     }
                 }
+                Print(garden, fences, focus, currentBatch);
             }
             int currentFenceCost = part == 1 ? plotArea * plotPerimeter : plotArea * plotSides;
             fenceCost += currentFenceCost;
-            Logger.LogInformation($"!! Plot {plotType}: {plotArea}, {plotPerimeter}, {plotSides}, {currentFenceCost}");
+            Logger.LogInformation("!! Plot {plotType}: {plotArea}, {plotPerimeter}, {plotSides}, {currentFenceCost}",
+                    plotType, plotArea, plotPerimeter, plotSides, currentFenceCost);
+            if (Logger.IsEnabled(LogLevel.Debug)) {
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey(true);
+            }
         }
         return fenceCost.ToString();
+    }
+
+    private static void Print(char[,] plots, Dictionary<FenceType, bool[,]> fences, Coord focus, ISet<Coord> batch) {
+        if (!Logger.IsEnabled(LogLevel.Debug)) {
+            return;
+        }
+        int plotRows = plots.GetLength(0);
+        int plotCols = plots.GetLength(1);
+        int fenceRows = fences[FenceType.NorthSouth].GetLength(0);
+        int fenceCols = fences[FenceType.NorthSouth].GetLength(1);
+        bool isFenceRow = true;
+        bool isFenceCol = true;
+        try {
+            for (int row = 0; row < plotRows; row++) {
+                for (int col = 0; col < fences[FenceType.EastWest].GetLength(1); col++) {
+                    Console.Write(" " + (fences[FenceType.EastWest][row, col] ? "-" : " "));
+                }
+                Console.Write("\n");
+                for (int col = 0; col < plotCols; col++) {
+                    Console.Write(fences[FenceType.NorthSouth][row, col] ? "|" : " ");
+
+                    if (row == focus.Y && col == focus.X) {
+                        Console.ForegroundColor = Blue;
+                    } else if (batch.Contains(new Coord(col, row))) {
+                        Console.ForegroundColor = Green;
+                    }
+                    Console.Write($"{plots[row, col]}");
+                    Console.ResetColor();
+                }
+                Console.Write(fences[FenceType.NorthSouth][row, fences[FenceType.NorthSouth].GetLength(1) - 1] ? "|" : " ");
+                Console.Write("\n");
+            }
+            for (int col = 0; col < fences[FenceType.EastWest].GetLength(1); col++) {
+                Console.Write(" " + (fences[FenceType.EastWest][fences[FenceType.EastWest].GetLength(0) - 1, col] ? "-" : " "));
+            }
+        } catch (Exception) {
+            Console.Out.Flush();
+            throw;
+        }
+        Console.WriteLine();
+        Console.Out.Flush();
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey(true);
     }
 
     private static (FenceType fenceType, Coord fenceCoord) GetFence(Coord plotCoord1, Coord plotCoord2) =>
