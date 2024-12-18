@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using kirypto.AdventOfCode.Common.Attributes;
+using kirypto.AdventOfCode.Common.Collections;
 using kirypto.AdventOfCode.Common.Extensions;
 using kirypto.AdventOfCode.Common.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -36,10 +37,9 @@ public class Day12 : IDailyProgram {
                     { FenceType.EastWest, new bool[rowCount + 1, colCount] },
             };
 
-            HashSet<Coord> currentBatch = [currPos];
+            QueueSet<Coord> currentBatch = [currPos];
             while (currentBatch.Count > 0) {
-                Coord focus = currentBatch.First();
-                currentBatch.Remove(focus);
+                currentBatch.RemoveFirst(out Coord focus);
                 visited.Add(focus);
                 plotArea++;
                 Logger.LogInformation("Focus: {focus}", focus);
@@ -88,10 +88,6 @@ public class Day12 : IDailyProgram {
         }
         int plotRows = plots.GetLength(0);
         int plotCols = plots.GetLength(1);
-        int fenceRows = fences[FenceType.NorthSouth].GetLength(0);
-        int fenceCols = fences[FenceType.NorthSouth].GetLength(1);
-        bool isFenceRow = true;
-        bool isFenceCol = true;
         try {
             for (int row = 0; row < plotRows; row++) {
                 for (int col = 0; col < fences[FenceType.EastWest].GetLength(1); col++) {
