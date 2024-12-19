@@ -54,11 +54,20 @@ public class Day12 : IDailyProgram {
                         (FenceType fenceType, Coord fenceCoord) = GetFence(focus, adjacentCoord);
                         fences[fenceType][fenceCoord.Y, fenceCoord.X] = true;
                         Logger.LogInformation("    --> {fenceType} @ {fenceCoord}", fenceType, fenceCoord);
-                        (Coord prevFence, Coord nextFence) = GetAdjacentFences(fenceCoord, fenceType);
-                        if ((fences[fenceType].TryGetValue(prevFence.Y, prevFence.X, out bool hasPreviousAdjacentFence)
-                                    && hasPreviousAdjacentFence)
-                            || (fences[fenceType].TryGetValue(nextFence.Y, nextFence.X, out bool hasNextAdjacentFence)
-                                    && hasNextAdjacentFence)) {
+                        (Coord prevFence, Coord nextFence) = GetAdjacent(fenceCoord, fenceType);
+                        (Coord prevPlot, Coord nextPlot) = GetAdjacent(focus, fenceType);
+                        bool isPrevFenceSameSide = fences[fenceType].TryGetValue(prevFence.Y, prevFence.X, out bool hasPrevFence)
+                                && hasPrevFence
+                                && garden.TryGetValue(prevPlot.Y, prevPlot.X, out char prevPlotType)
+                                && prevPlotType == plotType;
+                        bool isNextFenceSameSide = fences[fenceType].TryGetValue(nextFence.Y, nextFence.X, out bool hasNextFence)
+                                && hasNextFence
+                                && garden.TryGetValue(nextPlot.Y, nextPlot.X, out char nextPlotType)
+                                && nextPlotType == plotType;
+                        if (isPrevFenceSameSide && isNextFenceSameSide) {
+                            plotSides--;
+                            Logger.LogInformation("    --> Counted previous and next, merging (decrementing count to {plotSides}.", plotSides);
+                        } else if (isPrevFenceSameSide || isNextFenceSameSide) {
                             Logger.LogInformation("    --> Already counted this fence side, skipping.");
                         } else {
                             plotSides++;
@@ -126,15 +135,15 @@ public class Day12 : IDailyProgram {
                     ? (FenceType.NorthSouth, plotCoord1 with { X = Math.Max(plotCoord1.X, plotCoord2.X) })
                     : (FenceType.EastWest, plotCoord1 with { Y = Math.Max(plotCoord1.Y, plotCoord2.Y) });
 
-    private static (Coord prev, Coord next) GetAdjacentFences(Coord fenceCoord, FenceType fenceType) =>
-            fenceType switch {
+    private static (Coord prev, Coord next) GetAdjacent(Coord coord, FenceType direction) =>
+            direction switch {
                     FenceType.NorthSouth => (
-                            fenceCoord with { Y = fenceCoord.Y - 1 },
-                            fenceCoord with { Y = fenceCoord.Y + 1 }),
+                            coord with { Y = coord.Y - 1 },
+                            coord with { Y = coord.Y + 1 }),
                     FenceType.EastWest => (
-                            fenceCoord with { X = fenceCoord.X - 1 },
-                            fenceCoord with { X = fenceCoord.X + 1 }),
-                    _ => throw new ArgumentOutOfRangeException(nameof(fenceType), fenceType, null)
+                            coord with { X = coord.X - 1 },
+                            coord with { X = coord.X + 1 }),
+                    _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
             };
 
     private enum FenceType {
