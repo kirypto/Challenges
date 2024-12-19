@@ -19,4 +19,8 @@ public static class CoordExtensions {
                 _ => throw new ArgumentException($"Unsupported direction {direction}", nameof(direction)),
         };
     }
+
+    public static int ManhattanDistanceTo(this Coord a, Coord b) {
+        return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
+    }
 }
