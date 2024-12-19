@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using static System.Linq.Enumerable;
+
 namespace kirypto.AdventOfCode.Common.Extensions;
 
 public static class ArrayExtensions {
@@ -8,5 +12,12 @@ public static class ArrayExtensions {
         }
         value = map[row, col];
         return true;
+    }
+
+    public static string ToString<T>(this T[,] map, Func<T, string> toString) {
+        return string.Join("\n", Range(0, map.GetLength(0))
+                .Select(row => Range(0, map.GetLength(1))
+                        .Select(col => toString(map[row, col]))
+                        .Aggregate((s1, s2) => $"{s1}{s2}")));
     }
 }
