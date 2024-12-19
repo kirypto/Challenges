@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.Models;
 using Microsoft.Extensions.Logging;
-using static kirypto.AdventOfCode._2024.DailyPrograms.CardinalDirection;
+using static kirypto.AdventOfCode.Common.Models.CardinalDirection;
 using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
@@ -94,13 +95,6 @@ public class Day06 : IDailyProgram {
     }
 }
 
-public readonly record struct Coord(int X, int Y) : IComparable<Coord> {
-    public int CompareTo(Coord other) {
-        int xComparison = X.CompareTo(other.X);
-        return xComparison != 0 ? xComparison : Y.CompareTo(other.Y);
-    }
-}
-
 public readonly record struct DirectedCoord(Coord Coord, CardinalDirection Direction) {
     public int Y => Coord.Y;
     public int X => Coord.X;
@@ -114,35 +108,8 @@ public readonly record struct DirectedCoord(Coord Coord, CardinalDirection Direc
     }
 }
 
-public static class CoordExtensions {
-    public static Coord Move(this Coord coord, CardinalDirection direction) {
-        return direction switch {
-                North => coord with { Y = coord.Y - 1 },
-                East => coord with { X = coord.X + 1 },
-                South => coord with { Y = coord.Y + 1 },
-                West => coord with { X = coord.X - 1 },
-                _ => throw new ArgumentException($"Unsupported direction {direction}", nameof(direction)),
-        };
-    }
-}
 
-public enum CardinalDirection {
-    North,
-    East,
-    South,
-    West,
-}
 
-public static class CardinalDirectionExtensions {
-    public static CardinalDirection Rotate90Clockwise(this CardinalDirection direction) {
-        return direction switch {
-                North => East,
-                East => South,
-                South => West,
-                West => North,
-                _ => throw new ArgumentException($"Unsupported direction {direction}", nameof(direction)),
-        };
-    }
-}
+
 
 internal record struct Cell(bool Obstacle);

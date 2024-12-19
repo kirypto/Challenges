@@ -4,6 +4,7 @@ using System.Linq;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Extensions;
 using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.Models;
 using Microsoft.Extensions.Logging;
 using QuickGraph;
 using QuickGraph.Algorithms.Search;
