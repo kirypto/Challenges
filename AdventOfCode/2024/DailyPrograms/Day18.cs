@@ -35,7 +35,7 @@ public class Day18 : IDailyProgram {
         coords.Take(limit).ForEach(coord => map[coord.Y, coord.X] = true);
 
         if (Logger.IsEnabled(Information)) {
-            string mapAsString = map.ToString(cellValue => cellValue ? "#" : ".");
+            string mapAsString = map.ToString((cellValue, _) => cellValue ? "#" : ".");
             Logger.LogInformation($"Map ({rowCount}, {colCount}):\n{mapAsString}");
         }
 

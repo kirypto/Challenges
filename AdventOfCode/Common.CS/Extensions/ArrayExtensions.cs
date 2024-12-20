@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using kirypto.AdventOfCode.Common.Models;
 using static System.Linq.Enumerable;
 
 namespace kirypto.AdventOfCode.Common.Extensions;
@@ -14,10 +15,10 @@ public static class ArrayExtensions {
         return true;
     }
 
-    public static string ToString<T>(this T[,] map, Func<T, string> toString) {
+    public static string ToString<T>(this T[,] map, Func<T, Coord, string> cellToString) {
         return string.Join("\n", Range(0, map.GetLength(0))
                 .Select(row => Range(0, map.GetLength(1))
-                        .Select(col => toString(map[row, col]))
+                        .Select(col => cellToString(map[row, col], new Coord {Y = row, X = col}))
                         .Aggregate((s1, s2) => $"{s1}{s2}")));
     }
 }
