@@ -10,7 +10,6 @@ using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using static System.ConsoleColor;
 using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
-using static Microsoft.Extensions.Logging.LogLevel;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -35,7 +34,7 @@ public class Day18 : IDailyProgram {
         coords.Take(part1Limit).ForEach(coord => map[coord.Y, coord.X] = true);
 
         Logger.LogInformation($"Map ({rowCount}, {colCount}):");
-        PrintMap(map, new HashSet<Coord>());
+        PrintMap(map, []);
 
         GridAStar<bool> search = new(map, isWalkable: b => !b);
         Coord startCoord = new(0, 0);
@@ -44,25 +43,40 @@ public class Day18 : IDailyProgram {
                 startCoord: startCoord,
                 endCoord: endCoord);
 
-        // Only need this for part 2 or verbose
-        ISet<Coord> visitedCoords = part == 2 || Program.IsVerbose
-                ? path.Select(p => p.coord).ToHashSet()
-                : [];
-
         Logger.LogInformation(cost == -1 ? "No path found" : "Found path:");
-        PrintMap(map, visitedCoords);
+        PrintMap(map, path);
 
         if (part == 1) {
             return cost.ToString();
         }
 
-        throw new NotImplementedException();
+        ISet<Coord> pathCoords = path.Select(p => p.coord).ToHashSet();
+
+        foreach (Coord newBlockCoord in coords.Skip(part1Limit)) {
+            Logger.LogInformation("New blockage at {coord}", newBlockCoord);
+            map[newBlockCoord.Y, newBlockCoord.X] = true;
+
+            if (!pathCoords.Contains(newBlockCoord)) {
+                Logger.LogInformation("--> Path unchanged");
+                continue;
+            }
+
+            Logger.LogInformation("Finding new path...");
+            (IList<(Coord coord, bool item)> newPath, int newCost) = search.FindPath(startCoord, endCoord);
+            PrintMap(map, newPath);
+            if (newCost == -1) {
+                Logger.LogInformation("There is no longer a walkable path.");
+                return $"{newBlockCoord.X},{newBlockCoord.Y}";
+            }
+        }
+        throw new InvalidOperationException("Code should not have reached here");
     }
 
-    private static void PrintMap(bool[,] map, ISet<Coord> visited) {
+    private static void PrintMap(bool[,] map, IList<(Coord coord, bool item)> path) {
         if (!Program.IsVerbose) {
             return;
         }
+        HashSet<Coord> visited = path.Select(p => p.coord).ToHashSet();
 
         map.Print((cellValue, coord) => new CellPrintInstruction {
                 CellString = visited.Contains(coord) ? "O" : cellValue ? "#" : ".",

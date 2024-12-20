@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Interfaces;
@@ -26,10 +27,13 @@ public static class Program {
         IInputRepository inputRepository = CreateInputRepository(args);
         IsVerbose = Logger.IsEnabled(LogLevel.Information); // TODO: Get this from AocProgramArguments
 
+        Stopwatch stopwatch = Stopwatch.StartNew();
         string result = program.Run(
                 inputRepository,
                 args.Part
         );
+        stopwatch.Stop();
+        Logger.LogInformation("Total runtime: {runtime}", stopwatch.Elapsed);
         Console.WriteLine(result);
     }
 
