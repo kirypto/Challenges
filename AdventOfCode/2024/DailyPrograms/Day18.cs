@@ -28,49 +28,45 @@ public class Day18 : IDailyProgram {
                 .ToList();
         bool[,] map = new bool[colCount, rowCount];
 
-        int limit = part switch {
-                1 => inputRepository is RestInputRepository && colCount == 7 && rowCount == 7 ? 12 : 1024,
-                _ => 99999,
-        };
+        int part1Limit = inputRepository is RestInputRepository && colCount == 7 && rowCount == 7
+                ? 12 // This is the example input
+                : 1024;
 
-        coords.Take(limit).ForEach(coord => map[coord.Y, coord.X] = true);
+        coords.Take(part1Limit).ForEach(coord => map[coord.Y, coord.X] = true);
 
-        bool isVerbose = Logger.IsEnabled(Information);
-        if (isVerbose) {
-            Logger.LogInformation($"Map ({rowCount}, {colCount}):");
-            map.Print((cellValue, _) => cellValue ? "#" : ".");
-        }
+        Logger.LogInformation($"Map ({rowCount}, {colCount}):");
+        PrintMap(map, new HashSet<Coord>());
 
         GridAStar<bool> search = new(map, isWalkable: b => !b);
         Coord startCoord = new(0, 0);
-        Coord endCoord = new Coord(colCount - 1, rowCount - 1);
+        Coord endCoord = new(colCount - 1, rowCount - 1);
         (IList<(Coord coord, bool item)> path, int cost) = search.FindPath(
                 startCoord: startCoord,
                 endCoord: endCoord);
 
-        ISet<Coord> visitedCoords = part == 2 || isVerbose
-            ? path.Select(p => p.coord).ToHashSet()
-            : []; // If part 1 or not verbose, this is not needed, skip for efficiency
+        // Only need this for part 2 or verbose
+        ISet<Coord> visitedCoords = part == 2 || Program.IsVerbose
+                ? path.Select(p => p.coord).ToHashSet()
+                : [];
 
-        if (isVerbose) {
-            if (cost != -1) {
-                Logger.LogInformation($"Found path of length {cost}:");
-                map.Print((cellValue, coord) => {
-                    bool wasVisited = visitedCoords.Contains(coord);
-                    return new CellPrintInstruction {
-                            CellString = wasVisited ? "O" : cellValue ? "#" : ".",
-                            Foreground = wasVisited ? Green : White,
-                    };
-                });
-            } else {
-                Logger.LogInformation("No path found");
-            }
-        }
+        Logger.LogInformation(cost == -1 ? "No path found" : "Found path:");
+        PrintMap(map, visitedCoords);
 
         if (part == 1) {
             return cost.ToString();
         }
 
         throw new NotImplementedException();
+    }
+
+    private static void PrintMap(bool[,] map, ISet<Coord> visited) {
+        if (!Program.IsVerbose) {
+            return;
+        }
+
+        map.Print((cellValue, coord) => new CellPrintInstruction {
+                CellString = visited.Contains(coord) ? "O" : cellValue ? "#" : ".",
+                Foreground = visited.Contains(coord) ? Green : White,
+        });
     }
 }
