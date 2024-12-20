@@ -36,10 +36,10 @@ public class Day18 : IDailyProgram {
         Logger.LogInformation($"Map ({rowCount}, {colCount}):");
         PrintMap(map, []);
 
-        GridAStar<bool> search = new(map, isWalkable: b => !b);
+        GridSearch<bool> search = new(map, isWalkableFunc: b => !b);
         Coord startCoord = new(0, 0);
         Coord endCoord = new(colCount - 1, rowCount - 1);
-        (IList<(Coord coord, bool item)> path, int cost) = search.FindPath(
+        (IList<(Coord coord, bool item)> path, int cost) = search.AStarPath(
                 startCoord: startCoord,
                 endCoord: endCoord);
 
@@ -62,7 +62,7 @@ public class Day18 : IDailyProgram {
             }
 
             Logger.LogInformation("Finding new path...");
-            (IList<(Coord coord, bool item)> newPath, int newCost) = search.FindPath(startCoord, endCoord);
+            (IList<(Coord coord, bool item)> newPath, int newCost) = search.FindShortestPath(startCoord, endCoord);
             PrintMap(map, newPath);
             if (newCost == -1) {
                 Logger.LogInformation("There is no longer a walkable path.");
