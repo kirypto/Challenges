@@ -69,6 +69,7 @@ public class Day18 : IDailyProgram {
                 PrintWalkableArea(map, search, startCoord, newBlockCoord);
                 return $"{newBlockCoord.X},{newBlockCoord.Y}";
             }
+            pathCoords = newPath.Select(p => p.coord).ToHashSet();
         }
         throw new InvalidOperationException("Code should not have reached here");
     }
