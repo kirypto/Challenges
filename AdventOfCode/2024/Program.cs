@@ -23,9 +23,9 @@ public static class Program {
                 .Select(Activator.CreateInstance)
                 .OfType<IDailyProgram>()
                 .FirstOrDefault(DefaultDailyProgram);
+        IsVerbose = args.Verbose;
 
         IInputRepository inputRepository = CreateInputRepository(args);
-        IsVerbose = Logger.IsEnabled(LogLevel.Information); // TODO: Get this from AocProgramArguments
 
         Stopwatch stopwatch = Stopwatch.StartNew();
         string result = program.Run(
@@ -33,8 +33,10 @@ public static class Program {
                 args.Part
         );
         stopwatch.Stop();
-        Logger.LogInformation("Total runtime: {runtime}", stopwatch.Elapsed);
         Console.WriteLine(result);
+        if (args.Stats) {
+            Console.WriteLine($"Stats:\n - Runtime: {stopwatch.Elapsed}");
+        }
     }
 
     private static IDailyProgram DefaultDailyProgram => new DefaultProgram();
