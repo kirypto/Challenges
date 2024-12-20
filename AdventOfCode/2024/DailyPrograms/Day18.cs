@@ -8,6 +8,7 @@ using kirypto.AdventOfCode.Common.Interfaces;
 using kirypto.AdventOfCode.Common.Models;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
+using static System.ConsoleColor;
 using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 using static Microsoft.Extensions.Logging.LogLevel;
 
@@ -34,15 +35,42 @@ public class Day18 : IDailyProgram {
 
         coords.Take(limit).ForEach(coord => map[coord.Y, coord.X] = true);
 
-        if (Logger.IsEnabled(Information)) {
-            string mapAsString = map.ToString((cellValue, _) => cellValue ? "#" : ".");
-            Logger.LogInformation($"Map ({rowCount}, {colCount}):\n{mapAsString}");
+        bool isVerbose = Logger.IsEnabled(Information);
+        if (isVerbose) {
+            Logger.LogInformation($"Map ({rowCount}, {colCount}):");
+            map.Print((cellValue, _) => cellValue ? "#" : ".");
         }
 
         GridAStar<bool> search = new(map, isWalkable: b => !b);
-        (IList<(Coord coord, bool item)> _, int cost) = search.FindPath(
-                startCoord: new Coord(0, 0),
-                endCoord: new Coord(colCount - 1, rowCount - 1));
-        return cost.ToString();
+        Coord startCoord = new(0, 0);
+        Coord endCoord = new Coord(colCount - 1, rowCount - 1);
+        (IList<(Coord coord, bool item)> path, int cost) = search.FindPath(
+                startCoord: startCoord,
+                endCoord: endCoord);
+
+        ISet<Coord> visitedCoords = part == 2 || isVerbose
+            ? path.Select(p => p.coord).ToHashSet()
+            : []; // If part 1 or not verbose, this is not needed, skip for efficiency
+
+        if (isVerbose) {
+            if (cost != -1) {
+                Logger.LogInformation($"Found path of length {cost}:");
+                map.Print((cellValue, coord) => {
+                    bool wasVisited = visitedCoords.Contains(coord);
+                    return new CellPrintInstruction {
+                            CellString = wasVisited ? "O" : cellValue ? "#" : ".",
+                            Foreground = wasVisited ? Green : White,
+                    };
+                });
+            } else {
+                Logger.LogInformation("No path found");
+            }
+        }
+
+        if (part == 1) {
+            return cost.ToString();
+        }
+
+        throw new NotImplementedException();
     }
 }
