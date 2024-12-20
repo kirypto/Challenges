@@ -34,7 +34,7 @@ public class Day18 : IDailyProgram {
         coords.Take(part1Limit).ForEach(coord => map[coord.Y, coord.X] = true);
 
         Logger.LogInformation($"Map ({rowCount}, {colCount}):");
-        PrintMap(map, []);
+        PrintMap(map, [], new Coord(-1, -1));
 
         GridSearch<bool> search = new(map, isWalkableFunc: b => !b);
         Coord startCoord = new(0, 0);
@@ -44,7 +44,7 @@ public class Day18 : IDailyProgram {
                 endCoord: endCoord);
 
         Logger.LogInformation(cost == -1 ? "No path found" : "Found path:");
-        PrintMap(map, path);
+        PrintMap(map, path, new Coord(-1, -1));
 
         if (part == 1) {
             return cost.ToString();
@@ -63,16 +63,17 @@ public class Day18 : IDailyProgram {
 
             Logger.LogInformation("Finding new path...");
             (IList<(Coord coord, bool item)> newPath, int newCost) = search.FindShortestPath(startCoord, endCoord);
-            PrintMap(map, newPath);
+            PrintMap(map, newPath, newBlockCoord);
             if (newCost == -1) {
                 Logger.LogInformation("There is no longer a walkable path.");
+                PrintWalkableArea(map, search, startCoord, newBlockCoord);
                 return $"{newBlockCoord.X},{newBlockCoord.Y}";
             }
         }
         throw new InvalidOperationException("Code should not have reached here");
     }
 
-    private static void PrintMap(bool[,] map, IList<(Coord coord, bool item)> path) {
+    private static void PrintMap(bool[,] map, IList<(Coord coord, bool item)> path, Coord newBlockage) {
         if (!Program.IsVerbose) {
             return;
         }
@@ -80,7 +81,19 @@ public class Day18 : IDailyProgram {
 
         map.Print((cellValue, coord) => new CellPrintInstruction {
                 CellString = visited.Contains(coord) ? "O" : cellValue ? "#" : ".",
-                Foreground = visited.Contains(coord) ? Green : White,
+                Foreground = visited.Contains(coord) ? Green : coord == newBlockage ? Magenta : White,
+        });
+    }
+
+    private static void PrintWalkableArea(bool[,] map, GridSearch<bool> search, Coord startCoord, Coord newBlockage) {
+        if (!Program.IsVerbose) {
+            return;
+        }
+
+        ISet<Coord> filled = search.FloodFill(startCoord);
+        map.Print((cellValue, coord) => new CellPrintInstruction {
+                CellString = filled.Contains(coord) ? "+" : cellValue ? "#" : ".",
+                Foreground = filled.Contains(coord) ? Blue : coord == newBlockage ? Magenta : White,
         });
     }
 }
