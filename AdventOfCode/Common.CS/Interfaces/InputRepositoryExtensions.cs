@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text.RegularExpressions;
+using kirypto.AdventOfCode.Common.Models;
 
 namespace kirypto.AdventOfCode.Common.Interfaces;
 
@@ -15,14 +15,19 @@ public static class InputRepositoryExtensions {
                 .Split(Environment.NewLine);
     }
 
-    public static char[,] FetchAs2DCharArray(this IInputRepository repository) {
+    public static char[,] FetchAs2DCharArray(
+            this IInputRepository repository,
+            Func<char, Coord, char> cellMutator = null
+    ) {
+        cellMutator ??= (cellValue, _) => cellValue;
+
         IList<string> lines = repository.FetchLines();
         int rows = lines.Count;
         int cols = lines[0].Length;
         char[,] result = new char[rows, cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                result[i, j] = lines[i][j];
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                result[row, col] = cellMutator(lines[row][col], new Coord { X = col, Y = row });
             }
         }
         return result;
