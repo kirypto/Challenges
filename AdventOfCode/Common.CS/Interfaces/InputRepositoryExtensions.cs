@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode.Common.Models;
+using kirypto.AdventOfCode.Common.Repositories;
 
 namespace kirypto.AdventOfCode.Common.Interfaces;
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")] // Library
 public static class InputRepositoryExtensions {
+    public static IInputRepository WithFormatter(this IInputRepository repository, Func<string, string> formatter) {
+        return new InMemoryInputRepository(formatter(repository.Fetch()));
+    }
+
     public static IList<string> FetchLines(this IInputRepository repository) {
         return repository.Fetch()
                 .ReplaceLineEndings()
