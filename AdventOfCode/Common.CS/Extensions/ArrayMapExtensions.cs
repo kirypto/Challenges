@@ -1,12 +1,10 @@
 using System;
-using System.Linq;
 using kirypto.AdventOfCode.Common.Models;
-using static System.ConsoleColor;
 using static System.Linq.Enumerable;
 
 namespace kirypto.AdventOfCode.Common.Extensions;
 
-public static class ArrayExtensions {
+public static class ArrayMapExtensions {
     public static bool TryGetValue<T>(this T[,] map, int row, int col, out T value) {
         if (row < 0 || col < 0 || row >= map.GetLength(0) || col >= map.GetLength(1)) {
             value = default;
