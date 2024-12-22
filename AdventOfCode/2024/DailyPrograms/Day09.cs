@@ -60,11 +60,29 @@ public class Day09 : IDailyProgram {
             }
             PrintDiskMap(diskMap, earliestEmptyBlock, latestFilledBlock);
         }
-        throw new NotImplementedException();
+
+        int checksum = 0;
+        List<int> blocksAsList = blocks.ToList();
+        for (int index = 0; index < blocksAsList.Count; index++) {
+            int blockStart = blocksAsList[index];
+            int blockEndExclusive = blocksAsList[index + 1];
+            int? value = diskMap[blockStart];
+            if (value is null) {
+                break;
+            }
+            checksum += ArithmeticSeriesSum(value.Value, blockStart, blockEndExclusive);
+        }
+        return checksum.ToString();
     }
 
     private int _fileId;
     private int NextFileId => _fileId++;
+
+
+    private static int ArithmeticSeriesSum(int scalar, int seriesStart, int seriesEndExclusive) {
+        int n = seriesEndExclusive - seriesStart;
+        return scalar * n * (seriesStart + (seriesEndExclusive - 1)) / 2;
+    }
 
     private static void PrintDiskMap(DiskMap diskMap, int earliestEmptyBlock, int latestFilledBlock) {
         if (!Program.IsVerbose || diskMap?.Keys is null) {
