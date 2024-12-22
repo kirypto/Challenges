@@ -15,7 +15,9 @@ namespace kirypto.AdventOfCode._2024.DailyPrograms;
 [DailyProgram(9)]
 public class Day09 : IDailyProgram {
     public string Run(IInputRepository inputRepository, int part) {
-        List<int> compressedDiskMap = inputRepository.Fetch()
+        List<int> compressedDiskMap = inputRepository
+                .WithFormatter(raw => raw.Replace("\n", ""))
+                .Fetch()
                 .Select(numericChar => numericChar - '0')
                 .ToList();
 
@@ -61,7 +63,7 @@ public class Day09 : IDailyProgram {
             PrintDiskMap(diskMap, earliestEmptyBlock, latestFilledBlock);
         }
 
-        int checksum = 0;
+        long checksum = 0;
         List<int> blocksAsList = blocks.ToList();
         for (int index = 0; index < blocksAsList.Count; index++) {
             int blockStart = blocksAsList[index];
@@ -79,8 +81,8 @@ public class Day09 : IDailyProgram {
     private int NextFileId => _fileId++;
 
 
-    private static int ArithmeticSeriesSum(int scalar, int seriesStart, int seriesEndExclusive) {
-        int n = seriesEndExclusive - seriesStart;
+    private static long ArithmeticSeriesSum(long scalar, long seriesStart, long seriesEndExclusive) {
+        long n = seriesEndExclusive - seriesStart;
         return scalar * n * (seriesStart + (seriesEndExclusive - 1)) / 2;
     }
 
