@@ -8,6 +8,8 @@ public readonly record struct Coord(int X, int Y) : IComparable<Coord> {
         int yComparison = Y.CompareTo(other.Y);
         return yComparison != 0 ? yComparison : X.CompareTo(other.X);
     }
+
+    public static readonly Coord None = new(-1, -1);
 }
 public static class CoordExtensions {
     public static Coord Move(this Coord coord, CardinalDirection direction) {

@@ -14,6 +14,10 @@ public static class ArrayMapExtensions {
         return true;
     }
 
+    public static bool TryGetValue<T>(this T[,] map, Coord index2D, out T value) {
+        return map.TryGetValue(index2D.Y, index2D.X, out value);
+    }
+
     public static string ToString<T>(this T[,] map, Func<T, Coord, string> cellToString) {
         return string.Join("\n", Range(0, map.GetLength(0))
                 .Select(row => Range(0, map.GetLength(1))
