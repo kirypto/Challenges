@@ -5,7 +5,6 @@ using kirypto.AdventOfCode.Common.Extensions;
 using kirypto.AdventOfCode.Common.Interfaces;
 using kirypto.AdventOfCode.Common.Models;
 using Microsoft.Extensions.Logging;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -41,6 +40,6 @@ public class Day04 : IDailyProgram {
             }
         }
 
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

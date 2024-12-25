@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Extensions;
 using kirypto.AdventOfCode.Common.Interfaces;
 using Microsoft.Extensions.Logging;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -26,6 +26,6 @@ public class Day05 : IDailyProgram {
             // if (pages.Contains())
             // Need to split the pages and put it in the dictionary page paths
         });
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

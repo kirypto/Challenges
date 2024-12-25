@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Interfaces;
@@ -27,6 +28,6 @@ public class Day08 : IDailyProgram {
             }
         }
 
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

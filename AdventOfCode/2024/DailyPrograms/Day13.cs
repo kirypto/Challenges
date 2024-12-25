@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode.Common.Attributes;
@@ -14,7 +15,7 @@ public partial class Day13 : IDailyProgram {
                 .Split("\n\n")
                 .Select(Puzzle.Parse)
                 .ToList();
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     private readonly partial record struct Puzzle(Coord ADiff, Coord BDiff, Coord Goal) {

@@ -8,7 +8,6 @@ using kirypto.AdventOfCode.Common.Models;
 using Microsoft.Extensions.Logging;
 using QuickGraph;
 using QuickGraph.Algorithms.Search;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 

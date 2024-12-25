@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using C5;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.Services.IO;
 using Microsoft.Extensions.Logging;
 using static System.ConsoleColor;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 using DiskMap = C5.TreeDictionary<int, int?>;
 using DiskMapKeys = C5.ISorted<int>;
 
@@ -38,11 +39,11 @@ public class Day09 : IDailyProgram {
         while (earliestEmptyBlock < latestFilledBlock) {
             int emptyBlockWidth = blocks.Successor(earliestEmptyBlock) - earliestEmptyBlock;
             int filledBlockWidth = blocks.Successor(latestFilledBlock) - latestFilledBlock;
-            Logger.LogInformation("Empty width {empty}, filled width {filled}", emptyBlockWidth, filledBlockWidth);
+            DailyProgramLogger.Logger.LogInformation("Empty width {empty}, filled width {filled}", emptyBlockWidth, filledBlockWidth);
             diskMap[earliestEmptyBlock] = diskMap[latestFilledBlock];
             if (emptyBlockWidth >= filledBlockWidth) {
                 // Move entire block
-                Logger.LogInformation("Moving full block");
+                DailyProgramLogger.Logger.LogInformation("Moving full block");
                 int endOfInsertedBlock = earliestEmptyBlock + filledBlockWidth;
                 if (blocks.Successor(earliestEmptyBlock) == endOfInsertedBlock) {
                     // Filled all available space
@@ -56,7 +57,7 @@ public class Day09 : IDailyProgram {
                 latestFilledBlock = blocks.FindPredecessor(latestFilledBlock, index => diskMap[index] is not null);
             } else {
                 // Move only part to fill available space
-                Logger.LogInformation("Moving partial block");
+                DailyProgramLogger.Logger.LogInformation("Moving partial block");
                 earliestEmptyBlock = blocks.FindSuccessor(earliestEmptyBlock, index => diskMap[index] is null);
                 diskMap[latestFilledBlock + filledBlockWidth - emptyBlockWidth] = null;
             }
@@ -120,7 +121,7 @@ public class Day09 : IDailyProgram {
 }
 
 public static class ISortedExtensions {
-    public static T FindPredecessor<T>(this C5.ISorted<T> source, T index, Func<T, bool> predicate) {
+    public static T FindPredecessor<T>(this ISorted<T> source, T index, Func<T, bool> predicate) {
         while (true) {
             index = source.Predecessor(index);
             if (predicate(index)) {
@@ -129,7 +130,7 @@ public static class ISortedExtensions {
         }
     }
 
-    public static T FindSuccessor<T>(this C5.ISorted<T> source, T index, Func<T, bool> predicate) {
+    public static T FindSuccessor<T>(this ISorted<T> source, T index, Func<T, bool> predicate) {
         while (true) {
             index = source.Successor(index);
             if (predicate(index)) {

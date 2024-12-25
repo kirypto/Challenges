@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode.Common.Attributes;
 using kirypto.AdventOfCode.Common.Interfaces;
 using Microsoft.Extensions.Logging;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -38,6 +38,6 @@ public class Day02 : IDailyProgram {
         }
 
 
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

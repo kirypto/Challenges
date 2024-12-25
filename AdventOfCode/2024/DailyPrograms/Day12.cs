@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using static System.ConsoleColor;
 using static System.Enum;
 using static System.Linq.Enumerable;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
