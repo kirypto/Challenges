@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using static kirypto.AdventOfCode.Common.Models.CardinalDirection;
 
 namespace kirypto.AdventOfCode.Common.Models;
@@ -10,7 +12,16 @@ public readonly record struct Coord(int X, int Y) : IComparable<Coord> {
     }
 
     public static readonly Coord None = new(-1, -1);
+
+    public static Coord Parse(string raw) {
+        // Expecting form of `x,y`
+        List<int> xAndY = raw.Split(",")
+                .Select(int.Parse)
+                .ToList();
+        return new Coord { X = xAndY[0], Y = xAndY[1] };
+    }
 }
+
 public static class CoordExtensions {
     public static Coord Move(this Coord coord, CardinalDirection direction) {
         return direction switch {
