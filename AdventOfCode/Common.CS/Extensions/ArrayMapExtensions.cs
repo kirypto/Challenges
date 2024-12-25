@@ -25,11 +25,12 @@ public static class ArrayMapExtensions {
                         .Aggregate((s1, s2) => $"{s1}{s2}")));
     }
 
-    public static string Print<T>(this T[,] map, Func<T, Coord, CellPrintInstruction> cellToString) {
+    public static void Print<T>(this T[,] map, Func<T, Coord, CellPrintInstruction> cellToString = null) {
         for (int row = 0; row < map.GetLength(0); row++) {
             for (int col = 0; col < map.GetLength(1); col++) {
                 (string cellString, ConsoleColor? foreground, ConsoleColor? background) =
-                        cellToString(map[row, col], new Coord { Y = row, X = col });
+                        cellToString?.Invoke(map[row, col], new Coord { Y = row, X = col })
+                        ?? new CellPrintInstruction(map[row, col].ToString());
                 if (foreground.HasValue) {
                     Console.ForegroundColor = foreground.Value;
                 }
@@ -41,10 +42,6 @@ public static class ArrayMapExtensions {
             }
             Console.WriteLine();
         }
-        return string.Join("\n", Range(0, map.GetLength(0))
-                .Select(row => Range(0, map.GetLength(1))
-                        .Select(col => cellToString(map[row, col], new Coord { Y = row, X = col }))
-                        .Aggregate((s1, s2) => $"{s1}{s2}")));
     }
 }
 
