@@ -5,6 +5,8 @@ using kirypto.AdventOfCode.Common.AOC;
 using kirypto.AdventOfCode.Common.Collections.Extensions;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
+using QuickGraph;
+using QuickGraph.Algorithms;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -16,16 +18,22 @@ public class Day05 : IDailyProgram {
 
         Logger.LogInformation("---\n{part1}\n---\n{part2}---", parts[0], parts[1]);
 
-        Dictionary<int, ISet<int>> paths = [];
+        AdjacencyGraph<int, SEdge<int>> pageConstraints = new();
         parts[0].Split("\n")
             .Select(line => line
                 .Split("|")
                 .Select(int.Parse)
                 .ToList())
             .ForEach(pages => {
-            // if (pages.Contains())
-            // Need to split the pages and put it in the dictionary page paths
-        });
+                pageConstraints.AddVertex(pages[0]);
+                pageConstraints.AddVertex(pages[1]);
+                pageConstraints.AddEdge(new SEdge<int>(pages[0], pages[1]));
+            });
+
+        Logger.LogInformation("Pages");
+        foreach (int page in pageConstraints.TopologicalSort()) {
+            Logger.LogInformation("Page {page}", page);
+        }
         throw new NotImplementedException();
     }
 }
