@@ -26,20 +26,35 @@ public class Day04 : IDailyProgram {
         }
 
         List<char> letters = ['M', 'A', 'S'];
+        int foundCount = 0;
         foreach (Coord wordStart in xPositions) {
             Coord position = wordStart;
+            if (Program.IsVerbose) {
+                grid.Print((cell, coord) => coord == wordStart
+                        ? new CellPrintInstruction(cell.ToString(), ConsoleColor.Red)
+                        : cell.ToString());
+            }
+            Logger.LogInformation("Checking X at {coord}", wordStart);
+
             foreach (CardinalDirection direction in Enum.GetValues<CardinalDirection>()) {
+                Logger.LogInformation("  --> Checking direction {direction}", direction);
+                bool allWorked = true;
                 foreach (char letter in letters) {
                     position = position.Move(direction);
+                    Logger.LogInformation("    --> Need a {letter} at {position}...", letter, position);
                     if (!grid.TryGetValue(position, out char cellChar) || cellChar != letter) {
-                        // Will not work
+                        Logger.LogInformation("      --> Nope!");
+                        allWorked = false;
                         break;
                     }
-                    
+                }
+                if (allWorked) {
+                    Logger.LogInformation("    --> Found one!");
+                    foundCount++;
                 }
             }
         }
 
-        throw new NotImplementedException();
+        return foundCount.ToString();
     }
 }
