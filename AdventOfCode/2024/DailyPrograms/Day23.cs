@@ -13,7 +13,7 @@ namespace kirypto.AdventOfCode._2024.DailyPrograms;
 [DailyProgram(23)]
 public class Day23 : IDailyProgram {
     public string Run(IInputRepository inputRepository, int part) {
-        BidirectionalGraph<string, IEdge<string>> gameNetwork = new();
+        AdjacencyGraph<string, Edge<string>> gameNetwork = new();
         HashSet<string> uniqueComputers = [];
         inputRepository
                 .FetchLines()
@@ -29,7 +29,23 @@ public class Day23 : IDailyProgram {
         foreach (string computer in uniqueComputers.Where(computer => computer.Contains('t'))) {
             Logger.LogInformation("Checking computer '{computer}'", computer);
         }
+        ICollection<Tuple<string,string,string>> triangles = gameNetwork.FindTriangles();
 
         throw new NotImplementedException();
+    }
+}
+
+public static class GraphExtensions {
+    public static ICollection<Tuple<T, T, T>> FindTriangles<T>(this AdjacencyGraph<T, Edge<T>> graph) {
+        Logger.LogInformation("Is directed graph: {directed}", graph.IsDirected);
+        foreach (Edge<T> edge in graph.Edges) {
+            Logger.LogInformation("Examining edge '{edge}'", edge);
+            T source = edge.Source;
+            T target = edge.Target;
+            if (graph.TryGetOutEdges(source, out IEnumerable<Edge<T>> outEdges)) {
+                Logger.LogInformation("Found out-edges: {outEdges}", outEdges.CommaDelimited());
+            }
+        }
+        return [];
     }
 }
