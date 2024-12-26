@@ -8,6 +8,7 @@ using kirypto.AdventOfCode.Common.Models;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using static System.ConsoleColor;
+using static kirypto.AdventOfCode.Common.Models.CompassDirectionExtensions;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -32,11 +33,11 @@ public class Day16 : IDailyProgram {
                 });
 
         GridSearch<char> search = new(map, c => c == '.');
-        (IList<(Coord coord, char item)> path, int cost) = search.AStarPath(start, end);
+        (IList<(Coord coord, char item)> path, int cost) = search.AStarPath(start, end, DetermineStepCost(start));
         Logger.LogInformation("Shortest path cost (without turn): {cost}", cost);
         PrintMap(map, path);
 
-        throw new NotImplementedException();
+        return cost.ToString();
     }
 
 
@@ -57,4 +58,27 @@ public class Day16 : IDailyProgram {
                 },
         });
     }
+
+    private static Func<CostFunctionData, int> DetermineStepCost(Coord startCoord) => state => {
+        Coord prev = state.Prev
+                ?? startCoord.Move(CompassDirection.West); // Initial direction is east
+        (_, Coord curr, Coord next) = state;
+
+        CompassDirection prevDirection = GetDirectionToAdjacentCoord(prev, curr);
+        CompassDirection nextDirection = GetDirectionToAdjacentCoord(curr, next);
+        if (prevDirection == nextDirection) {
+            return 1;
+        }
+        bool is90DegreeDiff = prevDirection.Rotate90Clockwise() == nextDirection
+                || prevDirection.Rotate90Anticlockwise() == nextDirection;
+        if (is90DegreeDiff) {
+            // 1000 for rotation + 1 move
+            return 1001;
+        }
+        // Must be 180 degrees diff, meaning 2 rotations + 1 move
+        return 2001;
+    };
+
+    private static CompassDirection GetDirectionToAdjacentCoord(Coord coordA, Coord coordB) => CardinalDirections
+            .First(direction => coordA.Move(direction) == coordB);
 }
