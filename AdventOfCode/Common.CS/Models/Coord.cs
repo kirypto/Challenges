@@ -20,6 +20,9 @@ public readonly record struct Coord(int X, int Y) : IComparable<Coord> {
                 .ToList();
         return new Coord { X = xAndY[0], Y = xAndY[1] };
     }
+
+    public static bool operator <(Coord left, Coord right) => left.CompareTo(right) < 0;
+    public static bool operator >(Coord left, Coord right) => left.CompareTo(right) > 0;
 }
 
 public static class CoordExtensions {

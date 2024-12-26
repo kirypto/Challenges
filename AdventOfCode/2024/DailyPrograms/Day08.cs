@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using kirypto.AdventOfCode.Common.AOC;
 using kirypto.AdventOfCode.Common.Models;
 using kirypto.AdventOfCode.Common.Repositories;
+using Microsoft.Extensions.Logging;
 using AntennaMap = System.Collections.Generic.Dictionary<char, System.Collections.Generic.HashSet<kirypto.AdventOfCode.Common.Models.Coord>>;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
@@ -26,6 +28,13 @@ public class Day08 : IDailyProgram {
                     }
                 }
             }
+        }
+        foreach (char antennaId in antennaMap.Keys) {
+            Logger.LogInformation("Checking antenna {id}...", antennaId);
+            HashSet<Coord> antennaCoords = antennaMap[antennaId];
+            antennaCoords
+                    .SelectMany(_ => antennaCoords, (a, b) => (a, b))
+                    .Where(pair => pair.a < pair.b);
         }
 
         throw new NotImplementedException();
