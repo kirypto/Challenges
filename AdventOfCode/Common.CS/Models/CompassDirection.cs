@@ -5,12 +5,20 @@ namespace kirypto.AdventOfCode.Common.Models;
 
 public enum CompassDirection {
     North,
+    NorthEast,
     East,
+    SouthEast,
     South,
+    SouthWest,
     West,
+    NorthWest,
 }
 
 public static class CompassDirectionExtensions {
+    public static CompassDirection[] CardinalDirections => [North, East, West, South];
+
+    public static CompassDirection[] IntermediateDirections => [NorthEast, SouthEast, SouthWest, NorthWest];
+
     public static CompassDirection Rotate90Clockwise(this CompassDirection direction) {
         return direction switch {
                 North => East,

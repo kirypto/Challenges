@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode.Common.AOC;
@@ -8,6 +7,7 @@ using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using QuickGraph;
 using QuickGraph.Algorithms.Search;
+using static kirypto.AdventOfCode.Common.Models.CompassDirectionExtensions;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -32,8 +32,8 @@ public class Day10 : IDailyProgram {
                 if (curr == '0') {
                     trailHeads.Add(currPos);
                 }
-                foreach (Coord nextPos in Enum.GetValues<CompassDirection>()
-                                 .Select(direction => currPos.Move(direction))) {
+                foreach (CompassDirection direction in CardinalDirections) {
+                    Coord nextPos = currPos.Move(direction);
                     if (inputMap.TryGetValue(nextPos.Y, nextPos.X, out char adjacent) && adjacent - curr == 1) {
                         graph.AddEdge(new Edge<Coord>(currPos, nextPos));
                         Logger.LogInformation($"Added edge from {currPos} to {nextPos}");

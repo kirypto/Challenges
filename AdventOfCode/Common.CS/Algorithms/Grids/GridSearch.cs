@@ -4,6 +4,7 @@ using System.Linq;
 using kirypto.AdventOfCode.Common.Collections;
 using kirypto.AdventOfCode.Common.Collections.Extensions;
 using kirypto.AdventOfCode.Common.Models;
+using static kirypto.AdventOfCode.Common.Models.CompassDirectionExtensions;
 
 namespace kirypto.AdventOfCode.Common.Algorithms.Grids;
 
@@ -69,8 +70,7 @@ public class GridSearch<T>(T[,] grid, Func<T, bool> isWalkableFunc) {
     private bool IsWalkable(Coord coord) => grid.TryGetValue(coord.Y, coord.X, out T cellValue)
             && isWalkableFunc(cellValue);
 
-    private static IEnumerable<Coord> NeighbouringCoords(Coord currentCoord) => Enum
-            .GetValues<CompassDirection>()
+    private static IEnumerable<Coord> NeighbouringCoords(Coord currentCoord) => CardinalDirections
             .Select(direction => currentCoord.Move(direction));
 
     private List<(Coord coord, T item)> ReconstructPath(Dictionary<Coord, Coord> cameFrom, Coord current) {

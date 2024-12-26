@@ -7,8 +7,8 @@ using kirypto.AdventOfCode.Common.Models;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using static System.ConsoleColor;
-using static System.Enum;
 using static System.Linq.Enumerable;
+using static kirypto.AdventOfCode.Common.Models.CompassDirectionExtensions;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -44,7 +44,7 @@ public class Day12 : IDailyProgram {
                 plotArea++;
                 Logger.LogInformation("Focus: {focus}", focus);
 
-                foreach (Coord adjacentCoord in GetValues<CompassDirection>().Select(d => focus.Move(d))) {
+                foreach (Coord adjacentCoord in CardinalDirections.Select(d => focus.Move(d))) {
                     if (!garden.TryGetValue(adjacentCoord.Y, adjacentCoord.X, out char adjPlotType)
                         || adjPlotType != plotType) {
                         plotPerimeter++;

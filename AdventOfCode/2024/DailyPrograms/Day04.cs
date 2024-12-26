@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using kirypto.AdventOfCode.Common.AOC;
 using kirypto.AdventOfCode.Common.Collections.Extensions;
@@ -6,6 +5,7 @@ using kirypto.AdventOfCode.Common.Models;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using static System.ConsoleColor;
+using static kirypto.AdventOfCode.Common.Models.CompassDirectionExtensions;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -36,7 +36,7 @@ public class Day04 : IDailyProgram {
             }
             Logger.LogInformation("Checking X at {coord}", wordStart);
 
-            foreach (CompassDirection direction in Enum.GetValues<CompassDirection>()) {
+            foreach (CompassDirection direction in CardinalDirections) {
                 Coord position = wordStart;
                 Logger.LogInformation("  --> Checking direction {direction}", direction);
                 bool allWorked = true;

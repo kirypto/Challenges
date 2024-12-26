@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode.Common.Algorithms.Grids;
@@ -8,6 +7,7 @@ using kirypto.AdventOfCode.Common.Models;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using static System.ConsoleColor;
+using static kirypto.AdventOfCode.Common.Models.CompassDirectionExtensions;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -38,7 +38,7 @@ public class Day20 : IDailyProgram {
 
         ISet<Coord> possibleCheats = path
                 .Select(pair => pair.coord)
-                .SelectMany(coord => Enum.GetValues<CompassDirection>()
+                .SelectMany(coord => CardinalDirections
                         .Select(direction => new { Direction = direction, Coord = coord.Move(direction) })
                         .Where(obj => racetrack.TryGetValue(obj.Coord, out char neighbourCell)
                                 && neighbourCell == '#')

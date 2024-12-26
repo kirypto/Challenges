@@ -26,9 +26,13 @@ public static class CoordExtensions {
     public static Coord Move(this Coord coord, CompassDirection direction) {
         return direction switch {
                 North => coord with { Y = coord.Y - 1 },
+                NorthEast => new Coord { X = coord.X + 1, Y = coord.Y - 1 },
                 East => coord with { X = coord.X + 1 },
+                SouthEast => new Coord { X = coord.X + 1, Y = coord.Y + 1 },
                 South => coord with { Y = coord.Y + 1 },
+                SouthWest => new Coord { X = coord.X - 1, Y = coord.Y + 1 },
                 West => coord with { X = coord.X - 1 },
+                NorthWest => new Coord { X = coord.X - 1, Y = coord.Y - 1 },
                 _ => throw new ArgumentException($"Unsupported direction {direction}", nameof(direction)),
         };
     }

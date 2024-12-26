@@ -1,3 +1,4 @@
+using System;
 using kirypto.AdventOfCode.Common.AOC;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ public class Day22 : IDailyProgram {
         inputRepository.Fetch();
         Logger.LogInformation("Mix 15 into 42 (expecting 37): {result}", Mix(42, 15));
         Logger.LogInformation("Prune 100000000 (expecting 16113920): {result}", Prune(100000000));
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     private static long Mix(long secretNumber, long newNumber) => secretNumber ^ newNumber;
