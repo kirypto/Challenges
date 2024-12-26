@@ -28,4 +28,14 @@ public static class CompassDirectionExtensions {
                 _ => throw new ArgumentException($"Unsupported direction {direction}", nameof(direction)),
         };
     }
+
+    public static CompassDirection Rotate90Anticlockwise(this CompassDirection direction) {
+        return direction switch {
+                North => West,
+                West => South,
+                South => East,
+                East => North,
+                _ => throw new ArgumentException($"Unsupported direction {direction}", nameof(direction)),
+        };
+    }
 }
