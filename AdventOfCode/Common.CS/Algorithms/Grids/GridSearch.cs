@@ -12,7 +12,13 @@ public class GridSearch<T>(T[,] grid, Func<T, bool> isWalkableFunc) {
     public (IList<(Coord coord, T item)> path, int cost) FindShortestPath(Coord startCoord, Coord endCoord)
         => AStarPath(startCoord, endCoord);
 
-    public (IList<(Coord coord, T item)> path, int cost) AStarPath(Coord startCoord, Coord endCoord) {
+    public (IList<(Coord coord, T item)> path, int cost) AStarPath(
+            Coord startCoord,
+            Coord endCoord,
+            Func<CostFunctionData, int> costFunc = null
+    ) {
+        costFunc ??= _ => 1;
+
         C5.IntervalHeap<(int cost, Coord coord)> openSet = [];
         Dictionary<Coord, Coord> cameFrom = new();
 
@@ -32,7 +38,11 @@ public class GridSearch<T>(T[,] grid, Func<T, bool> isWalkableFunc) {
                     continue;
                 }
 
-                int tentativeGCost = gCosts[currentCoord] + 1;
+                int tentativeGCost = gCosts[currentCoord] + costFunc(new CostFunctionData {
+                        Prev = cameFrom.TryGetValue(currentCoord, out Coord prevCoord) ? prevCoord : null,
+                        Curr = currentCoord,
+                        Next = neighbor,
+                });
 
                 if (!gCosts.TryGetValue(neighbor, out int value) || tentativeGCost < value) {
                     cameFrom[neighbor] = currentCoord;
@@ -85,3 +95,5 @@ public class GridSearch<T>(T[,] grid, Func<T, bool> isWalkableFunc) {
         return path;
     }
 }
+
+public readonly record struct CostFunctionData(Coord? Prev, Coord Curr, Coord Next);
