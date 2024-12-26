@@ -5,6 +5,7 @@ using kirypto.AdventOfCode.Common.Collections.Extensions;
 using kirypto.AdventOfCode.Common.Models;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
+using static System.ConsoleColor;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -18,7 +19,7 @@ public class Day04 : IDailyProgram {
         for (int row = 0; row < grid.GetLength(0); row++) {
             for (int col = 0; col < grid.GetLength(1); col++) {
                 if (grid[row, col] == 'X') {
-                    Coord coord = new(row, col);
+                    Coord coord = new() { Y = row, X = col };
                     Logger.LogInformation("Found an X at {coord}", coord);
                     xPositions.Add(coord);
                 }
@@ -28,15 +29,15 @@ public class Day04 : IDailyProgram {
         List<char> letters = ['M', 'A', 'S'];
         int foundCount = 0;
         foreach (Coord wordStart in xPositions) {
-            Coord position = wordStart;
             if (Program.IsVerbose) {
                 grid.Print((cell, coord) => coord == wordStart
-                        ? new CellPrintInstruction(cell.ToString(), ConsoleColor.Red)
+                        ? new CellPrintInstruction(cell.ToString(), Red)
                         : cell.ToString());
             }
             Logger.LogInformation("Checking X at {coord}", wordStart);
 
             foreach (CardinalDirection direction in Enum.GetValues<CardinalDirection>()) {
+                Coord position = wordStart;
                 Logger.LogInformation("  --> Checking direction {direction}", direction);
                 bool allWorked = true;
                 foreach (char letter in letters) {
