@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using kirypto.AdventOfCode.Common.AOC;
 using kirypto.AdventOfCode.Common.Collections.Extensions;
 using kirypto.AdventOfCode.Common.Models;
@@ -36,7 +37,7 @@ public class Day04 : IDailyProgram {
             }
             Logger.LogInformation("Checking X at {coord}", wordStart);
 
-            foreach (CompassDirection direction in CardinalDirections) {
+            foreach (CompassDirection direction in CardinalDirections.Concat(IntermediateDirections)) {
                 Coord position = wordStart;
                 Logger.LogInformation("  --> Checking direction {direction}", direction);
                 bool allWorked = true;
