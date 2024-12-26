@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode.Common.AOC;
@@ -17,6 +16,7 @@ public class Day02 : IDailyProgram {
                         .ToList())
                 .ToList();
 
+        int safeCount = 0;
         foreach (List<int> line in lines) {
             bool increasing = line[0] < line[1];
             Logger.LogInformation(increasing ? "increasing" : "decreasing");
@@ -25,19 +25,22 @@ public class Day02 : IDailyProgram {
                 int curr = line[i];
                 int next = line[i + 1];
                 int diff = next - curr;
-                if (increasing && diff is < 1 or > 2) {
+                if (increasing && diff is < 1 or > 3) {
+                    Logger.LogInformation("  --> Determined unsafe due to {a}->{b}", curr, next);
                     isSafe = false;
                     break;
                 }
-                if (!increasing && diff is > -1 or < -2) {
+                if (!increasing && diff is > -1 or < -3) {
+                    Logger.LogInformation("  --> Determined unsafe due to {a}->{b}", curr, next);
                     isSafe = false;
                     break;
                 }
             }
             Logger.LogInformation("Is safe: {isSafe}", isSafe);
+            if (isSafe) {
+                safeCount++;
+            }
         }
-
-
-        throw new NotImplementedException();
+        return safeCount.ToString();
     }
 }
