@@ -1,17 +1,17 @@
 using System;
-using static kirypto.AdventOfCode.Common.Models.CardinalDirection;
+using static kirypto.AdventOfCode.Common.Models.CompassDirection;
 
 namespace kirypto.AdventOfCode.Common.Models;
 
-public enum CardinalDirection {
+public enum CompassDirection {
     North,
     East,
     South,
     West,
 }
 
-public static class CardinalDirectionExtensions {
-    public static CardinalDirection Rotate90Clockwise(this CardinalDirection direction) {
+public static class CompassDirectionExtensions {
+    public static CompassDirection Rotate90Clockwise(this CompassDirection direction) {
         return direction switch {
                 North => East,
                 East => South,

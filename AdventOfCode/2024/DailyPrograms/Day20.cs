@@ -38,7 +38,7 @@ public class Day20 : IDailyProgram {
 
         ISet<Coord> possibleCheats = path
                 .Select(pair => pair.coord)
-                .SelectMany(coord => Enum.GetValues<CardinalDirection>()
+                .SelectMany(coord => Enum.GetValues<CompassDirection>()
                         .Select(direction => new { Direction = direction, Coord = coord.Move(direction) })
                         .Where(obj => racetrack.TryGetValue(obj.Coord, out char neighbourCell)
                                 && neighbourCell == '#')

@@ -44,7 +44,7 @@ public class Day12 : IDailyProgram {
                 plotArea++;
                 Logger.LogInformation("Focus: {focus}", focus);
 
-                foreach (Coord adjacentCoord in GetValues<CardinalDirection>().Select(d => focus.Move(d))) {
+                foreach (Coord adjacentCoord in GetValues<CompassDirection>().Select(d => focus.Move(d))) {
                     if (!garden.TryGetValue(adjacentCoord.Y, adjacentCoord.X, out char adjPlotType)
                         || adjPlotType != plotType) {
                         plotPerimeter++;

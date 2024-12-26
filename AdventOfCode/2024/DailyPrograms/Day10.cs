@@ -32,7 +32,7 @@ public class Day10 : IDailyProgram {
                 if (curr == '0') {
                     trailHeads.Add(currPos);
                 }
-                foreach (Coord nextPos in Enum.GetValues<CardinalDirection>()
+                foreach (Coord nextPos in Enum.GetValues<CompassDirection>()
                                  .Select(direction => currPos.Move(direction))) {
                     if (inputMap.TryGetValue(nextPos.Y, nextPos.X, out char adjacent) && adjacent - curr == 1) {
                         graph.AddEdge(new Edge<Coord>(currPos, nextPos));

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static kirypto.AdventOfCode.Common.Models.CardinalDirection;
+using static kirypto.AdventOfCode.Common.Models.CompassDirection;
 
 namespace kirypto.AdventOfCode.Common.Models;
 
@@ -23,7 +23,7 @@ public readonly record struct Coord(int X, int Y) : IComparable<Coord> {
 }
 
 public static class CoordExtensions {
-    public static Coord Move(this Coord coord, CardinalDirection direction) {
+    public static Coord Move(this Coord coord, CompassDirection direction) {
         return direction switch {
                 North => coord with { Y = coord.Y - 1 },
                 East => coord with { X = coord.X + 1 },

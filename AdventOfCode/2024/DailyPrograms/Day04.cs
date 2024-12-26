@@ -36,7 +36,7 @@ public class Day04 : IDailyProgram {
             }
             Logger.LogInformation("Checking X at {coord}", wordStart);
 
-            foreach (CardinalDirection direction in Enum.GetValues<CardinalDirection>()) {
+            foreach (CompassDirection direction in Enum.GetValues<CompassDirection>()) {
                 Coord position = wordStart;
                 Logger.LogInformation("  --> Checking direction {direction}", direction);
                 bool allWorked = true;

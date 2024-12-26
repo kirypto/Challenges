@@ -70,7 +70,7 @@ public class GridSearch<T>(T[,] grid, Func<T, bool> isWalkableFunc) {
             && isWalkableFunc(cellValue);
 
     private static IEnumerable<Coord> NeighbouringCoords(Coord currentCoord) => Enum
-            .GetValues<CardinalDirection>()
+            .GetValues<CompassDirection>()
             .Select(direction => currentCoord.Move(direction));
 
     private List<(Coord coord, T item)> ReconstructPath(Dictionary<Coord, Coord> cameFrom, Coord current) {

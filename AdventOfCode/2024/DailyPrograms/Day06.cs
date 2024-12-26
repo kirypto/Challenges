@@ -5,7 +5,7 @@ using kirypto.AdventOfCode.Common.AOC;
 using kirypto.AdventOfCode.Common.Models;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
-using static kirypto.AdventOfCode.Common.Models.CardinalDirection;
+using static kirypto.AdventOfCode.Common.Models.CompassDirection;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
@@ -94,7 +94,7 @@ public class Day06 : IDailyProgram {
     }
 }
 
-public readonly record struct DirectedCoord(Coord Coord, CardinalDirection Direction) {
+public readonly record struct DirectedCoord(Coord Coord, CompassDirection Direction) {
     public int Y => Coord.Y;
     public int X => Coord.X;
 
