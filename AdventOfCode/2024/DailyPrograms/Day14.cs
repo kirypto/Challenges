@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using kirypto.AdventOfCode.Common.Attributes;
-using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.AOC;
 using kirypto.AdventOfCode.Common.Models;
+using kirypto.AdventOfCode.Common.Repositories;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;
 

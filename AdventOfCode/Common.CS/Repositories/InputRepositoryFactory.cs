@@ -1,5 +1,4 @@
-using kirypto.AdventOfCode.Common.Interfaces;
-using kirypto.AdventOfCode.Common.Services.IO;
+using kirypto.AdventOfCode.Common.AOC;
 
 namespace kirypto.AdventOfCode.Common.Repositories;
 

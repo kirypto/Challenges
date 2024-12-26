@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace kirypto.AdventOfCode.Common.Extensions;
+namespace kirypto.AdventOfCode.Common.Collections.Extensions;
 
 public static class EnumerableExtensions {
     public static string CommaDelimited<T>(this IEnumerable<T> source) {

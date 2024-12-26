@@ -1,4 +1,4 @@
-namespace kirypto.AdventOfCode.Common.Services.IO;
+namespace kirypto.AdventOfCode.Common.AOC;
 
 public readonly record struct AocProgramArguments(
         int Day,

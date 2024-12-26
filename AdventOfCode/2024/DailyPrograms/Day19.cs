@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
-using kirypto.AdventOfCode.Common.Attributes;
-using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.AOC;
+using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using static System.StringSplitOptions;
 

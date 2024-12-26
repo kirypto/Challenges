@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using kirypto.AdventOfCode.Common.Models;
-using kirypto.AdventOfCode.Common.Repositories;
 
-namespace kirypto.AdventOfCode.Common.Interfaces;
+namespace kirypto.AdventOfCode.Common.Repositories;
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")] // Library
 public static class InputRepositoryExtensions {

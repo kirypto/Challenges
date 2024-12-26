@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using kirypto.AdventOfCode.Common.Attributes;
-using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.AOC;
 using kirypto.AdventOfCode.Common.Models;
+using kirypto.AdventOfCode.Common.Repositories;
 using AntennaMap = System.Collections.Generic.Dictionary<char, System.Collections.Generic.HashSet<kirypto.AdventOfCode.Common.Models.Coord>>;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;

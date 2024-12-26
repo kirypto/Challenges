@@ -2,7 +2,7 @@ using System;
 using kirypto.AdventOfCode.Common.Models;
 using static System.Linq.Enumerable;
 
-namespace kirypto.AdventOfCode.Common.Extensions;
+namespace kirypto.AdventOfCode.Common.Collections.Extensions;
 
 public static class ArrayMapExtensions {
     public static bool TryGetValue<T>(this T[,] map, int row, int col, out T value) {

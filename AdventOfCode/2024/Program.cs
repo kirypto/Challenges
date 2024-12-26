@@ -1,12 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using kirypto.AdventOfCode.Common.Attributes;
-using kirypto.AdventOfCode.Common.Interfaces;
-using kirypto.AdventOfCode.Common.Services.IO;
+using kirypto.AdventOfCode.Common.AOC;
+using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using static kirypto.AdventOfCode.Common.Repositories.InputRepositoryFactory;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
+using static kirypto.AdventOfCode.Common.AOC.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode._2024;
 

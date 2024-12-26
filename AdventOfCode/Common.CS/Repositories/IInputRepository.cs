@@ -1,4 +1,4 @@
-﻿namespace kirypto.AdventOfCode.Common.Interfaces;
+﻿namespace kirypto.AdventOfCode.Common.Repositories;
 
 public interface IInputRepository {
     public string Fetch();

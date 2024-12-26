@@ -1,10 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using kirypto.AdventOfCode.Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using static System.Environment;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
+using static kirypto.AdventOfCode.Common.AOC.DailyProgramLogger;
 
 namespace kirypto.AdventOfCode.Common.Repositories;
 

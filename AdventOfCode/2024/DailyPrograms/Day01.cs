@@ -1,10 +1,10 @@
-global using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
+global using static kirypto.AdventOfCode.Common.AOC.DailyProgramLogger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using kirypto.AdventOfCode.Common.Attributes;
-using kirypto.AdventOfCode.Common.Extensions;
-using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.AOC;
+using kirypto.AdventOfCode.Common.Collections.Extensions;
+using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;

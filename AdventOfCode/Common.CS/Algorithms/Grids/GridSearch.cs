@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using kirypto.AdventOfCode.Common.Collections;
-using kirypto.AdventOfCode.Common.Extensions;
+using kirypto.AdventOfCode.Common.Collections.Extensions;
 using kirypto.AdventOfCode.Common.Models;
 
-namespace kirypto.AdventOfCode.Common.Algorithms.Search;
+namespace kirypto.AdventOfCode.Common.Algorithms.Grids;
 
 public class GridSearch<T>(T[,] grid, Func<T, bool> isWalkableFunc) {
     public (IList<(Coord coord, T item)> path, int cost) FindShortestPath(Coord startCoord, Coord endCoord)

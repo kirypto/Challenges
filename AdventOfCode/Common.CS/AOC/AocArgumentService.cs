@@ -2,7 +2,7 @@ using System;
 using System.CommandLine;
 using System.Linq;
 
-namespace kirypto.AdventOfCode.Common.Services.IO;
+namespace kirypto.AdventOfCode.Common.AOC;
 
 public static class AocArgumentService {
     public static AocProgramArguments Parse(string[] args) {

@@ -1,6 +1,6 @@
 using System;
-using kirypto.AdventOfCode.Common.Attributes;
-using kirypto.AdventOfCode.Common.Interfaces;
+using kirypto.AdventOfCode.Common.AOC;
+using kirypto.AdventOfCode.Common.Repositories;
 using KeyPadMap = System.Collections.Generic.Dictionary<int, System.Collections.Generic.Dictionary<int, string>>;
 
 namespace kirypto.AdventOfCode._2024.DailyPrograms;

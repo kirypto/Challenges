@@ -1,6 +1,6 @@
 using System;
 
-namespace kirypto.AdventOfCode.Common.Attributes;
+namespace kirypto.AdventOfCode.Common.AOC;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class DailyProgramAttribute(int day) : Attribute {
