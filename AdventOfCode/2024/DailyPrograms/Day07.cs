@@ -23,12 +23,23 @@ public class Day07 : IDailyProgram {
         ];
 
         foreach (Equation equation in equations) {
-            // Walk through
+            Logger.LogInformation("Working on equation {result}: {values}", equation.Result, equation.Values);
+
         }
 
         throw new NotImplementedException();
     }
 
+    private static Equation Reduce(Equation equation) {
+        if (equation.Values.Count == 1) {
+            return equation;
+        }
+        int a = equation.Values[0];
+        int b = equation.Values[1];
+        return Reduce(equation with {
+                Values = [],
+        });
+    }
 
 
     private readonly record struct Equation(int Result, IList<int> Values) {
