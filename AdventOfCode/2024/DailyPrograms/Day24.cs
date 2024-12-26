@@ -13,10 +13,6 @@ namespace kirypto.AdventOfCode._2024.DailyPrograms;
 // ReSharper disable once UnusedType.Global
 [DailyProgram(24)]
 public partial class Day24 : IDailyProgram {
-    private delegate void EquationSolved(string outId, long value);
-
-    private delegate void InputProvided(long input);
-
     public string Run(IInputRepository inputRepository, int part) {
         string[] registersAndEquations = inputRepository
                 .WithFormatter(raw => raw
@@ -27,8 +23,9 @@ public partial class Day24 : IDailyProgram {
                 .Fetch()
                 .Split("\n\n");
 
-        Dictionary<string, long> registers = [];
+        Dictionary<string, int> registers = [];
         Dictionary<string, HashSet<Equation>> subscriptions = [];
+        Queue<Equation> readyEquations = new();
         registersAndEquations[1]
                 .Split("\n", RemoveEmptyEntries | TrimEntries)
                 .Select(Equation.Parse)
@@ -49,7 +46,39 @@ public partial class Day24 : IDailyProgram {
                     }
                 });
 
-        throw new NotImplementedException();
+        registersAndEquations[0]
+                .Replace(" ", "")
+                .Split("\n", RemoveEmptyEntries | TrimEntries)
+                .Select(registerRaw => registerRaw.Split(":"))
+                .ForEach(nameAndValue => ProvideInput(nameAndValue[0], int.Parse(nameAndValue[1])));
+
+        while (readyEquations.Count > 0) {
+            Equation equation = readyEquations.Dequeue();
+            int newValue = equation.Evaluate();
+            string outId = equation.OutId;
+            Logger.LogInformation("Equation {equation} finished with value {val}", equation, newValue);
+            registers[outId] = newValue;
+            if (subscriptions.TryGetValue(outId, out HashSet<Equation> newResultSubscriptions)) {
+                newResultSubscriptions.ForEach(subscribed => subscribed.ProvideInput(outId, newValue));
+            }
+        }
+
+        int final = registers.Keys
+                .Where(register => register.StartsWith('z'))
+                .OrderDescending()
+                .Select(register => registers[register])
+                .Aggregate(0, (soFar, newVal) => (soFar << 1) | newVal);
+        return final.ToString();
+
+        void ProvideInput(string registerId, int value) {
+            Logger.LogInformation("Setting value for register {register} to {value}", registerId, value);
+            subscriptions[registerId].ForEach(equation => {
+                if (equation.ProvideInput(registerId, value)) {
+                    readyEquations.Enqueue(equation);
+                    Logger.LogInformation("--> Equation {equation} is now ready to run", equation);
+                }
+            });
+        }
     }
 
     private enum Operation {
@@ -59,15 +88,31 @@ public partial class Day24 : IDailyProgram {
     }
 
     private partial record Equation(string InIdA, string InIdB, Operation Op, string OutId) {
-        private long valueA = -1;
-        private long valueB = -1;
+        private int valueA = -1;
+        private int valueB = -1;
+
         public bool ProvideInput(string inputId, int value) {
             if (inputId == InIdA) {
                 valueA = value;
             } else if (inputId == InIdB) {
                 valueB = value;
             }
-            return valueA != -1 && valueB != -1;
+            return IsReadyToRun;
+        }
+
+        private bool IsReadyToRun => valueA != -1 && valueB != -1;
+
+        public int Evaluate() {
+            if (!IsReadyToRun) {
+                throw new InvalidOperationException($"Equation {this} is not yet ready to run.");
+            }
+
+            return Op switch {
+                    Operation.And => valueA & valueB,
+                    Operation.Or => valueA | valueB,
+                    Operation.Xor => valueA ^ valueB,
+                    _ => throw new NotImplementedException($"Operation {Op} not supported"),
+            };
         }
 
         public static Equation Parse(string raw) {
@@ -82,5 +127,5 @@ public partial class Day24 : IDailyProgram {
 
         [GeneratedRegex(@"(\w+) (\w+) (\w+) -> (\w+)")]
         private static partial Regex RawEquationPattern();
-    };
+    }
 }
