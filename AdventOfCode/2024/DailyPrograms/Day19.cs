@@ -15,7 +15,7 @@ public class Day19 : IDailyProgram {
         string[] availableTowels = availableAndRequests[0]
                 .Split(",", TrimEntries);
         Logger.LogInformation("Available Towels: {towels}", string.Join(",", availableTowels));
-        string pattern = $"({string.Join('|', availableTowels)})+";
+        string pattern = $"(({string.Join(")|(", availableTowels)}))+";
         Logger.LogInformation("Pattern: {pattern}", pattern);
         Regex regex = new("^" + pattern + "$", RegexOptions.Compiled);
         int possibleDesignCount = 0;
@@ -24,8 +24,8 @@ public class Day19 : IDailyProgram {
         for (int index = 0; index < requests.Length; index++) {
             Logger.LogInformation("Checked {current} of {total}, found {count} so far", index, requests.Length, possibleDesignCount);
             string request = requests[index];
+            Logger.LogInformation("Request: '{request}'...", request);
             Match designMatch = regex.Match(request);
-            // Logger.LogInformation("Request: '{request}': {success}", request, designMatch.Success);
             if (designMatch.Success) {
                 possibleDesignCount++;
             }
