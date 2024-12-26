@@ -23,6 +23,8 @@ public readonly record struct Coord(int X, int Y) : IComparable<Coord> {
 
     public static bool operator <(Coord left, Coord right) => left.CompareTo(right) < 0;
     public static bool operator >(Coord left, Coord right) => left.CompareTo(right) > 0;
+    public static Coord operator +(Coord left, Coord right) => new(left.X + right.X, left.Y + right.Y);
+    public static Coord operator -(Coord left, Coord right) => new(left.X - right.X, left.Y - right.Y);
 }
 
 public static class CoordExtensions {
