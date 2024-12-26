@@ -51,4 +51,6 @@ public class RestInputRepository : IInputRepository {
                 throw new ArgumentException($"Unknown fetch code {_fetchCode}");
         }
     }
+
+    public string FetchCode => _fetchCode;
 }
