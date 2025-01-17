@@ -1,17 +1,18 @@
+global using static kirypto.AdventOfCode.Common.AOC.DailyProgramLogger;
 using System;
 using System.Collections.Generic;
-using kirypto.AdventOfCode.Common.Attributes;
-using kirypto.AdventOfCode.Common.Extensions;
-using kirypto.AdventOfCode.Common.Interfaces;
+using System.Linq;
+using kirypto.AdventOfCode.Common.AOC;
+using kirypto.AdventOfCode.Common.Collections.Extensions;
+using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
-using static kirypto.AdventOfCode.Common.Services.IO.DailyProgramLogger;
 
-namespace kirypto.AdventOfCode._2024;
+namespace kirypto.AdventOfCode._2024.DailyPrograms;
 
 [DailyProgram(1)]
-public class Day1 : IDailyProgram {
-    public string Run(IInputRepository inputRepository, string inputRef, int part) {
-        var nums = inputRepository.FetchRegexParsedLines<int, int>(inputRef, @"(\d+)\s+(\d+)");
+public class Day01 : IDailyProgram {
+    public string Run(IInputRepository inputRepository, int part) {
+        var nums = inputRepository.FetchRegexParsedLines<int, int>(@"(\d+)\s+(\d+)");
         Logger.LogInformation($"Nums ({nums.Count}): [[{nums[0].Item1},{nums[0].Item2}],...]");
         SortedList<int, int> listA = [];
         SortedList<int, int> listB = [];
@@ -27,6 +28,10 @@ public class Day1 : IDailyProgram {
         Logger.LogInformation($"List A: {listA.CommaDelimited()}");
         Logger.LogInformation($"List B: {listB.CommaDelimited()}");
 
+        return part == 1 ? Part1(listA, listB) : Part2(listA, listB);
+    }
+
+    private static string Part1(SortedList<int, int> listA, SortedList<int, int> listB) {
         Logger.LogInformation("Summing differences...");
         int result = 0;
         while (listA.Count > 0 && listB.Count > 0) {
@@ -57,5 +62,12 @@ public class Day1 : IDailyProgram {
         }
         Logger.LogInformation("Done!");
         return result.ToString();
+    }
+
+    private static string Part2(SortedList<int, int> listA, SortedList<int, int> listB) {
+        return listA.Keys
+                .Select(itemA => listB.TryGetValue(itemA, out int count) ? itemA * count : 0)
+                .Sum()
+                .ToString();
     }
 }

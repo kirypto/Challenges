@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace kirypto.AdventOfCode.Common.Services.IO;
+namespace kirypto.AdventOfCode.Common.AOC;
 
 public class DailyProgramLogger(bool verboseFlag) : ILogger {
     private static DailyProgramLogger _logger;
