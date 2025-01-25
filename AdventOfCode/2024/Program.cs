@@ -1,9 +1,7 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using kirypto.AdventOfCode.Common.AOC;
-using kirypto.AdventOfCode.Common.Collections.Extensions;
 using kirypto.AdventOfCode.Common.Repositories;
 using Microsoft.Extensions.Logging;
 using static kirypto.AdventOfCode.Common.Repositories.InputRepositoryFactory;
@@ -15,15 +13,6 @@ public static class Program {
     public static bool IsVerbose { get; private set; }
 
     public static void Main(string[] rawArgs) {
-        Initialize(false);
-        Enumerable.Range(1, 25)
-                .Select(day => new { Day = day, Input = new RestInputRepository(day, "real").Fetch() })
-                .ForEach(obj => {
-                    string path = $@"C:\Users\garre\Repositories\Challenges\AdventOfCode\2024\Data\day{obj.Day}real.txt";
-                    File.WriteAllText(path, obj.Input);
-                });
-        return;
-
         AocProgramArguments args = AocArgumentService.Parse(rawArgs);
         IDailyProgram program = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
