@@ -5,7 +5,7 @@ function Watch-AocFile([String]$file) {
         $LastWrite = (Get-Item $file).LastWriteTime
         if ($LastWrite -ne $LastPrint) {
             Write-Host "`n`n$(Get-Date -Format 'o')" -ForegroundColor Green
-            node $file
+            node --env-file=.env $file
             $LastPrint = $LastWrite
         }
 
