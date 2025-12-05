@@ -1,15 +1,3 @@
-const input = `L68
-L30
-R48
-L5
-R60
-L55
-L1
-L99
-R14
-L82
-`
-
 $_$ = require(process.env.WAT);
 
 $$$ = (_) => ((_$_) => ((___$$__$__) => {
@@ -48,5 +36,4 @@ $$$ = (_) => ((_$_) => ((___$$__$__) => {
     )
 })() || _$_.$)()
 
-console.log(`Solution: ${$$$(input)}`)
-// module.exports = $$$
+module.exports = $$$
