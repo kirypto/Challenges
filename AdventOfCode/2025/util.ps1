@@ -1,4 +1,4 @@
-function Watch-AocFile([int]$Day, [int]$Part) {
+function Watch-AocFile([int]$Day, [int]$Part, [int]$Test=1) {
     $LastPrint = $null
     $DaySourceFile = "./day$Day-part$Part.wat.js"
 
@@ -6,7 +6,7 @@ function Watch-AocFile([int]$Day, [int]$Part) {
         $LastWrite = (Get-Item $DaySourceFile).LastWriteTime
         if ($LastWrite -ne $LastPrint) {
             Write-Host "`n`n$(Get-Date -Format 'o')" -ForegroundColor Green
-            node --env-file=.env runner.js $Day $Part ".\day$Day-test.txt"
+            node --env-file=.env runner.js $Day $Part ".\day$Day-test$Test.txt"
             $LastPrint = $LastWrite
         }
 
