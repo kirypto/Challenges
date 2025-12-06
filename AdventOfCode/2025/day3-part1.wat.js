@@ -13,7 +13,6 @@ $$$ = (_) => ((_$_) => ((__, __$, __$_, $$) => {
 
     $_$.$.$$([] - [], $ => $ < __$, $ => $ + !+[], $ => { // For each line
         __$_ = $_$.$.__$(__[$])  // Get the length of the input line
-        console.log(`Processing Line '${__[$]}'`)
         $$ = {
             __: [][[]],  // Placeholder for max char except last (10s digit)
             $$: [][[]],  // Placeholder for index of 10s digit
@@ -22,7 +21,8 @@ $$$ = (_) => ((_$_) => ((__, __$, __$_, $$) => {
         $$.__ = $_$.$.__$$($_$.$._$$_(__[$], []-[], __$_-!-[])) // Get the 10s digit
         $$.$$ = $_$.$.__$__(__[$], $$.__)                       // Get the index of the 10s digit
         $$._ = $_$.$.__$$($_$.$._$$_(__[$], $$.$$+!+[], __$_))  // Get the 1s digit
-        console.log($$)
+
+        _$_.$ += ($$.__ + $$._) - [] // Put the 10s digit and 1s digit together, subtract 0 to convert to num, add to sum
     })
 })() || _$_.$)()
 
